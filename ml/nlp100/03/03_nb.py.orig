@@ -1,0 +1,185 @@
+
+# coding: utf-8
+
+# ## [第3章 正規表現](https://nlp100.github.io/ja/ch03.html)
+# 結果だけ載せました。正解かどうかは保障しません笑
+# 
+# ### github
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/ml/nlp100/02/02_nb.ipynb)
+# 
+# ### 筆者の環境
+
+# In[1]:
+
+
+get_ipython().system('sw_vers')
+
+
+# In[2]:
+
+
+get_ipython().system('python -V')
+
+
+# In[3]:
+
+
+get_ipython().system('bash --version')
+
+
+# ### ダウンロードと解凍
+
+# In[4]:
+
+
+get_ipython().system('wget https://nlp100.github.io/data/jawiki-country.json.gz -O ./wiki.json.gz')
+
+
+# In[5]:
+
+
+get_ipython().system('gzip -f -d wiki.json.gz')
+
+
+# ## 解答
+
+# ### 共通部分
+
+# In[6]:
+
+
+import re
+
+file_name = './wiki.json'
+
+
+# ### 20問
+
+# In[7]:
+
+
+import json
+
+with open(file_name, mode='r') as f:
+  for line in f.readlines():
+    info = json.loads(line)
+    if info['title'] == 'イギリス':
+      print('### 先頭500文字 ###')
+      print(info['text'][:500])
+      print()
+      print('### 最後500文字 ###')
+      print(info['text'][-500:])
+      
+      # 以後 b_infoをイギリスの情報として利用
+      b_info = info['text']
+
+
+# In[8]:
+
+
+print(print.__doc__)
+
+
+# ### 21問
+
+# In[9]:
+
+
+for line in b_info.split('\n'):
+  s = re.findall('\[\[Category:(.*)\]\]',line)
+  if len(s) != 0:
+    print(line)
+
+
+# ### 22問
+
+# In[10]:
+
+
+for line in b_info.split('\n'):
+  s = re.findall('\[\[Category:(.*)\]\]',line)
+  if len(s) != 0:
+    for _ in s:
+      print(_)
+
+
+# ### 23問
+
+# In[11]:
+
+
+for line in b_info.split('\n'):
+  s = re.findall('(==+)(.*[^=])==+',line)
+  if len(s) != 0:
+    print(len(s[0][0]) - 1, s[0][1])
+
+
+# ### 24問
+# ファイルの定義がわからないのですが、以下を抜き出すものとします。[こちら](https://ja.wikipedia.org/wiki/Help:%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%9A%E3%83%BC%E3%82%B8)を参考にしています。
+# 
+# ```text
+# [[ファイル:ファイル名]]
+# [[:ファイル:ファイル名]]
+# [[File:ファイル名]]
+# [[Media:ファイル名]] 
+# ```
+
+# In[14]:
+
+
+for line in b_info.split('\n'):
+  s1 = re.findall(r'\[\[File:(.+)\]\]',line)
+  s2 = re.findall(r'\[\[Media:(.+)\]\]',line)
+  s3 = re.findall(r'\[\[:?ファイル:(.+)\]\]',line)
+  
+  for s in [s1,s2,s3]:
+    if len(s) != 0:
+      for _ in s:
+        print(_.split('|')[0])
+
+
+# In[21]:
+
+
+a = 'aB1_Wo'
+
+s = re.findall(r'(a[A-Z](.*)|a[A-Z](\d).*)', a)
+s = re.findall(r'a[A-Z](\d).*', a)
+s = re.findall(r'(a[A-Z](.*)|(\w)[A-Z].*)', a)
+for _ in s:
+  print(_)
+
+
+# ### 25問
+
+<<<<<<< HEAD
+# In[58]:
+
+
+for line in b_info.split('\n'):
+  s = re.findall(r'\{\{(.*)\}\}',line)
+  if len(s) != 0:
+    print(s)
+
+
+=======
+>>>>>>> update
+# ### 26問
+
+# ### 27問
+
+# ### 28問
+
+# ### 29問
+
+# ## 関連記事
+# - [第1章](/ml/nlp100/01/)
+# - [第2章](/ml/nlp100/02/)
+# - [第3章](/ml/nlp100/03/)
+# - [第4章](/ml/nlp100/04/)
+# - [第5章](/ml/nlp100/05/)
+# - [第6章](/ml/nlp100/06/)
+# - [第7章](/ml/nlp100/07/)
+# - [第8章](/ml/nlp100/08/)
+# - [第9章](/ml/nlp100/09/)
+# - [第10章](/ml/nlp100/10/)
