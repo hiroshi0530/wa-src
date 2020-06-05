@@ -4,13 +4,14 @@
 # ## 第1章 ウェブからの注文数を分析する10本ノック
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/ml/data100/01/01_nb.ipynb)
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/01/01_nb.ipynb)
 # 
 # ### 筆者の環境
 
 # In[1]:
 
 
+get_ipython().system('sw_vers')
 get_ipython().system('sw_vers')
 
 
