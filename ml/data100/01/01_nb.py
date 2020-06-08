@@ -12,7 +12,6 @@
 
 
 get_ipython().system('sw_vers')
-get_ipython().system('sw_vers')
 
 
 # In[2]:
