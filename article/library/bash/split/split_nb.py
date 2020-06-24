@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## unexpend
-# 与えられたファイルのスペースをタブに変換します。結果を標準出力に表示します。
+# ## split
+# ファイルの分割を行います。
 # 
 # ```bash
 # NAME
-#      expand, unexpand -- expand tabs to spaces, and vice versa
+#      split -- split a file into pieces
 # 
 # SYNOPSIS
-#      expand [-t tab1,tab2,...,tabn] [file ...]
-#      unexpand [-a | -t tab1,tab2,...,tabn] [file ...]
+#      split [-a suffix_length] [-b byte_count[k|m]] [-l line_count]
+#            [-p pattern] [file [name]]
+# 
 # ```
 # 
 # ### github
@@ -21,6 +22,7 @@
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 # 
 # 実際に動かす際は先頭の！や先頭行の%%bashは無視してください。
+# 
 
 # In[1]:
 
@@ -28,22 +30,22 @@
 get_ipython().system('sw_vers')
 
 
-# In[2]:
+# In[1]:
 
 
 get_ipython().system('bash --version')
 
 
-# ## 使用例
-
-# In[3]:
+# In[ ]:
 
 
-get_ipython().run_cell_magic('bash', '', 'echo -e "a   b\\nc   d" > temp1.txt\ncat temp1.txt')
 
 
-# In[4]:
+
+# ## 参考記事
+
+# In[ ]:
 
 
-get_ipython().run_cell_magic('bash', '', 'unexpand -a -t 3 temp1.txt > temp2.txt\ncat -te temp2.txt')
+
 

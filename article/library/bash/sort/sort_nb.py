@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## sort
@@ -16,8 +16,7 @@
 # ```
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/sort/sort_nb.ipynb)
-# 
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/sort/sort_nb.ipynb)
 # 
 # ### 環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -42,6 +41,12 @@ get_ipython().system('bash --version')
 
 
 get_ipython().run_cell_magic('bash', '', 'echo -e "b\\nc\\na\\nz\\ny" > temp1.txt\ncat temp1.txt\nsort -r temp1.txt > temp2.txt\necho -e "\\nsorted"\ncat temp2.txt')
+
+
+# In[ ]:
+
+
+
 
 
 # ## 参考記事

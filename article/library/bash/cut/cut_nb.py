@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ##  cut
@@ -15,7 +15,7 @@
 # ```
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/cut/cut_nb.ipynb)
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/cut/cut_nb.ipynb)
 # 
 # ### 環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
