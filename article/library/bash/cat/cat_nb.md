@@ -11,7 +11,8 @@ SYNOPSIS
 ```
 
 ### github
-- githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/cat/cat_nb.ipynb)
+- githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/cat/cat_nb.ipynb)
+
 
 ### 環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
