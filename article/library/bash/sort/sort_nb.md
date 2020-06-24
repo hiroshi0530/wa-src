@@ -14,8 +14,7 @@ SYNOPSIS
 ```
 
 ### github
-- githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/sort/sort_nb.ipynb)
-
+- githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/sort/sort_nb.ipynb)
 
 ### 環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -66,6 +65,11 @@ cat temp2.txt
     b
     a
 
+
+
+```python
+
+```
 
 ## 参考記事
 

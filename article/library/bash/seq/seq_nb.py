@@ -1,10 +1,19 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## seq
+# 連番を作成します。
+# 
+# ```bash
+# NAME
+#      cat -- concatenate and print files
+# 
+# SYNOPSIS
+#      cat [-benstuv] [file ...]
+# ```
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/seq/seq_nb.ipynb)
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/seq/seq_nb.ipynb)
 # 
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -15,6 +24,8 @@
 
 
 get_ipython().system('sw_vers')
+
+get_ipython().system('man seq')
 
 
 # In[2]:

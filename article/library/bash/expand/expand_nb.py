@@ -1,11 +1,12 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## expand
 # ファイルを読み込み、タブを半角スペースに変換します。
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/expand/expand_nb.ipynb)
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/expand/expand_nb.ipynb)
+# 
 # 
 # ### 環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
