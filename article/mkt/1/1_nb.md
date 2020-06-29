@@ -1,18 +1,56 @@
 
+## 準備
+  
+教科書では計算は主にエクセルによる関数で実行されています。エクセルはGUI上の操作性は抜群なのですが、外部のWebシステムと連携するためのAPIのライブラリやデータ分析ツールとの連携が十分でないため、本サイトではpythonにより教科書と同じ計算を行います。そのための準備です。
+
+### github
+- githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/mkt/1/1_nb.md)
+
+### 筆者の環境
+筆者の環境です。
+
+
+```python
+!sw_vers
+```
+
+    ProductName:	Mac OS X
+    ProductVersion:	10.14.6
+    BuildVersion:	18G2022
+
+
+
+```python
+!python -V
+```
+
+    Python 3.7.3
+
+
+必要なライブラリを読み込みます。
+
 
 ```python
 import numpy as np
+import scipy
+from scipy.stats import binom
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+print("numpy version :", np.__version__)
+print("matplotlib version :", matplotlib.__version__)
+print("sns version :",sns.__version__)
 ```
 
+    numpy version : 1.16.2
+    matplotlib version : 3.0.3
+    sns version : 0.9.0
 
-```python
-
-```
-
-
-```python
-
-```
 
 ## 概要
 限られた時間の中で生きている我々が知ることが出来るのは、平均値とその分散（標準偏差）のみです。マーケティングの世界で例えると、一日あたりの来店者数、一日あたりの商品の売り上げ数などです。では、その限られた情報から何を知ることが出来るでしょうか？今日の来店者数が１０００人だった場合、明日の来店者数が５００の確率はどのぐらいでしょうか？また、１５００人である確率はどのぐらいでしょうか？その答えを教えてくれるのが確率分布になります。
@@ -57,40 +95,39 @@ $$ \frac{N!}{r! \(N-r\)!} \times \left(\frac{\theta}{n}\right)^r \times \left(\f
 
 
 ```python
-import numpy as np
-import scipy
-from scipy.stats import binom
-import matplotlib.pyplot as plt
+x = np.arange(100)
 
-def plot_binomial():
+n = 100
+p = 0.3
+mean, var, skew, kurt = binom.stats(n, p, moments='mvsk')
+print("平均    : ", mean)
+print("標準偏差 :", var)
 
-  x = np.arange(100)
+plt.xlabel('$r$')
+plt.xlabel('$r$')
+plt.ylabel('$B(n,p)$')
+plt.title('binomial distribution n={}, p={}'.format(n,p))
+plt.grid(True)
 
-  n = 100
-  p = 0.3
-  mean, var, skew, kurt = binom.stats(n, p, moments='mvsk')
-  print(mean)
-  print(var)
-  print(skew)
-  print(kurt)
-
-  plt.xlabel('$r$')
-  plt.xlabel('$r$')
-  plt.ylabel('$B(n,p)$')
-  plt.title('binomial distribution n={}, p={}'.format(n,p))
-  plt.grid(True)
-  y = binom.pmf(x,n,p)
-
-  plt.plot(x,y)
-  plt.savefig('binomial.png') 
-  
-if __name__ == "__main__":
-  plot_binomial()
+y = binom.pmf(x,n,p)
+plt.scatter(x,y)
+# sns.plot(x=x, y=y)  
+# sns.scatterplot(data=tips, x='total_bill', y='tip')
 ```
 
-グラフは以下の通りです。
+    平均    :  30.0
+    標準偏差 : 21.0
 
-{{<figure src="binomial.png" class="center">}}
+
+
+
+
+    <matplotlib.collections.PathCollection at 0x122717f98>
+
+
+
+
+![svg](1_nb_files/1_nb_8_2.svg)
 
 
 ## 1-2. ポアソン分布 (Poisson Distribution)
@@ -128,39 +165,41 @@ $$P\left(r|\mu \right) = \frac{\mu^r}{r!}e^{-\mu}$$
 
 グラフと計算に利用したpythonのコードを以下に示します。
 
-{{< figure src="poisson.png" class="center" >}}
 
 ```python
-import numpy as np
-import scipy
 from scipy.stats import poisson
-import matplotlib.pyplot as plt
 
-def plot_poisson():
+x = np.arange(10)
 
-  x = np.arange(10)
+mu = 0.6
+mean, var, skew, kurt = poisson.stats(mu, moments='mvsk')
+print("平均    : ", mean)
+print("標準偏差 :", var)
 
-  mu = 0.6
-  mean, var, skew, kurt = poisson.stats(mu, moments='mvsk')
-  print(mean)
-  print(var)
-  print(skew)
-  print(kurt)
+y = poisson.pmf(x,mu)
 
-  y = poisson.pmf(x,mu)
+plt.xlabel('$r$')
+plt.ylabel('$P(r|\mu)$')
+plt.title('poisson distribution mu=%.1f' % (mu))
+plt.grid(True)
 
-  plt.xlabel('$r$')
-  plt.ylabel('$P(r|\mu)$')
-  plt.title('poisson distribution mu=%.1f' % (mu))
-  plt.grid(True)
-
-  plt.plot(x,y)
-  plt.savefig('poisson.png') 
-
-
-if __name__ == "__main__":
-  plot_poisson()
+plt.plot(x,y)
 ```
+
+    平均    :  0.6
+    標準偏差 : 0.6
+
+
+
+
+
+    [<matplotlib.lines.Line2D at 0x12288b908>]
+
+
+
+
+![svg](1_nb_files/1_nb_10_2.svg)
+
 
 ## 1-3. 負の二項分布 (Negative Binomical Distribution)
 
@@ -188,14 +227,13 @@ $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left
 
 と計算できると述べています。その後に、その負の二項分布が、「成功が成功を呼ぶ分布」としてのガンマ分布を仮定することによって$\left(1 \right)$が導かれる事が証明されていますが、この理解は後で良いかと思います。繰り返しますが、重要なのは、
 
-```math
+```text
 ポアソン分布とガンマ分布を仮定することによって、負の二項分布が導かれる
 ```
 
 という事です。
 
 ※実際に個人レベルのポアソン分布と消費者全体でのガンマ分布を仮定することによって負の二項分布が導かれることは1.6で証明します。
-
 
 ## 1-4. ポアソン分布と二項分布のまとめ
 
@@ -216,7 +254,7 @@ $$ f\left(x|\alpha, \beta \right) =\frac{\beta^{\alpha}x^{\alpha - 1}e^{-\beta x
 
 $$ f\left(x|\alpha, \theta \right) =\frac{x^{\alpha - 1}e^{-\frac{x}{\theta}}}{\Gamma\left(\alpha \right)\theta^{\alpha}} \cdot\cdot\cdot\cdot\left(2\right) $$
 
-<a href=""https://en.wikipedia.org/wiki/Gamma_distribution"" target="_blank">wikipedia</a>でもこの二通りの数式で表記されています。ここで、(1)と(2)における確率分布の平均と標準偏差は以下の通りです。
+<a href="https://en.wikipedia.org/wiki/Gamma_distribution" target="_blank">wikipedia</a>でもこの二通りの数式で表記されています。ここで、(1)と(2)における確率分布の平均と標準偏差は以下の通りです。
 
 <style>.cent td {text-align:center;}</style>
 <style>.cent tr {text-align:center;}</style>
@@ -243,56 +281,61 @@ $$ f\left(x|\alpha, \theta \right) =\frac{x^{\alpha - 1}e^{-\frac{x}{\theta}}}{\
 
 本書では、$\displaystyle Gamma \left(K,\frac{M}{K} \right)$がどちらの表記を用いているか明示されていませんが、$\displaystyle Gamma \left(1,5 \right)$、$\displaystyle Gamma \left(3,\frac{5}{3} \right)$、$\displaystyle Gamma \left(15,\frac{5}{15} \right)$の平均値はすべて5と述べているので、(2)の表記を用いていると思われます。
 
-
 ### python code
 ガンマ分布を記述するpythonのコードです。moduleとしてscipy、numpy、matplotlibなど機械学習ではおなじみのライブラリを用いてます。
-
-```python
-import numpy as np
-import scipy
-from scipy.stats import gamma
-import matplotlib.pyplot as plt
-
-def plog_gamma():
-
-  x = np.linspace(0,50,1000)
-
-  a = 1.0 
-  b = 5.0
-  mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
-  y1 = gamma.pdf(x, a, scale=b)
-  print(mean)
-
-  a = 3.0
-  b = 5.0/3.0
-  mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
-  print(mean)
-  y2 = gamma.pdf(x, a, scale=b)
-
-  a = 15.0
-  b = 1.0/3.0
-  mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
-  print(mean)
-  y3 = gamma.pdf(x, a, scale=b)
-
-  plt.ylim([0,0.30])
-  plt.xlim([0,10])
-
-  plt.plot(x, y1, x, y2, x, y3)
-
-  plt.savefig('gamma.png') 
-
-if __name__ == "__main__":
-  plog_gamma()
-```
-
 
 ### ガンマ分布のpython code
 上記のコードの実行結果です。
 
 - $\displaystyle \left(K,\frac{M}{K} \right) = \left(1,5 \right) , \left(3,\frac{5}{3} \right), \left(15,\frac{5}{15} \right) $の三通りについてプロットしています。教科書のP61の図2-2と同じようなグラフが得られています
 
-{{< figure src="gamma.png" class="center" >}}
+
+
+```python
+from scipy.stats import gamma
+
+x = np.linspace(0,50,1000)
+
+a = 1.0 
+b = 5.0
+mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
+y1 = gamma.pdf(x, a, scale=b)
+print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
+
+a = 3.0
+b = 5.0/3.0
+mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
+print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
+y2 = gamma.pdf(x, a, scale=b)
+
+a = 15.0
+b = 1.0/3.0
+mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
+print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
+y3 = gamma.pdf(x, a, scale=b)
+
+plt.ylim([-0.01,0.40])
+plt.xlim([0,15])
+
+plt.plot(x, y1, x, y2, x, y3)
+```
+
+    a : 1.0, b : 5.000, mean : 5.0
+    a : 3.0, b : 1.667, mean : 5.0
+    a : 15.0, b : 0.333, mean : 5.0
+
+
+
+
+
+    [<matplotlib.lines.Line2D at 0x122949e80>,
+     <matplotlib.lines.Line2D at 0x122949f98>,
+     <matplotlib.lines.Line2D at 0x12293a320>]
+
+
+
+
+![svg](1_nb_files/1_nb_15_2.svg)
 
 
 ## 1-5. 売り上げを支配する重要な式
@@ -312,7 +355,6 @@ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left(K 
 $$
 
 と表され、$M$はプリファレンスであり、$K$がプリファレンスの関数であれば、$P\left(r \right)$は$M$のみをパラメタに持つ関数という事になります。これは本書で筆者たちがいい関して主張している結論になります。
-
 
 ## 1-6. デリシュレーNBDモデル
 
@@ -414,9 +456,4 @@ $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left
 という事が導けました。
 
 ### パート2
-#### 工事中
-
-
-```python
-
-```
+#### 準備中
