@@ -1,6 +1,57 @@
 
+## 準備
+  
+教科書では計算は主にエクセルによる関数で実行されています。エクセルはGUI上の操作性は抜群なのですが、外部のWebシステムと連携するためのAPIのライブラリやデータ分析ツールとの連携が十分でないため、本サイトではpythonにより教科書と同じ計算を行います。そのための準備です。
+
+### github
+- githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/mkt/2/2_nb.md)
+
+### 筆者の環境
+筆者の環境です。
+
 
 ```python
+!sw_vers
+```
+
+    ProductName:	Mac OS X
+    ProductVersion:	10.14.6
+    BuildVersion:	18G2022
+
+
+
+```python
+!python -V
+```
+
+    Python 3.7.3
+
+
+必要なライブラリを読み込みます。
+
+
+```python
+import numpy as np
+import scipy
+from scipy.stats import binom
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+print("numpy version :", np.__version__)
+print("matplotlib version :", matplotlib.__version__)
+print("sns version :",sns.__version__)
+```
+
+    numpy version : 1.16.2
+    matplotlib version : 3.0.3
+    sns version : 0.9.0
+
+
 ## 概要
 
  巻末解説2では、筆者たちがよく利用する6つのツールについて、具体例を踏まえて解説してくれています。実際のビジネスの場で必要になったらこれを参考にして適用すると良いでしょう。
@@ -135,6 +186,7 @@ x[0]が$t_1$の配列、x[1]が$t_2$の配列となります。x[1,7]=10000.0と
 
 fittingする実際のコードは以下の通りです。
 
+
 ```python
 import json
 import numpy as np
@@ -155,8 +207,12 @@ y = [0.439, 0.256, 0.191, 0.051, 0.015, 0.007, 0.014, 0.027]
 parameters, covariances = curve_fit(_get_delta_nbd, x, y)
 print('parameters  : ', parameters)
 print('covariances : ', covariances)
-
 ```
+
+    parameters  :  [1.37824241 4.14429889]
+    covariances :  [[ 0.00284656 -0.03699629]
+     [-0.03699629  1.57449471]]
+
 
 結果として得られた$m$と$k$は、
 
@@ -181,7 +237,6 @@ $$
 </div>
 
 とほぼ等しい値になっています。
-
 
 ## 2-2. 負の二項分布
 
@@ -349,7 +404,6 @@ $$
 </table>
 </div>
 
-
 ### 補正のステップ
 1. ブランドの$m=$浸透率×平均購入回数×平均購入個数
 2. ブランドの$k$
@@ -386,29 +440,12 @@ $$
 #### python code
 pythonのコードは以下の通りです。私の[git repository](https://github.com/hiroshi0530/curv-api/blob/master/function/py/api/curv-get-k-from-P0-m.py)も参考にしてください。
 
+
 ```python
-import json
-
-from clib.const.cconst import *
-from clib.const.cdynamodb import *
-from clib.util.ufile import get_ISO8601
-
-from clib.util.ulogger import Log
-
-from clib.util.uresponse import success_response
-from clib.util.uresponse import error_response
-
 from scipy.optimize import newton
 
-from clib.util.utime import get_TTL
-from clib.util.uvalidation import get_body
-from clib.aws.udynamodb import put_item
-
-from clib.util.uerror import ParameterValidationError
-from clib.util.uerror import ParameterHashCheckError
-from clib.util.uerror import DynamodbError
-from clib.util.uerror import get_error_tuple
-
+MIN_k = 0
+MAX_k = 1.0
 
 def check_k(k):
   if MIN_k < k and k < MAX_k:
@@ -416,103 +453,33 @@ def check_k(k):
   else:
     return False
 
+def get_k(m, P0):
+  
+  def func(k, m=m, P0=P0):
+    return (1 + m / k) ** (-1 * k) - P0
 
-def lambda_handler(event, context):
+  k = None
   try:
-    try:
-      Log.write_log_debug(event)
-      request_body = json.loads(event['body'])
-      Log.write_log_debug(request_body)
+    for initial_k in [(i + 1) * 0.01 for i in range(100)]:
+      k = newton(func, initial_k)
+      if check_k(k):
+        return k
+    else:
+      if not check_k(k):
+        return None
+  except:
+    return None
 
-      m = float(request_body[NBD_M])
-      P0 = float(request_body[NBD_P0])
+m = 0.4125
+P0 = 0.85
 
-      category = request_body[CATEGORY_KEY]
-      model = request_body[MODEL_KEY]
-
-    except:
-      raise ParameterValidationError
-
-
-    # mとP0をデフォルト変数とするため、関数内に定義
-    def func(k, m=m, P0=P0):
-      return (1 + m / k) ** (-1 * k) - P0
-
-
-    k = None
-    try:
-      for initial_k in [(i + 1) * 0.01 for i in range(100)]:
-        k = newton(func, initial_k)
-        Log.write_log_info("k = {}".format(k))
-        if check_k(k):
-          break
-      else:
-        if not check_k(k):
-          k = None
-    except:
-      k = None
-
-    item = {
-      DB_OBJECT_HASH_KEY: "object=k",
-      DB_OBJECT_RANGE_KEY: "category={}|model={}".format(category, model),
-      DB_ATTR_CATEGORY_KEY: category,
-      DB_ATTR_MODEL_KEY: model,
-      DB_ATTR_M_KEY: str(m),
-      DB_ATTR_K_KEY: str(k),
-      DB_ATTR_P0_KEY: str(P0),
-      DB_ATTR_TTL_KEY: get_TTL(TTL_6_MONTH),
-      DB_ATTR_CREATE_TIME_KEY: get_ISO8601(),
-      DB_ATTR_UPDATE_TIME_KEY: get_ISO8601(),
-    }
-
-    if not put_item(
-        table_name=DB_OBJECT_TABLE_NAME,
-        item=item,
-    ):
-      raise DynamodbError
-
-    body = {
-      STATUS_KEY: STATUS_SUCCESS,
-      NBD_K: k,
-    }
-
-    Log.write_log_debug(body)
-    return success_response(body=body)
-
-  except get_error_tuple() as e:
-    return error_response(e)
-
-
-if __name__ == '__main__':
-  am = "0.4125"
-  ap0 = "0.85"
-
-  am = "0.1"
-  ap0 = "0.8"
-
-  category = 'consumer'
-  model = 'nbd'
-
-  body = {
-    CATEGORY_KEY: category,
-    MODEL_KEY: model,
-    NBD_M: am,
-    NBD_P0: ap0,
-  }
-
-  event = {
-    'body': json.dumps(body),
-    'headers': json.dumps({
-      'x-hash-code': 'test-hash',
-      'x-random-code': 'test-random-code'
-    })
-  }
-
-  context = {}
-
-  lambda_handler(event, context)
-
+print("k = {:,.5f}".format(get_k(m, P0)))
 ```
+
+    k = 0.09893
+
+
+となり、pythonを用いても教科書とほぼ等しい値が得られています。
 
 #### 3. 1回買う確率であるP_1
 $P_1$は$P_0$と同じように、
@@ -649,11 +616,17 @@ $$
 $$
 \begin{aligned}
 & \text{マーケットシェアのパイオニアブランドに対する比率} \\
-&= \left(\text{参入順位}\right)^{-0.49} \times \left(\text{相対的好意度}\right)^{1.11} \times \\ 
-& \quad \quad \left(\text{宣伝費の比率}\right)^{0.28} \times \left(\text{間合いの年数}\right)^{0.07} 
+&= \left(a\right)^{-0.49} \times \left(b\right)^{1.11} \times \left(c\right)^{0.28} \times \left(d\right)^{0.07} 
 \end{aligned}
 $$
 </div>
+
+ここで、
+- a : 参入順位
+- b : 相対的好意度
+- c : 宣伝費の比率
+- d : 間合いの年数
+となります。
 
 ### 例
 教科書では具体的な例が示されています。
@@ -678,6 +651,7 @@ $$
 ### python code
 あまり必要ないですが、pythonの計算コードを記載します。
 
+
 ```python
 pioneer_share = 0.35
 order = 4
@@ -687,8 +661,11 @@ entry = 1
 
 prediceted_share = pioneer_share*order**(-0.49)*m**(1.11)*cost**(0.28)*entry**(0.07)
 
-print(prediceted_share)
+print('予想されるシェア率 = {:,.3f}'.format(prediceted_share))
 ```
+
+    予想されるシェア率 = 0.143
+
 
 これが実際に正しく予測できるかという問題は別として、この公式から、今後新しく市場に参入した際のシェアを予測できるという点でかなり有意義の高い公式になります。
 
@@ -742,7 +719,4 @@ print(prediceted_share)
 本節は特に数学的な面の説明も必要ないと思われるため、省略します。
 
 ## 2-6. デリシュレーNBDモデル 
-### 工事中
-
-
-```
+### 更新中
