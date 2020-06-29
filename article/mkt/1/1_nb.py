@@ -1,22 +1,47 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# ## 準備
+#   
+# 教科書では計算は主にエクセルによる関数で実行されています。エクセルはGUI上の操作性は抜群なのですが、外部のWebシステムと連携するためのAPIのライブラリやデータ分析ツールとの連携が十分でないため、本サイトではpythonにより教科書と同じ計算を行います。そのための準備です。
+# 
+# ### github
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/mkt/1/1_nb.md)
+# 
+# ### 筆者の環境
+# 筆者の環境です。
+
+# In[1]:
+
+
+get_ipython().system('sw_vers')
+
+
 # In[2]:
 
 
+get_ipython().system('python -V')
+
+
+# 必要なライブラリを読み込みます。
+
+# In[3]:
+
+
 import numpy as np
+import scipy
+from scipy.stats import binom
 
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
-# In[ ]:
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-
-
-
-
-# In[ ]:
-
-
-
+print("numpy version :", np.__version__)
+print("matplotlib version :", matplotlib.__version__)
+print("sns version :",sns.__version__)
 
 
 # ## 概要
@@ -41,7 +66,7 @@ import numpy as np
 # 6. デリシュレーNBDモデル
 # 
 # の順に沿って解説を行います。
-# 
+
 # ## 1-1. 二項分布 (Binomicl Distribution)
 # 
 # ### 1. 二項分布の式
@@ -57,48 +82,32 @@ import numpy as np
 # 
 # $$ \frac{N!}{r! \(N-r\)!} \times \left(\frac{\theta}{n}\right)^r \times \left(\frac{n-\theta}{n}\right)^{N-r}  \cdot \cdot \cdot \cdot  \left(3\right) $$
 # となります。
-# 
+
 # ### 2. pythonによる計算例
 
-# In[ ]:
+# In[4]:
 
 
-import numpy as np
-import scipy
-from scipy.stats import binom
-import matplotlib.pyplot as plt
+x = np.arange(100)
 
-def plot_binomial():
+n = 100
+p = 0.3
+mean, var, skew, kurt = binom.stats(n, p, moments='mvsk')
+print("平均    : ", mean)
+print("標準偏差 :", var)
 
-  x = np.arange(100)
+plt.xlabel('$r$')
+plt.xlabel('$r$')
+plt.ylabel('$B(n,p)$')
+plt.title('binomial distribution n={}, p={}'.format(n,p))
+plt.grid(True)
 
-  n = 100
-  p = 0.3
-  mean, var, skew, kurt = binom.stats(n, p, moments='mvsk')
-  print(mean)
-  print(var)
-  print(skew)
-  print(kurt)
-
-  plt.xlabel('$r$')
-  plt.xlabel('$r$')
-  plt.ylabel('$B(n,p)$')
-  plt.title('binomial distribution n={}, p={}'.format(n,p))
-  plt.grid(True)
-  y = binom.pmf(x,n,p)
-
-  plt.plot(x,y)
-  plt.savefig('binomial.png') 
-  
-if __name__ == "__main__":
-  plot_binomial()
+y = binom.pmf(x,n,p)
+plt.scatter(x,y)
+# sns.plot(x=x, y=y)  
+# sns.scatterplot(data=tips, x='total_bill', y='tip')
 
 
-# グラフは以下の通りです。
-# 
-# {{<figure src="binomial.png" class="center">}}
-# 
-# 
 # ## 1-2. ポアソン分布 (Poisson Distribution)
 # 
 # ### 1. ポアソン分布の意味
@@ -133,41 +142,29 @@ if __name__ == "__main__":
 # </div>
 # 
 # グラフと計算に利用したpythonのコードを以下に示します。
-# 
-# {{< figure src="poisson.png" class="center" >}}
-# 
-# ```python
-# import numpy as np
-# import scipy
-# from scipy.stats import poisson
-# import matplotlib.pyplot as plt
-# 
-# def plot_poisson():
-# 
-#   x = np.arange(10)
-# 
-#   mu = 0.6
-#   mean, var, skew, kurt = poisson.stats(mu, moments='mvsk')
-#   print(mean)
-#   print(var)
-#   print(skew)
-#   print(kurt)
-# 
-#   y = poisson.pmf(x,mu)
-# 
-#   plt.xlabel('$r$')
-#   plt.ylabel('$P(r|\mu)$')
-#   plt.title('poisson distribution mu=%.1f' % (mu))
-#   plt.grid(True)
-# 
-#   plt.plot(x,y)
-#   plt.savefig('poisson.png') 
-# 
-# 
-# if __name__ == "__main__":
-#   plot_poisson()
-# ```
-# 
+
+# In[5]:
+
+
+from scipy.stats import poisson
+
+x = np.arange(10)
+
+mu = 0.6
+mean, var, skew, kurt = poisson.stats(mu, moments='mvsk')
+print("平均    : ", mean)
+print("標準偏差 :", var)
+
+y = poisson.pmf(x,mu)
+
+plt.xlabel('$r$')
+plt.ylabel('$P(r|\mu)$')
+plt.title('poisson distribution mu=%.1f' % (mu))
+plt.grid(True)
+
+plt.plot(x,y)
+
+
 # ## 1-3. 負の二項分布 (Negative Binomical Distribution)
 # 
 # この章では、最初に重要な結論が書かれています。
@@ -194,15 +191,14 @@ if __name__ == "__main__":
 # 
 # と計算できると述べています。その後に、その負の二項分布が、「成功が成功を呼ぶ分布」としてのガンマ分布を仮定することによって$\left(1 \right)$が導かれる事が証明されていますが、この理解は後で良いかと思います。繰り返しますが、重要なのは、
 # 
-# ```math
+# ```text
 # ポアソン分布とガンマ分布を仮定することによって、負の二項分布が導かれる
 # ```
 # 
 # という事です。
 # 
 # ※実際に個人レベルのポアソン分布と消費者全体でのガンマ分布を仮定することによって負の二項分布が導かれることは1.6で証明します。
-# 
-# 
+
 # ## 1-4. ポアソン分布と二項分布のまとめ
 # 
 # 1.4 では「ポアソン分布と二項分布のまとめ」と主題でまとめていますが、重要な点は繰り返しになりますが以下の通りです。
@@ -212,7 +208,7 @@ if __name__ == "__main__":
 # - 上記2点の結果として、ある期間における消費者全体の購入回数の分布は「負の二項分布」に従う 
 # 
 # ※ここで述べていることは、教科書と原因と結果の因果関係が異なります。教科書では、ポアソン分布と負の二項分布の結果からガンマ分布を導かれると書かれていますが、同じページの下の部分では、ポアソン分布とガンマ分布から負の二項分布が導かれると書かれているので、ここではそちらの理解の立場を取ります。
-# 
+
 # ### ガンマ関数の表記
 # 一般的にガンマ分布を表す数式は、形状を決定するパラメタ $\alpha, \beta$を用いて、
 # 
@@ -222,7 +218,7 @@ if __name__ == "__main__":
 # 
 # $$ f\left(x|\alpha, \theta \right) =\frac{x^{\alpha - 1}e^{-\frac{x}{\theta}}}{\Gamma\left(\alpha \right)\theta^{\alpha}} \cdot\cdot\cdot\cdot\left(2\right) $$
 # 
-# <a href=""https://en.wikipedia.org/wiki/Gamma_distribution"" target="_blank">wikipedia</a>でもこの二通りの数式で表記されています。ここで、(1)と(2)における確率分布の平均と標準偏差は以下の通りです。
+# <a href="https://en.wikipedia.org/wiki/Gamma_distribution" target="_blank">wikipedia</a>でもこの二通りの数式で表記されています。ここで、(1)と(2)における確率分布の平均と標準偏差は以下の通りです。
 # 
 # <style>.cent td {text-align:center;}</style>
 # <style>.cent tr {text-align:center;}</style>
@@ -248,59 +244,47 @@ if __name__ == "__main__":
 # </div>
 # 
 # 本書では、$\displaystyle Gamma \left(K,\frac{M}{K} \right)$がどちらの表記を用いているか明示されていませんが、$\displaystyle Gamma \left(1,5 \right)$、$\displaystyle Gamma \left(3,\frac{5}{3} \right)$、$\displaystyle Gamma \left(15,\frac{5}{15} \right)$の平均値はすべて5と述べているので、(2)の表記を用いていると思われます。
-# 
-# 
+
 # ### python code
 # ガンマ分布を記述するpythonのコードです。moduleとしてscipy、numpy、matplotlibなど機械学習ではおなじみのライブラリを用いてます。
-# 
-# ```python
-# import numpy as np
-# import scipy
-# from scipy.stats import gamma
-# import matplotlib.pyplot as plt
-# 
-# def plog_gamma():
-# 
-#   x = np.linspace(0,50,1000)
-# 
-#   a = 1.0 
-#   b = 5.0
-#   mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
-#   y1 = gamma.pdf(x, a, scale=b)
-#   print(mean)
-# 
-#   a = 3.0
-#   b = 5.0/3.0
-#   mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
-#   print(mean)
-#   y2 = gamma.pdf(x, a, scale=b)
-# 
-#   a = 15.0
-#   b = 1.0/3.0
-#   mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
-#   print(mean)
-#   y3 = gamma.pdf(x, a, scale=b)
-# 
-#   plt.ylim([0,0.30])
-#   plt.xlim([0,10])
-# 
-#   plt.plot(x, y1, x, y2, x, y3)
-# 
-#   plt.savefig('gamma.png') 
-# 
-# if __name__ == "__main__":
-#   plog_gamma()
-# ```
-# 
 # 
 # ### ガンマ分布のpython code
 # 上記のコードの実行結果です。
 # 
 # - $\displaystyle \left(K,\frac{M}{K} \right) = \left(1,5 \right) , \left(3,\frac{5}{3} \right), \left(15,\frac{5}{15} \right) $の三通りについてプロットしています。教科書のP61の図2-2と同じようなグラフが得られています
 # 
-# {{< figure src="gamma.png" class="center" >}}
-# 
-# 
+
+# In[6]:
+
+
+from scipy.stats import gamma
+
+x = np.linspace(0,50,1000)
+
+a = 1.0 
+b = 5.0
+mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
+y1 = gamma.pdf(x, a, scale=b)
+print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
+
+a = 3.0
+b = 5.0/3.0
+mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
+print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
+y2 = gamma.pdf(x, a, scale=b)
+
+a = 15.0
+b = 1.0/3.0
+mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
+print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
+y3 = gamma.pdf(x, a, scale=b)
+
+plt.ylim([-0.01,0.40])
+plt.xlim([0,15])
+
+plt.plot(x, y1, x, y2, x, y3)
+
+
 # ## 1-5. 売り上げを支配する重要な式
 # 
 # この章で重要なのは、表９−５であり、消費者全体がどの「カテゴリー」、もしくは、「ブランド」を選ぶかは負の二項分布に従い、それぞれの平均購入回数$M$や、分布を決定するパラメタ$K$がどのように決定されるか示されています。「カテゴリー」を表現した式も、「ブランド」を表現した式もほぼ同じような数式で表現されています。違うのは添字ぐらいでしょうか。
@@ -318,8 +302,7 @@ if __name__ == "__main__":
 # $$
 # 
 # と表され、$M$はプリファレンスであり、$K$がプリファレンスの関数であれば、$P\left(r \right)$は$M$のみをパラメタに持つ関数という事になります。これは本書で筆者たちがいい関して主張している結論になります。
-# 
-# 
+
 # ## 1-6. デリシュレーNBDモデル
 # 
 # ### デリシュレーNBDモデルとは
@@ -420,10 +403,4 @@ if __name__ == "__main__":
 # という事が導けました。
 # 
 # ### パート2
-# #### 工事中
-
-# In[ ]:
-
-
-
-
+# #### 準備中
