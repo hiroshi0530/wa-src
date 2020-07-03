@@ -46,7 +46,7 @@ get_ipython().run_cell_magic('bash', '', 'echo -n "linux"\necho " Linux"')
 
 # ### e オプション
 
-# In[5]:
+# In[1]:
 
 
 get_ipython().run_cell_magic('bash', '', 'echo -e "this is a pen.\\nthis is a pen."')

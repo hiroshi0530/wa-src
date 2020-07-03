@@ -19,6 +19,8 @@ SYNOPSIS
 ### 環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
+linux環境では-nオプションで分割数が指定出来るのですが、manを見てもわかるとおり、FreeBSD（macOSの元となるOS）ではそういうオプションはありません。
+
 実際に動かす際は先頭の！や先頭行の%%bashは無視してください。
 
 
@@ -30,72 +32,6 @@ SYNOPSIS
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
     BuildVersion:	18G2022
-    
-    SPLIT(1)                  BSD General Commands Manual                 SPLIT(1)
-    
-    NAME
-         split -- split a file into pieces
-    
-    SYNOPSIS
-         split [-a suffix_length] [-b byte_count[k|m]] [-l line_count]
-               [-p pattern] [file [name]]
-    
-    DESCRIPTION
-         The split utility reads the given file and breaks it up into files of
-         1000 lines each.  If file is a single dash (`-') or absent, split reads
-         from the standard input.
-    
-         The options are as follows:
-    
-         -a suffix_length
-                 Use suffix_length letters to form the suffix of the file name.
-    
-         -b byte_count[k|m]
-                 Create smaller files byte_count bytes in length.  If ``k'' is
-                 appended to the number, the file is split into byte_count kilo-
-                 byte pieces.  If ``m'' is appended to the number, the file is
-                 split into byte_count megabyte pieces.
-    
-         -l line_count
-                 Create smaller files n lines in length.
-    
-         -p pattern
-                 The file is split whenever an input line matches pattern, which
-                 is interpreted as an extended regular expression.  The matching
-                 line will be the first line of the next output file.  This option
-                 is incompatible with the -b and -l options.
-    
-         If additional arguments are specified, the first is used as the name of
-         the input file which is to be split.  If a second additional argument is
-         specified, it is used as a prefix for the names of the files into which
-         the file is split.  In this case, each file into which the file is split
-         is named by the prefix followed by a lexically ordered suffix using
-         suffix_length characters in the range ``a-z''.  If -a is not specified,
-         two letters are used as the suffix.
-    
-         If the name argument is not specified, the file is split into lexically
-         ordered files named with the prefix ``x'' and with suffixes as above.
-    
-    ENVIRONMENT
-         The LANG, LC_ALL, LC_CTYPE and LC_COLLATE environment variables affect
-         the execution of split as described in environ(7).
-    
-    EXIT STATUS
-         The split utility exits 0 on success, and >0 if an error occurs.
-    
-    SEE ALSO
-         csplit(1), re_format(7)
-    
-    STANDARDS
-         The split utility conforms to IEEE Std 1003.1-2001 (``POSIX.1'').
-    
-    HISTORY
-         A split command appeared in Version 3 AT&T UNIX.
-    
-    BUGS
-         The maximum line length for matching patterns is 65536.
-    
-    BSD                             August 21, 2005                            BSD
 
 
 
@@ -107,14 +43,50 @@ SYNOPSIS
     Copyright (C) 2007 Free Software Foundation, Inc.
 
 
+## 使用例
 
-```python
+通常、以下の様な代表的なオプションと共に利用します。
 
+### 代表的なオプション
+- b : 分割するバイト数
+- l : 分割する行数
+- a : prefixに利用する文字数
+
+
+
+```bash
+%%bash
+echo -e "1\n2\n3\n4\n5\n6\n7\n8\n9\n10" > temp
+cat temp
+
+split -l 2 -a 3 temp prefix_
+echo -e "\n<file list>"
+ls | grep -v split
+
+echo -e "\n<prefix_aaa file content>"
+cat prefix_aaa
 ```
 
-## 参考記事
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    10
+    
+    <file list>
+    prefix_aaa
+    prefix_aab
+    prefix_aac
+    prefix_aad
+    prefix_aae
+    temp
+    
+    <prefix_aaa file content>
+    1
+    2
 
-
-```python
-
-```

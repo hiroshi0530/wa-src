@@ -25,8 +25,6 @@
 
 get_ipython().system('sw_vers')
 
-get_ipython().system('man seq')
-
 
 # In[2]:
 

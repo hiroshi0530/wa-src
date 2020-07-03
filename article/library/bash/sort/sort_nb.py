@@ -42,17 +42,3 @@ get_ipython().system('bash --version')
 
 get_ipython().run_cell_magic('bash', '', 'echo -e "b\\nc\\na\\nz\\ny" > temp1.txt\ncat temp1.txt\nsort -r temp1.txt > temp2.txt\necho -e "\\nsorted"\ncat temp2.txt')
 
-
-# In[ ]:
-
-
-
-
-
-# ## 参考記事
-
-# In[1]:
-
-
-get_ipython().system('man sort')
-
