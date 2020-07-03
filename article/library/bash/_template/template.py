@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## template
@@ -9,8 +9,7 @@
 # ```
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/article/library/bash/template/template_nb.ipynb)
-# 
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/template/template_nb.ipynb)
 # 
 # ### 環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -50,3 +49,9 @@ get_ipython().run_cell_magic('bash', '', '')
 
 
 # ## 参考記事
+
+# In[ ]:
+
+
+
+
