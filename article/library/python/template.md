@@ -23,14 +23,4 @@ pythonを利用する上で、便利な表記などの個人的なメモです�
     Python 3.5.5 :: Anaconda, Inc.
 
 
-
-```python
-
-```
-
 ## 参考記事
-
-
-```python
-
-```

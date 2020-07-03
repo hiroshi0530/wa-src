@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## sys.getsizeof(a)
@@ -28,12 +28,4 @@ a = [i ** 2 for i in range(10000)]
 
 print('(先頭の10個を表示) a :',a[0:10])
 print('aの使用メモリ        :', sys.getsizeof(a))
-
-
-# ## 関連記事
-
-# In[ ]:
-
-
-
 

@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
-# ## unexpend
+# ## unexpand
 # 与えられたファイルのスペースをタブに変換します。結果を標準出力に表示します。
 # 
 # ```bash
@@ -14,8 +14,10 @@
 # ```
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/cat/cat_nb.ipynb)
+# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/unexpand/unexpand_nb.ipynb)
 # 
+# ### google colaboratory
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/bash/unexpand/unexpand_nb.ipynb)
 # 
 # ### 環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。

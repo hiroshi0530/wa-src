@@ -12,6 +12,9 @@ NAME
 ### github
 - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/bash/wget/wget_nb.ipynb)
 
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/bash/wget/wget_nb.ipynb)
+
 ### 環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
