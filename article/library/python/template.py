@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## Python Tips
@@ -19,16 +19,4 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[ ]:
-
-
-
-
-
 # ## 参考記事
-
-# In[ ]:
-
-
-
-

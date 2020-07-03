@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## re 正規表現
@@ -179,34 +179,8 @@ postCode_list = re.findall(r'(([0-9]{3})-[0-9]{4})' , text)
 print (postCode_list)
 
 
-# In[ ]:
-
-
-
-
-
 # ## re.findall()
 # 正規表現に一致するすべてのパターンをリストで取得します。
 
 # ## re.finditer()
 # 正規表現に一致するすべてのパターンをイテレータで取得します。
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# ## 参考記事
-
-# In[ ]:
-
-
-
-
