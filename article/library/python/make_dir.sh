@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `seq -f %03g 3 5`; do
+for i in `seq -f %03g 6 7`; do
   if [ ! -d $i ]; then mkdir $i; fi
   if [ ! -f $i/${i}_nb.ipynb ]; then cp template.ipynb $i/${i}_nb.ipynb; fi
 done
