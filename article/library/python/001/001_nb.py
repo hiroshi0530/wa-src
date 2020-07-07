@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## Python Tips
@@ -37,7 +37,6 @@ get_ipython().system('python -V')
 import timeit
 
 timeit.timeit('[ i for i in range(10)]')
-timeit.timeit('[ i for i in range(10)]')
 
 
 # 平均を取るための繰り返し回数`number`を指定することが出来ます。デフォルトは1000000(100万回)です。
@@ -66,13 +65,13 @@ timeit.repeat('[ i for i in range(10)]', number=number,repeat=repeat)
 # In[6]:
 
 
-get_ipython().magic('timeit [i ** 2 for i in range(10000)]')
+get_ipython().run_line_magic('timeit', '[i ** 2 for i in range(10000)]')
 
 
 # In[7]:
 
 
-get_ipython().magic('timeit -r 5 -n 1000 [i ** 2 for i in range(10000)]')
+get_ipython().run_line_magic('timeit', '-r 5 -n 1000 [i ** 2 for i in range(10000)]')
 
 
 # In[8]:
@@ -141,7 +140,7 @@ get_ipython().run_cell_magic('timeit', '', 'a = [i for i in range(10000)]\nb = l
 # In[16]:
 
 
-get_ipython().magic('timeit [i for i in range(1000000)]')
+get_ipython().run_line_magic('timeit', '[i for i in range(1000000)]')
 
 
 # In[17]:
