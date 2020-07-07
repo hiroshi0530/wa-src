@@ -6,6 +6,9 @@
 ### github
 - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/mkt/1/1_nb.md)
 
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/python/1/1_nb.ipynb)
+
 ### 筆者の環境
 筆者の環境です。
 
