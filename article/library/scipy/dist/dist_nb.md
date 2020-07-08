@@ -1,14 +1,14 @@
 
-## scipyによる確率分布
-
-### 目次
-
-1. [公式データセット](/article/library/sklearn/datasets/) <= 本節
-2. [データの作成](/article/library/sklearn/makedatas/)
+## scipyによる確率分布と特殊関数
 
 ### github
-- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/sklearn/datasets/ds_nb.ipynb)
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
 
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
+
+### 環境
+筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
 ### 筆者の環境
 
@@ -39,28 +39,25 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scipy
 
-matplotlib.__version__
-scipy.__version__
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
 ```
 
+    matplotlib version : 2.2.2
+    scipy version : 1.4.1
 
 
+## 基本的な確率分布
 
-    '1.4.1'
+ここではベイズ統計を理解するために必要な基本的な確率分布と必要な特殊関数の説明を行います。基本的な性質をまとめています。また、サンプリングするpythonのコードも示しています。基本的にはscipyモジュールの統計関数を利用するだけです。
 
-
-
-## 正規分布
+### 正規分布
 
 
 ```python
 from scipy.stats import norm
 
 x = norm.rvs(size=1000)
-```
-
-
-```python
 plt.grid()
 plt.hist(x, bins=20)
 ```
@@ -68,30 +65,20 @@ plt.hist(x, bins=20)
 
 
 
-    (array([  6.,   8.,  16.,  25.,  46.,  52.,  86.,  87., 116., 131., 108.,
-            103.,  77.,  62.,  32.,  24.,   6.,  11.,   2.,   2.]),
-     array([-2.89146351, -2.5827596 , -2.2740557 , -1.96535179, -1.65664788,
-            -1.34794397, -1.03924006, -0.73053615, -0.42183225, -0.11312834,
-             0.19557557,  0.50427948,  0.81298339,  1.1216873 ,  1.4303912 ,
-             1.73909511,  2.04779902,  2.35650293,  2.66520684,  2.97391075,
-             3.28261465]),
+    (array([  3.,   7.,   7.,  20.,  34.,  52.,  72., 109., 111., 126., 120.,
+            111.,  83.,  66.,  33.,  26.,   7.,   6.,   5.,   2.]),
+     array([-2.89470239, -2.59839446, -2.30208653, -2.0057786 , -1.70947067,
+            -1.41316274, -1.11685481, -0.82054688, -0.52423895, -0.22793102,
+             0.06837691,  0.36468484,  0.66099277,  0.9573007 ,  1.25360863,
+             1.54991656,  1.84622449,  2.14253242,  2.43884035,  2.73514828,
+             3.03145621]),
      <a list of 20 Patch objects>)
 
 
 
 
-![svg](dist_nb_files/dist_nb_6_1.svg)
+![svg](dist_nb_files/dist_nb_5_1.svg)
 
-
-<!-- 特殊関数部分 -->
-
-# 確率分布と特殊関数
-
-ベイズ統計を理解するために必要な確率分布と行列計算の定理を簡単に整理します。
-
-## 基本的な確率分布
-
-ここではベイズ統計を理解するために必要な基本的な確率分布と必要な特殊関数の説明を行います。基本的な性質をまとめています。また、サンプリングするpythonのコードも示しています。基本的にはscipyモジュールの統計関数を利用するだけです。
 
 ### ベルヌーイ分布
  コイン投げにおいて、表、もしくは裏が出る分布のように、試行の結果が2通りしか存在しない場合の分布を決定します。
@@ -125,6 +112,8 @@ V\left[x\right]=\mu\left(1-\mu \right)
 $
 
 #### python code
+
+
 ```python
 from scipy.stats import bernoulli
 
@@ -132,13 +121,12 @@ mu=0.3
 size=100
 
 print(bernoulli.rvs(mu, size=size))
-
-""" output
-[0 0 1 0 0 0 1 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0
- 0 0 1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 1 0 0 1 0 1 0 1 0 0 1 1 0 1
- 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 0]
-"""
 ```
+
+    [0 0 1 0 1 0 1 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 0 1 0 1 0 0 0 1 0 0 1 0 0 0 1
+     0 1 1 0 0 0 0 0 1 1 0 0 1 0 0 0 0 0 1 0 1 0 0 1 1 0 0 0 0 0 1 0 0 0 0 1 0
+     0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0]
+
 
 ### 二項分布
 コイン投げを複数回行った結果、表が出来る回数の確率が従う分布になります。回数が1の時はベルヌーイ分布に一致します。$n$がコインを投げる回数、$p$が表が出る確率、$k$が表が出る回数で確率変数になります。詳細な計算は別途教科書を参照してください。
@@ -158,57 +146,55 @@ $ \displaystyle
 V\left[k \right] = np\left(1-p \right) 
 $
 
-#### python code
+#### python code と グラフ
+
+$p=0.3, 0.5, 0.9$の場合の二項分布の確率質量関数になります。
+
+
 ```python
 import numpy as np
 import scipy
 from scipy.stats import binom
 import matplotlib.pyplot as plt
 
+n = 100
+x = np.arange(n)
 
-def plot_binomial():
+# case.1
+p = 0.3
+y1 = binom.pmf(x,n,p)
 
-  n = 100
-  x = np.arange(n)
+# case.2
+p = 0.5
+y2 = binom.pmf(x,n,p)
 
-  
-  # case.1
-  p = 0.3
-  y1 = binom.pmf(x,n,p)
+# case.3
+p = 0.9
+y3 = binom.pmf(x,n,p)
 
-  # case.2
-  p = 0.5
-  y2 = binom.pmf(x,n,p)
+# fig, ax = plt.subplots(facecolor="w")
+plt.plot(x, y1, label="$p=0.3$")
+plt.plot(x, y2, label="$p=0.5$")
+plt.plot(x, y3, label="$p=0.9$")
 
-  # case.3
-  p = 0.9
-  y3 = binom.pmf(x,n,p)
-  
-  # fig, ax = plt.subplots(facecolor="w")
-  plt.plot(x, y1, label="$p=0.3$")
-  plt.plot(x, y2, label="$p=0.5$")
-  plt.plot(x, y3, label="$p=0.9$")
-  
-  plt.xlabel('$k$')
-  plt.ylabel('$B(n,p)$')
-  plt.title('binomial distribution n={}'.format(n))
-  plt.grid(True)
+plt.xlabel('$k$')
+plt.ylabel('$B(n,p)$')
+plt.title('binomial distribution n={}'.format(n))
+plt.grid(True)
 
-  plt.legend()
-
-
-  # plt.plot(x,y1,x,y2,x,y3)
-  # plt.legend()
-  plt.savefig('../static/images/statistics_binomial.png') 
-  
-if __name__ == "__main__":
-  plot_binomial()
+plt.legend()
 ```
 
-#### グラフ
-$p=0.3, 0.5, 0.9$の場合の二項分布の確率質量関数になります。
 
-{{<figure src="/images/statistics_binomial.png" class="center">}}
+
+
+    <matplotlib.legend.Legend at 0x127d111d0>
+
+
+
+
+![svg](dist_nb_files/dist_nb_9_1.svg)
+
 
 ### カテゴリ分布
 #### 平均
@@ -221,12 +207,6 @@ $ \displaystyle
 V\left[x \right] = 
 $
 
-#### python code
-```python
-
-```
-
-
 ### 多項分布
 #### 平均
 $ \displaystyle
@@ -238,13 +218,7 @@ $ \displaystyle
 V\left[x \right] = 
 $
 
-#### python code
-```python
-
-```
-
-
-### $\rm Beta$分布
+### ベータ分布
 #### 平均
 $ \displaystyle
 E\left[x \right] = 
@@ -255,13 +229,7 @@ $ \displaystyle
 V\left[x \right] = 
 $
 
-#### python code
-```python
-
-```
-
-
-### $\rm Gamma$分布
+### ガンマ分布
 #### 平均
 $ \displaystyle
 E\left[x \right] = 
@@ -271,12 +239,6 @@ $
 $ \displaystyle
 V\left[x \right] = 
 $
-
-#### python code
-```python
-
-```
-
 
 ### カイ二乗分布
 #### 平均
@@ -289,12 +251,6 @@ $ \displaystyle
 V\left[x \right] = 
 $ 
 
-#### python code
-```python
-
-```
-
-
 ### ステューデントのt分布
 #### 平均
 $ \displaystyle
@@ -306,17 +262,12 @@ $ \displaystyle
 V\left[x \right] = 
 $
 
-#### python code
-```python
+## 基本的な特殊関数
 
-```
-
-
-## 特殊関数
-
-### $\rm Beta$関数
-### $\rm Gamma$関数
-
+### ベータ関数
+test
+### ガンマ関数
+test
 
 ## まとめ
 
@@ -402,5 +353,3 @@ $
   </tr>
 </table>
 </div>
-
-
