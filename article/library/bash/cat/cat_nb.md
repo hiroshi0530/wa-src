@@ -1,6 +1,7 @@
 
 ## cat
 ファイルを連結します。ファイルの中身を表示するのによく使用します。
+ヒアドキュメントなど、複数行にわたるファイルを作成するのに利用します。
 
 ```bash
 NAME
@@ -42,12 +43,15 @@ SYNOPSIS
 
 ## 使用例
 
+### ファイルの表示、連結
+
 ```bash
 cat file
 cat file1 file2
+cat file1 file2 > file3
 ```
 
-ファイルを作成します。
+ファイルを作成し、その中身を表示します。
 
 
 ```bash
@@ -58,6 +62,98 @@ cat temp.txt
 
     a b c
 
+
+ファイルを二つ作成し連結します。
+
+
+```bash
+%%bash
+echo "e f g" > temp1.txt
+echo "h i j" > temp2.txt
+cat temp1.txt temp2.txt > temp3.txt
+```
+
+temp3.txtが作成され、その中でtemp1.txtとtemp2.txtが連結されていることがわかります。
+
+
+```bash
+%%bash 
+cat temp3.txt
+```
+
+    e f g
+    h i j
+
+
+### ヒアドキュメントの作成
+
+スクリプトの中で複数行にわたるファイルを作成する際によく利用します。
+EOFの表記は何でも良いです。ファイルを作成する際にはリダイレクトさせます。
+
+
+```bash
+%%bash
+
+cat << EOF > temp10.txt
+a b c
+e f g
+h i j
+EOF
+```
+
+
+```python
+cat temp10.txt
+```
+
+    a b c
+    e f g
+    h i j
+
+
+ただ、これだとコマンドをそのままを入れ込むことが出来ません。コマンドの結果や、変数などが展開されて表記されます。
+
+
+```bash
+%%bash
+
+cat << EOF > temp11.sh
+#!/bin/bash
+
+user="test"
+
+echo ${user}
+
+EOF
+```
+ここであえて変数を展開させたくない場合や、コマンドそのものの表記を残したい場合は、EOFをシングルクオテーションマークで囲みます。
+
+```bash
+%%bash
+cat << 'EOF' > temp12.sh
+#!/bin/bash
+
+user="test"
+
+echo ${user}
+
+EOF
+
+cat temp12.sh
+```
+
+    #!/bin/bash
+    
+    user="test"
+    
+    echo ${user}
+    
+
+
+
+```python
+となり、ちゃんとファイルの中に`${user}`が展開されずにファイルの中に記載されていることがわかります。
+```
 
 ### 代表的なオプション
 - t : タブを明示的に表示します(^Iと表示されます)
