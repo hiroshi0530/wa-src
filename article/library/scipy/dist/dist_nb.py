@@ -1,16 +1,16 @@
 
 # coding: utf-8
 
-# ## scipyによる確率分布
-# 
-# ### 目次
-# 
-# 1. [公式データセット](/article/library/sklearn/datasets/) <= 本節
-# 2. [データの作成](/article/library/sklearn/makedatas/)
+# ## scipyによる確率分布と特殊関数
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/sklearn/datasets/ds_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
 # 
+# ### google colaboratory
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
+# 
+# ### 環境
+# 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 # 
 # ### 筆者の環境
 
@@ -26,7 +26,7 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[3]:
+# In[1]:
 
 
 get_ipython().magic('matplotlib inline')
@@ -36,37 +36,26 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scipy
 
-matplotlib.__version__
-scipy.__version__
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
 
 
-# ## 正規分布
+# ## 基本的な確率分布
+# 
+# ここではベイズ統計を理解するために必要な基本的な確率分布と必要な特殊関数の説明を行います。基本的な性質をまとめています。また、サンプリングするpythonのコードも示しています。基本的にはscipyモジュールの統計関数を利用するだけです。
+# 
+# ### 正規分布
 
-# In[4]:
+# In[9]:
 
 
 from scipy.stats import norm
 
 x = norm.rvs(size=1000)
-
-
-# In[5]:
-
-
 plt.grid()
 plt.hist(x, bins=20)
 
 
-# <!-- 特殊関数部分 -->
-# 
-# # 確率分布と特殊関数
-# 
-# ベイズ統計を理解するために必要な確率分布と行列計算の定理を簡単に整理します。
-# 
-# ## 基本的な確率分布
-# 
-# ここではベイズ統計を理解するために必要な基本的な確率分布と必要な特殊関数の説明を行います。基本的な性質をまとめています。また、サンプリングするpythonのコードも示しています。基本的にはscipyモジュールの統計関数を利用するだけです。
-# 
 # ### ベルヌーイ分布
 #  コイン投げにおいて、表、もしくは裏が出る分布のように、試行の結果が2通りしか存在しない場合の分布を決定します。
 # 
@@ -99,21 +88,18 @@ plt.hist(x, bins=20)
 # $
 # 
 # #### python code
-# ```python
-# from scipy.stats import bernoulli
-# 
-# mu=0.3
-# size=100
-# 
-# print(bernoulli.rvs(mu, size=size))
-# 
-# """ output
-# [0 0 1 0 0 0 1 1 0 0 0 1 0 0 1 0 0 0 1 0 1 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0
-#  0 0 1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 1 0 0 0 0 0 1 0 0 1 0 1 0 1 0 0 1 1 0 1
-#  0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 1 1 0]
-# """
-# ```
-# 
+
+# In[8]:
+
+
+from scipy.stats import bernoulli
+
+mu=0.3
+size=100
+
+print(bernoulli.rvs(mu, size=size))
+
+
 # ### 二項分布
 # コイン投げを複数回行った結果、表が出来る回数の確率が従う分布になります。回数が1の時はベルヌーイ分布に一致します。$n$がコインを投げる回数、$p$が表が出る確率、$k$が表が出る回数で確率変数になります。詳細な計算は別途教科書を参照してください。
 # 
@@ -132,58 +118,46 @@ plt.hist(x, bins=20)
 # V\left[k \right] = np\left(1-p \right) 
 # $
 # 
-# #### python code
-# ```python
-# import numpy as np
-# import scipy
-# from scipy.stats import binom
-# import matplotlib.pyplot as plt
+# #### python code と グラフ
 # 
-# 
-# def plot_binomial():
-# 
-#   n = 100
-#   x = np.arange(n)
-# 
-#   
-#   # case.1
-#   p = 0.3
-#   y1 = binom.pmf(x,n,p)
-# 
-#   # case.2
-#   p = 0.5
-#   y2 = binom.pmf(x,n,p)
-# 
-#   # case.3
-#   p = 0.9
-#   y3 = binom.pmf(x,n,p)
-#   
-#   # fig, ax = plt.subplots(facecolor="w")
-#   plt.plot(x, y1, label="$p=0.3$")
-#   plt.plot(x, y2, label="$p=0.5$")
-#   plt.plot(x, y3, label="$p=0.9$")
-#   
-#   plt.xlabel('$k$')
-#   plt.ylabel('$B(n,p)$')
-#   plt.title('binomial distribution n={}'.format(n))
-#   plt.grid(True)
-# 
-#   plt.legend()
-# 
-# 
-#   # plt.plot(x,y1,x,y2,x,y3)
-#   # plt.legend()
-#   plt.savefig('../static/images/statistics_binomial.png') 
-#   
-# if __name__ == "__main__":
-#   plot_binomial()
-# ```
-# 
-# #### グラフ
 # $p=0.3, 0.5, 0.9$の場合の二項分布の確率質量関数になります。
-# 
-# {{<figure src="/images/statistics_binomial.png" class="center">}}
-# 
+
+# In[6]:
+
+
+import numpy as np
+import scipy
+from scipy.stats import binom
+import matplotlib.pyplot as plt
+
+n = 100
+x = np.arange(n)
+
+# case.1
+p = 0.3
+y1 = binom.pmf(x,n,p)
+
+# case.2
+p = 0.5
+y2 = binom.pmf(x,n,p)
+
+# case.3
+p = 0.9
+y3 = binom.pmf(x,n,p)
+
+# fig, ax = plt.subplots(facecolor="w")
+plt.plot(x, y1, label="$p=0.3$")
+plt.plot(x, y2, label="$p=0.5$")
+plt.plot(x, y3, label="$p=0.9$")
+
+plt.xlabel('$k$')
+plt.ylabel('$B(n,p)$')
+plt.title('binomial distribution n={}'.format(n))
+plt.grid(True)
+
+plt.legend()
+
+
 # ### カテゴリ分布
 # #### 平均
 # $ \displaystyle
@@ -194,13 +168,7 @@ plt.hist(x, bins=20)
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-# 
-# #### python code
-# ```python
-# 
-# ```
-# 
-# 
+
 # ### 多項分布
 # #### 平均
 # $ \displaystyle
@@ -211,14 +179,8 @@ plt.hist(x, bins=20)
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-# 
-# #### python code
-# ```python
-# 
-# ```
-# 
-# 
-# ### $\rm Beta$分布
+
+# ### ベータ分布
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -228,14 +190,8 @@ plt.hist(x, bins=20)
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-# 
-# #### python code
-# ```python
-# 
-# ```
-# 
-# 
-# ### $\rm Gamma$分布
+
+# ### ガンマ分布
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -245,13 +201,7 @@ plt.hist(x, bins=20)
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-# 
-# #### python code
-# ```python
-# 
-# ```
-# 
-# 
+
 # ### カイ二乗分布
 # #### 平均
 # $ \displaystyle
@@ -262,13 +212,7 @@ plt.hist(x, bins=20)
 # $ \displaystyle
 # V\left[x \right] = 
 # $ 
-# 
-# #### python code
-# ```python
-# 
-# ```
-# 
-# 
+
 # ### ステューデントのt分布
 # #### 平均
 # $ \displaystyle
@@ -279,19 +223,14 @@ plt.hist(x, bins=20)
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+
+# ## 基本的な特殊関数
 # 
-# #### python code
-# ```python
-# 
-# ```
-# 
-# 
-# ## 特殊関数
-# 
-# ### $\rm Beta$関数
-# ### $\rm Gamma$関数
-# 
-# 
+# ### ベータ関数
+# test
+# ### ガンマ関数
+# test
+
 # ## まとめ
 # 
 # ### 主要確率分布一覧 
@@ -376,5 +315,3 @@ plt.hist(x, bins=20)
 #   </tr>
 # </table>
 # </div>
-# 
-# 
