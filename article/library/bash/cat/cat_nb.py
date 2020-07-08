@@ -101,11 +101,7 @@ get_ipython().run_cell_magic('bash', '', '\ncat << EOF > temp11.sh\n#!/bin/bash\
 get_ipython().run_cell_magic('bash', '', 'cat << \'EOF\' > temp12.sh\n#!/bin/bash\n\nuser="test"\n\necho ${user}\n\nEOF\n\ncat temp12.sh')
 
 
-# In[ ]:
-
-
-となり、ちゃんとファイルの中に`${user}`が展開されずにファイルの中に記載されていることがわかります。
-
+# となり、ちゃんとファイルの中に`${user}`が展開されずにファイルの中に記載されていることがわかります。
 
 # ### 代表的なオプション
 # - t : タブを明示的に表示します(^Iと表示されます)
