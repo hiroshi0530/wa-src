@@ -3,6 +3,7 @@
 array=()
 
 # array+=("awk") 
+array+=("at") 
 array+=("cat") 
 array+=("cut") 
 array+=("echo") 
