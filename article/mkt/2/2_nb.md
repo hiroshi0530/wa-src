@@ -441,7 +441,7 @@ $$
 を得ます。
 
 #### python code
-pythonのコードは以下の通りです。私の[git repository](https://github.com/hiroshi0530/curv-api/blob/master/function/py/api/curv-get-k-from-P0-m.py)も参考にしてください。
+pythonのコードは以下の通りです。
 
 
 ```python

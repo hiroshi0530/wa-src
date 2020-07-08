@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 準備
@@ -35,8 +35,8 @@ import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -429,7 +429,7 @@ print('covariances : ', covariances)
 # を得ます。
 
 # #### python code
-# pythonのコードは以下の通りです。私の[git repository](https://github.com/hiroshi0530/curv-api/blob/master/function/py/api/curv-get-k-from-P0-m.py)も参考にしてください。
+# pythonのコードは以下の通りです。
 
 # In[5]:
 
