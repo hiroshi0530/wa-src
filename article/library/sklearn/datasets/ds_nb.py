@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
-# ## sickit-learn 個人的tips
-# scikit-learnは機械学習、データ分析には必須のライブラリです。個人的な勉強も込めてメモを残しておきます。
+# ## sickit-learn データセットの使い方
+# scikit-learnは機械学習、データ分析には必須のライブラリです。ここではデフォルトでscikit-learnに付随されているデータセットの使い方をメモしておきます。
 # 
 # ### sickit-learn 目次
 # 
@@ -11,9 +11,15 @@
 # 3. [線形回帰](/article/library/sklearn/linear_regression/)
 # 4. [ロジスティック回帰](/article/library/sklearn/logistic_regression/)
 # 
-# ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa/blob/master/src/sklearn/datasets/ds_nb.ipynb)
 # 
+# ### github
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/sklearn/datasets/ds_nb.ipynb)
+# 
+# ### google colaboratory
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/sklearn/datasets/ds_nb.ipynb)
+# 
+# ### 環境
+# 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 # 
 # ### 筆者の環境
 
@@ -52,8 +58,8 @@ pd.__version__
 # In[5]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib.pyplot as plt
 
