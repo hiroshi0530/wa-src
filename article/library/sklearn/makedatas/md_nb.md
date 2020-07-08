@@ -1,23 +1,30 @@
 
 ## scikit-learn 公式データセット
 
+scikit-learnは機械学習に必要なデータセットを用意してくれています。ここでは公式サイトにそってサンプルデータの概要を説明します。
+
 ### sickit-learn 解説目次
 
-1. [公式データセット](/article/library/sklearn/datasets/) <= 本節
-2. データの作成
+1. 公式データセット
+2. [データの作成](/article/library/sklearn/makedatas/) <= 本節
 3. 線形回帰
 4. ロジスティック回帰
 
-scikit-learnは機械学習に必要なデータセットを用意してくれています。ここでは公式サイトにそってサンプルデータの概要を説明します。
+### github
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/sklearn/datasets/ds_nb.ipynb)
+
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/sklearn/datasets/ds_nb.ipynb)
+
+### abc
 
 1. toy dataset
 2. 実際のデータセット
 
-
-
 詳細は公式ページを参考にしてください。
 
-筆者の環境は以下の通りです。
+### 筆者の環境
+筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
 
 ```python
@@ -53,12 +60,6 @@ sklearn.__version__
 
 
 ```python
-
-```
-
-
-```python
-
 import numpy as np
 import pandas as pd
 
@@ -67,11 +68,5 @@ from sklearn.datasets import load_boston
 boston = load_boston()
 ```
 
-
-```python
-
-```
-
 ## 参考資料
 - [scikit-learn 公式ページ](https://scikit-learn.org/stable/datasets/index.html)
-- いつも参考にしている[nkmkさん](https://note.nkmk.me/python-sklearn-datasets-load-fetch/)の記事です。
