@@ -104,13 +104,11 @@ plt.hist(x, bins=20)
 
 # #### help
 # これ以外にもscipy.stats.normには様々な関数が用意されています。
-
-# In[6]:
-
-
-get_ipython().run_line_magic('pinfo', 'norm')
-
-
+# 
+# ```python
+# norm?
+# ```
+# 
 # これを実行するとどのような関数が用意されているかわかります。
 # `rvs: random variates`や`pdf : probability density function`、`logpdf`、`cdf : cumulative distribution function`などを利用する場合が多いと思います。
 
