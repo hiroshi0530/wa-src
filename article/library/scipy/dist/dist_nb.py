@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -9,10 +9,8 @@
 # ### google colaboratory
 # - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
 # 
-# ### 環境
-# 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
-# 
 # ### 筆者の環境
+# 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
 # In[1]:
 
@@ -26,18 +24,22 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[1]:
+# 基本的なライブラリをインポートしそのバージョンを確認しておきます。
+
+# In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
 import scipy
+import numpy as np
 
 print('matplotlib version :', matplotlib.__version__)
 print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
 
 
 # ## 基本的な確率分布
@@ -45,16 +47,115 @@ print('scipy version :', scipy.__version__)
 # ここではベイズ統計を理解するために必要な基本的な確率分布と必要な特殊関数の説明を行います。基本的な性質をまとめています。また、サンプリングするpythonのコードも示しています。基本的にはscipyモジュールの統計関数を利用するだけです。
 # 
 # ### 正規分布
+# 
+# 正規分布は最も良く使われる確率分布であり、その詳細は教科書に詳細に書かれているので割愛します。ここではscipyによる利用方法にとどめます。
+# 
+# #### 表式
+# $
+# \displaystyle P\left( x \| \mu, \sigma \right) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( - \frac{x-\mu}{2 \sigma^2} \right)
+# $
+# 
+# #### 平均
+# $
+# E\left[x \right]=\mu
+# $
+# 
+# #### 分散
+# $
+# V\left[x\right]=\sigma^2
+# $
+# 
+# #### 確率密度関数の取得
+# pythonで正規分布の確率密度関数の生成方法は以下の通りです。中心0、標準偏差1のグラフになります。
 
-# In[9]:
+# In[4]:
 
 
 from scipy.stats import norm
 
-x = norm.rvs(size=1000)
+mu = 0
+sigma = 1
+
+X = np.arange(-5, 5, 0.1)
+Y = norm.pdf(X, mu, sigma)
+
+plt.xlabel('$x$')
+plt.ylabel('$P$')
+plt.grid()
+plt.plot(X, Y)
+
+
+# 実際に定量的なデータ分析の現場では、確率密度関数自体はそれほど使いません。統計モデリングなどでは、仮定された確率分布からデータを仮想的にサンプリングすることがしばしば行われます。確率分布を仮定した場合のシミュレーションのようなものです。
+
+# #### サンプリング
+
+# In[5]:
+
+
+from scipy.stats import norm
+
+mu = 0
+sigma = 1
+
+x = norm.rvs(mu, sigma, size=1000)
 plt.grid()
 plt.hist(x, bins=20)
 
+
+# #### help
+# これ以外にもscipy.stats.normには様々な関数が用意されています。
+
+# In[6]:
+
+
+get_ipython().run_line_magic('pinfo', 'norm')
+
+
+# これを実行するとどのような関数が用意されているかわかります。
+# `rvs: random variates`や`pdf : probability density function`、`logpdf`、`cdf : cumulative distribution function`などを利用する場合が多いと思います。
+
+# ```txt
+# 
+# rvs(loc=0, scale=1, size=1, random_state=None)
+#     Random variates.
+# pdf(x, loc=0, scale=1)
+#     Probability density function.
+# logpdf(x, loc=0, scale=1)
+#     Log of the probability density function.
+# cdf(x, loc=0, scale=1)
+#     Cumulative distribution function.
+# logcdf(x, loc=0, scale=1)
+#     Log of the cumulative distribution function.
+# sf(x, loc=0, scale=1)
+#     Survival function  (also defined as ``1 - cdf``, but `sf` is sometimes more accurate).
+# logsf(x, loc=0, scale=1)
+#     Log of the survival function.
+# ppf(q, loc=0, scale=1)
+#     Percent point function (inverse of ``cdf`` --- percentiles).
+# isf(q, loc=0, scale=1)
+#     Inverse survival function (inverse of ``sf``).
+# moment(n, loc=0, scale=1)
+#     Non-central moment of order n
+# stats(loc=0, scale=1, moments='mv')
+#     Mean('m'), variance('v'), skew('s'), and/or kurtosis('k').
+# entropy(loc=0, scale=1)
+#     (Differential) entropy of the RV.
+# fit(data, loc=0, scale=1)
+#     Parameter estimates for generic data.
+# expect(func, args=(), loc=0, scale=1, lb=None, ub=None, conditional=False, **kwds)
+#     Expected value of a function (of one argument) with respect to the distribution.
+# median(loc=0, scale=1)
+#     Median of the distribution.
+# mean(loc=0, scale=1)
+#     Mean of the distribution.
+# var(loc=0, scale=1)
+#     Variance of the distribution.
+# std(loc=0, scale=1)
+#     Standard deviation of the distribution.
+# interval(alpha, loc=0, scale=1)
+#     Endpoints of the range that contains alpha percent of the distribution
+# 
+# ```
 
 # ### ベルヌーイ分布
 #  コイン投げにおいて、表、もしくは裏が出る分布のように、試行の結果が2通りしか存在しない場合の分布を決定します。
@@ -89,7 +190,7 @@ plt.hist(x, bins=20)
 # 
 # #### python code
 
-# In[8]:
+# In[7]:
 
 
 from scipy.stats import bernoulli
@@ -122,7 +223,7 @@ print(bernoulli.rvs(mu, size=size))
 # 
 # $p=0.3, 0.5, 0.9$の場合の二項分布の確率質量関数になります。
 
-# In[6]:
+# In[8]:
 
 
 import numpy as np
@@ -169,6 +270,12 @@ plt.legend()
 # V\left[x \right] = 
 # $
 
+# In[ ]:
+
+
+
+
+
 # ### 多項分布
 # #### 平均
 # $ \displaystyle
@@ -179,6 +286,12 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+
+# In[ ]:
+
+
+
+
 
 # ### ベータ分布
 # #### 平均
@@ -191,6 +304,12 @@ plt.legend()
 # V\left[x \right] = 
 # $
 
+# In[ ]:
+
+
+
+
+
 # ### ガンマ分布
 # #### 平均
 # $ \displaystyle
@@ -201,6 +320,12 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+
+# In[ ]:
+
+
+
+
 
 # ### カイ二乗分布
 # #### 平均
@@ -213,6 +338,12 @@ plt.legend()
 # V\left[x \right] = 
 # $ 
 
+# In[ ]:
+
+
+
+
+
 # ### ステューデントのt分布
 # #### 平均
 # $ \displaystyle
@@ -224,94 +355,8 @@ plt.legend()
 # V\left[x \right] = 
 # $
 
-# ## 基本的な特殊関数
-# 
-# ### ベータ関数
-# test
-# ### ガンマ関数
-# test
+# In[ ]:
 
-# ## まとめ
-# 
-# ### 主要確率分布一覧 
-# 
-# <!-- <div style="width:100%; margin: 10px 40px 10px 40px;"> -->
-# <style>.cent td {text-align:center;}</style>
-# <style>.cent tr {text-align:center;}</style>
-# 
-# <div style="width:100%;"> 
-# <table class="cent">
-#   <tr>
-#     <th>名前</th>
-#     <th>確率密度関数</th>
-#     <th>確率変数</th>
-#     <th>params</th>
-#     <th>$\displaystyle E[x]$</th>
-#     <th>$\displaystyle V[x]$</th>
-#     <th>概要</th>
-#   </tr>
-#   <tr>
-#     <td>二項分布</td>
-#     <td>$\displaystyle \binom{n}{k}p^k\left(1-p\right)^{n-k}$</td>
-#     <td>$k$</td>
-#     <td>$n,p$</td>
-#     <td>$np$</td>
-#     <td>$np(1-p)$</td>
-#     <td>成功確率$\displaystyle p $の試行を$n$回行い、その成功回数が従う確率分布 </td>
-#   </tr>
-#   <tr>
-#     <td>ポアソン分布</td>
-#     <td>$\displaystyle \dfrac{\lambda^ke^{-\lambda}}{k!}$</td>
-#     <td>$k$</td>
-#     <td>$\lambda$</td>
-#     <td>$\lambda$</td>
-#     <td>$\lambda$</td>
-#     <td align="left">単位時間あたり$\displaystyle \lambda$回起こる事象の、単位時間あたりの発生回数が従う確率分布</td>
-#   </tr>
-#   <tr>
-#     <td>正規分布</td>
-#     <td>$\displaystyle \dfrac{1}{\sqrt{2\pi \sigma^2}}\exp\left(-\dfrac{\left(x-\mu\right)^2}{2\sigma^2}\right)$</td>
-#     <td>$x$</td>
-#     <td>$\mu,\sigma$</td>
-#     <td>$\mu$</td>
-#     <td>$\sigma^2$</td>
-#     <td></td>
-#   </tr>
-#   <tr>
-#     <td>幾何分布</td>
-#     <td>$\displaystyle p\left(1-p\right)^k$</td>
-#     <td>$k$</td>
-#     <td>$p$</td>
-#     <td>$\displaystyle \dfrac{1-p}{p}$</td>
-#     <td>$\displaystyle \dfrac{1-p}{p^2}$</td>
-#     <td align="left">成功確率$\displaystyle p $の試行を行い、はじめての成功を得られるまでに必要な失敗の回数が従う確率分布</td>
-#   </tr>
-#   <tr>
-#     <td>指数分布</td>
-#     <th>$\lambda e^{-\lambda x} $</th>
-#     <td>$\displaystyle x $</td>
-#     <td>$\displaystyle \lambda $</td>
-#     <td>$\displaystyle \dfrac{1}{\lambda} $</td>
-#     <td>$\displaystyle \dfrac{1}{\lambda^2} $</td>
-#     <td>単位時間あたり$\displaystyle \lambda$回起こる事象において、始めて発生する時間が従う確率分布</td>
-#   </tr>
-#   <tr>
-#     <td>負の二項分布</td>
-#     <td>$\displaystyle \binom{n+k-1}{k-1}p^n\left(1-p\right)^{k}$</td>
-#     <td>$k$</td>
-#     <td>$n,p$</td>
-#     <td>$\displaystyle \dfrac{n}{p}$</td>
-#     <td>$\displaystyle \dfrac{n\left(1-p\right)}{p^2}$</td>
-#     <td align="left">成功確率$\displaystyle p $の試行を行い、$n$回の成功を得られるまでに必要な失敗の回数が従う確率分布 (定義は他にもあり)</td>
-#   </tr>
-#   <tr>
-#     <td>ガンマ分布</td>
-#     <td>$\displaystyle \dfrac{x^{n-1}\lambda^{n}}{\Gamma\left(n\right)}e^{-\lambda x} $ <br>for $x > 0$</td>
-#     <td>$x$</td>
-#     <td>$n,\lambda$</td>
-#     <td>$\displaystyle \dfrac{n}{\lambda}$</td>
-#     <td>$\displaystyle \dfrac{n}{\lambda^2}$</td>
-#     <td>単位時間あたり$\displaystyle \lambda$回起こる事象において、$n$回発生する時間が従う確率分布</td>
-#   </tr>
-# </table>
-# </div>
+
+
+
