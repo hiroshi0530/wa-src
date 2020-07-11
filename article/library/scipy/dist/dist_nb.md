@@ -220,8 +220,23 @@ $
 $
 V\left[x\right]=\mu\left(1-\mu \right)
 $
+#### 確率密度関数
 
-#### python code
+
+```python
+from scipy.stats import bernoulli
+
+mu=0.3
+
+print(bernoulli.pmf(0, mu))
+print(bernoulli.pmf(1, mu))
+```
+
+    0.7000000000000001
+    0.3
+
+
+#### サンプリング
 
 
 ```python
@@ -230,12 +245,28 @@ from scipy.stats import bernoulli
 mu=0.3
 size=100
 
-print(bernoulli.rvs(mu, size=size))
+x = bernoulli.rvs(mu, size=size)
+print(x)
+bernoulli?
+plt.hist(x, bins=3)
 ```
 
-    [0 0 0 0 0 1 0 1 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 1
-     0 1 0 0 0 0 1 1 1 1 1 0 1 1 1 0 0 1 1 0 0 0 0 0 0 0 1 0 0 1 0 1 1 0 1 0 0
-     0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 0 0 1 0]
+    [1 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 1 1 0 0 0 0 1 1 0 0 0 1 0 0 0
+     0 0 1 0 1 0 0 1 0 0 0 0 0 1 0 1 0 0 0 1 0 1 0 0 0 0 1 0 0 0 1 0 0 0 1 1 0
+     0 0 0 0 1 0 1 1 0 0 1 0 1 1 1 0 0 0 1 1 0 0 1 0 0 0]
+
+
+
+
+
+    (array([70.,  0., 30.]),
+     array([0.        , 0.33333333, 0.66666667, 1.        ]),
+     <a list of 3 Patch objects>)
+
+
+
+
+![svg](dist_nb_files/dist_nb_15_2.svg)
 
 
 ### 二項分布
@@ -303,7 +334,7 @@ plt.legend()
 
 
 
-![svg](dist_nb_files/dist_nb_15_1.svg)
+![svg](dist_nb_files/dist_nb_17_1.svg)
 
 
 ### カテゴリ分布
@@ -317,11 +348,6 @@ $ \displaystyle
 V\left[x \right] = 
 $
 
-
-```python
-
-```
-
 ### 多項分布
 #### 平均
 $ \displaystyle
@@ -332,11 +358,6 @@ $
 $ \displaystyle
 V\left[x \right] = 
 $
-
-
-```python
-
-```
 
 ### ベータ分布
 #### 平均
@@ -349,11 +370,6 @@ $ \displaystyle
 V\left[x \right] = 
 $
 
-
-```python
-
-```
-
 ### ガンマ分布
 #### 平均
 $ \displaystyle
@@ -364,11 +380,6 @@ $
 $ \displaystyle
 V\left[x \right] = 
 $
-
-
-```python
-
-```
 
 ### カイ二乗分布
 #### 平均
@@ -381,11 +392,6 @@ $ \displaystyle
 V\left[x \right] = 
 $ 
 
-
-```python
-
-```
-
 ### ステューデントのt分布
 #### 平均
 $ \displaystyle
@@ -396,8 +402,3 @@ $
 $ \displaystyle
 V\left[x \right] = 
 $
-
-
-```python
-
-```

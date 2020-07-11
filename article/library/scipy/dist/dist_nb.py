@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -185,10 +185,22 @@ plt.hist(x, bins=20)
 # $
 # V\left[x\right]=\mu\left(1-\mu \right)
 # $
-# 
-# #### python code
+# #### 確率密度関数
 
-# In[7]:
+# In[34]:
+
+
+from scipy.stats import bernoulli
+
+mu=0.3
+
+print(bernoulli.pmf(0, mu))
+print(bernoulli.pmf(1, mu))
+
+
+# #### サンプリング
+
+# In[32]:
 
 
 from scipy.stats import bernoulli
@@ -196,7 +208,10 @@ from scipy.stats import bernoulli
 mu=0.3
 size=100
 
-print(bernoulli.rvs(mu, size=size))
+x = bernoulli.rvs(mu, size=size)
+print(x)
+get_ipython().magic('pinfo bernoulli')
+plt.hist(x, bins=3)
 
 
 # ### 二項分布
@@ -268,12 +283,6 @@ plt.legend()
 # V\left[x \right] = 
 # $
 
-# In[ ]:
-
-
-
-
-
 # ### 多項分布
 # #### 平均
 # $ \displaystyle
@@ -284,12 +293,6 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-
-# In[ ]:
-
-
-
-
 
 # ### ベータ分布
 # #### 平均
@@ -302,12 +305,6 @@ plt.legend()
 # V\left[x \right] = 
 # $
 
-# In[ ]:
-
-
-
-
-
 # ### ガンマ分布
 # #### 平均
 # $ \displaystyle
@@ -318,12 +315,6 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-
-# In[ ]:
-
-
-
-
 
 # ### カイ二乗分布
 # #### 平均
@@ -336,12 +327,6 @@ plt.legend()
 # V\left[x \right] = 
 # $ 
 
-# In[ ]:
-
-
-
-
-
 # ### ステューデントのt分布
 # #### 平均
 # $ \displaystyle
@@ -352,9 +337,3 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
-
-# In[ ]:
-
-
-
-
