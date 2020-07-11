@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -88,8 +88,9 @@ plt.plot(X, Y)
 # 実際に定量的なデータ分析の現場では、確率密度関数自体はそれほど使いません。統計モデリングなどでは、仮定された確率分布からデータを仮想的にサンプリングすることがしばしば行われます。確率分布を仮定した場合のシミュレーションのようなものです。
 
 # #### サンプリング
+# 標準正規分布から1000個データをサンプリングして、ヒストグラム表示してみます。ちゃんと確率密度関数を再現できていることがわかります。
 
-# In[5]:
+# In[65]:
 
 
 from scipy.stats import norm
@@ -185,9 +186,9 @@ plt.hist(x, bins=20)
 # $
 # V\left[x\right]=\mu\left(1-\mu \right)
 # $
-# #### 確率密度関数
+# #### 確率質量関数
 
-# In[34]:
+# In[10]:
 
 
 from scipy.stats import bernoulli
@@ -199,18 +200,17 @@ print(bernoulli.pmf(1, mu))
 
 
 # #### サンプリング
+# 1000個サンプリングして、ヒストグラムで表示してみます。
 
-# In[32]:
+# In[64]:
 
 
 from scipy.stats import bernoulli
 
 mu=0.3
-size=100
+size=1000
 
 x = bernoulli.rvs(mu, size=size)
-print(x)
-get_ipython().magic('pinfo bernoulli')
 plt.hist(x, bins=3)
 
 
@@ -232,11 +232,11 @@ plt.hist(x, bins=3)
 # V\left[k \right] = np\left(1-p \right) 
 # $
 # 
-# #### python code と グラフ
+# #### 確率質量関数
 # 
 # $p=0.3, 0.5, 0.9$の場合の二項分布の確率質量関数になります。
 
-# In[8]:
+# In[33]:
 
 
 import numpy as np
@@ -272,18 +272,109 @@ plt.grid(True)
 plt.legend()
 
 
+# #### サンプリング
+
+# In[37]:
+
+
+from scipy.stats import binom
+
+n = 100
+p = 0.3
+
+x = binom.rvs(n,p,size=10000)
+
+plt.xlim(0,120)
+plt.hist(x,bins=15)
+
+
 # ### カテゴリ分布
+# ベルヌーイ分布の多変数化になります。
+# 
+# 
+# #### 表式
+# 
 # #### 平均
 # $ \displaystyle
-# \left[x \right] = 
+# E\left[x \right] = 
 # $
 # 
 # #### 分散
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+# 
+# 
+# #### 確率質量関数
+
+# In[ ]:
+
+
+
+
 
 # ### 多項分布
+# 二項分布の多変数版です。いかさまの可能性があるサイコロを複数回振って、それぞれの目が出る回数が従う確率分布になります。サイコロの面が$n$個あり、それぞれが一回の試行で出る確率が$p_1,p_2, \cdots , p_n$で、$N$回そのサイコロを振ったとき、それぞれの面が出る確率を$x_1,x_2, \cdots , x_n$とします。
+# 
+# #### 表式
+# $ \displaystyle
+# P\left(x_1, x_2, \cdots x_n | n,p_1,p_2 \cdots p_n \right) = \frac{N!}{x_1!x_2! \cdots x_n!} p_1^{x_1}p_2^{x_2}\cdots p_n^{x_n}
+# $
+# 
+# ただし、$p_i$と$x_i$は $ \displaystyle \sum_i p_i = 1 , \sum_i x_i = N $を満たす。
+# 
+# #### 平均
+# $ \displaystyle
+# E\left[x_i \right] = Np_i 
+# $
+# 
+# #### 分散
+# $ \displaystyle
+# V\left[x_i \right] = Np_i\left(1-p_i \right) 
+# $
+# 
+# #### 確率質量関数
+# 6面体のサイコロで、1から6それぞれの目が出る確率は、$0.1,0.2,0.25,0.15,0.2,01$とします。そのサイコロを10回振って、それぞれの目が1回,2回,1回,3回,2回,1回出る確率を計算します。
+
+# In[48]:
+
+
+from scipy.stats import multinomial
+
+rv = multinomial(10,[0.1,0.2,0.25,0.15,0.2,0.1])
+print('確率 : ',str(rv.pmf([1,2,1,3,2,1]))[:8])
+
+
+# #### サンプリング
+# 上記のサイコロを10回投げて、それぞれの目が出る回数をサンプリングします。とりあえず一回だけサンプリングしてみます。
+
+# In[52]:
+
+
+multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=1)
+
+
+# 10000回サンプリングしてみます。
+
+# In[60]:
+
+
+from collections import Counter
+
+array = multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=10000)
+array = map(str, array)
+
+print('出現する上位10個のデータ')
+for i in Counter(array).most_common()[:10]:
+  print(i)
+
+
+# 結果として、一番出現する確率する3の目が出る出現する目のセットが多いことがわかります。
+
+# ### 多項分布
+# 
+# #### 表式
+# 
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -293,8 +384,24 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+# 
+# 
+# #### 確率質量関数
+
+# In[63]:
+
+
+a = [i for i in range(5)]
+
+list(map(lambda x: x+ 10, a))
+
 
 # ### ベータ分布
+# 
+# #### 表式
+# $
+# $
+# 
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -304,8 +411,23 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+# 
+# 
+# #### 確率質量関数
+
+# In[ ]:
+
+
+
+
 
 # ### ガンマ分布
+# 
+# 
+# #### 表式
+# $
+# $
+# 
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -315,8 +437,21 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+# 
+# #### 確率質量関数
+
+# In[ ]:
+
+
+
+
 
 # ### カイ二乗分布
+# 
+# #### 表式
+# $
+# $
+# 
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -326,8 +461,23 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $ 
+# 
+# 
+# #### 確率質量関数
+
+# In[ ]:
+
+
+
+
 
 # ### ステューデントのt分布
+# 
+# 
+# #### 表式
+# $
+# $
+# 
 # #### 平均
 # $ \displaystyle
 # E\left[x \right] = 
@@ -337,3 +487,12 @@ plt.legend()
 # $ \displaystyle
 # V\left[x \right] = 
 # $
+# 
+# 
+# #### 確率質量関数
+
+# In[ ]:
+
+
+
+
