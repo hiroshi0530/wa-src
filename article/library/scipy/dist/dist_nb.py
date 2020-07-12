@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -307,12 +307,6 @@ plt.hist(x,bins=15)
 # 
 # #### 確率質量関数
 
-# In[ ]:
-
-
-
-
-
 # ### 多項分布
 # 二項分布の多変数版です。いかさまの可能性があるサイコロを複数回振って、それぞれの目が出る回数が従う確率分布になります。サイコロの面が$n$個あり、それぞれが一回の試行で出る確率が$p_1,p_2, \cdots , p_n$で、$N$回そのサイコロを振ったとき、それぞれの面が出る確率を$x_1,x_2, \cdots , x_n$とします。
 # 
@@ -371,54 +365,52 @@ for i in Counter(array).most_common()[:10]:
 
 # 結果として、一番出現する確率する3の目が出る出現する目のセットが多いことがわかります。
 
-# ### 多項分布
-# 
-# #### 表式
-# 
-# #### 平均
-# $ \displaystyle
-# E\left[x \right] = 
-# $
-# 
-# #### 分散
-# $ \displaystyle
-# V\left[x \right] = 
-# $
-# 
-# 
-# #### 確率質量関数
-
-# In[63]:
-
-
-a = [i for i in range(5)]
-
-list(map(lambda x: x+ 10, a))
-
-
 # ### ベータ分布
 # 
 # #### 表式
+# $ \displaystyle
+# P\left( x | \alpha, \beta \right) = \frac{x^{\alpha - 1}(1-x)^{\beta - 1}}{B \left(\alpha, \beta \right)}
 # $
-# $
+# 
+# ここで$\displaystyle B(\alpha, \beta)$はベータ関数で$\alpha, \beta > 0$となります。
 # 
 # #### 平均
 # $ \displaystyle
-# E\left[x \right] = 
+# E\left[x \right] = \frac{\alpha}{\alpha + \beta}
 # $
 # 
 # #### 分散
 # $ \displaystyle
-# V\left[x \right] = 
+# V\left[x \right] = \frac{\alpha\beta}{(\alpha + \beta)^2(\alpha + \beta + 1)}
 # $
 # 
 # 
 # #### 確率質量関数
 
-# In[ ]:
+# In[45]:
 
 
+from scipy.stats import beta
+_alpha = 2
+_beta = 2
 
+x = np.linspace(0,1,100)
+print(x)
+
+beta.pdf(x[1:-2], _alpha, _beta)
+
+
+# #### サンプリング
+
+# In[46]:
+
+
+from scipy.stats import beta
+
+_alpha = 2
+_beta = 2
+
+beta.rvs(_alpha, _beta, size=100)
 
 
 # ### ガンマ分布
@@ -440,12 +432,6 @@ list(map(lambda x: x+ 10, a))
 # 
 # #### 確率質量関数
 
-# In[ ]:
-
-
-
-
-
 # ### カイ二乗分布
 # 
 # #### 表式
@@ -464,12 +450,6 @@ list(map(lambda x: x+ 10, a))
 # 
 # 
 # #### 確率質量関数
-
-# In[ ]:
-
-
-
-
 
 # ### ステューデントのt分布
 # 
@@ -490,9 +470,3 @@ list(map(lambda x: x+ 10, a))
 # 
 # 
 # #### 確率質量関数
-
-# In[ ]:
-
-
-
-
