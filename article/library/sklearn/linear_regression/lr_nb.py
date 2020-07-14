@@ -1,9 +1,9 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
-# ## scikit-learn 公式データセット
+# ## scikit-learn で2変数の線形回帰
 # 
-# scikit-learnは機械学習に必要なデータセットを用意してくれています。ここでは公式サイトにそってサンプルデータの概要を説明します。
+# scikit-learnを使えば手軽に線形回帰を実践できるので、備忘録として残しておきます。scikit-learnを用いれば、学習(fitting)や予測(predict)など手軽行うことが出来ます。ここでは2つの説明変数の場合の線形回帰をscikit-learnを用いて実行してみます。
 # 
 # ### sickit-learn 解説目次
 # 
@@ -18,17 +18,10 @@
 # ### google colaboratory
 # - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/sklearn/linear_regression/lr_nb.ipynb)
 # 
-# ### abc
-# 
-# 1. toy dataset
-# 2. 実際のデータセット
-# 
-# 詳細は公式ページを参考にしてください。
-# 
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
-# In[3]:
+# In[1]:
 
 
 get_ipython().system('sw_vers')
@@ -40,7 +33,7 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[1]:
+# In[3]:
 
 
 import sklearn
@@ -48,13 +41,109 @@ import sklearn
 sklearn.__version__
 
 
-# In[1]:
+# 必要なライブラリを読み込みます。
+
+# In[4]:
 
 
 import numpy as np
-import pandas as pd
+import scipy
+from scipy.stats import binom
+
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+print("numpy version :", np.__version__)
+print("matplotlib version :", matplotlib.__version__)
+print("sns version :",sns.__version__)
+
+
+# ### データの取得
+# 説明変数を二つの場合の線形回帰を実行します。
+# 利用するデータは、sklearnのdatasetsを使ってもいいのですが、練習もかねて自分で作って見ます。
+# 
+# データセットは以下の様に利用できます。以下では、ボストンの土地価格のデータを読み込んでいます。scikit-learnの公式ページの説明もこのデータセットを利用していると記憶しています。
+# 
+
+# In[5]:
+
 
 from sklearn.datasets import load_boston
 
 boston = load_boston()
 
+
+# ### データの作成
+# 以下の様な線形回帰の式を想定します。
+# 説明変数が二つ、目的変数が一つです。
+# 
+# $$
+# y = a_0 + a_1 * x_1 + a_2 * x_2
+# $$
+
+# In[6]:
+
+
+from mpl_toolkits.mplot3d import Axes3D
+
+x1 = [0.01 * i for i in range(100)]
+x2 = [0.01 * i for i in range(100)]
+
+x1 = np.linspace(-3,3,10)
+x2 = np.linspace(1,5,10)
+
+# 配列の個々の要素に対して乱数を追加したいので、ブロードキャストをキャンセルする
+def get_y(x1, x2):
+  return np.array([
+    [2 * __x1 + __x2 + np.random.randn() + 5 for __x1, __x2 in zip(_x1,_x2)] for _x1, _x2 in zip(x1,x2)
+  ])
+
+X1, X2 = np.meshgrid(x1, x2)
+Y = get_y(X1, X2)
+
+X1 = X1.reshape(-1)
+X2 = X2.reshape(-1)
+Y = Y.reshape(-1)
+
+fig = plt.figure()
+ax = Axes3D(fig)
+
+ax.set_xlabel("$x_1$")
+ax.set_ylabel("$x_2$")
+ax.set_zlabel("$f(x_1, x_2)$")
+
+# ax.plot_wireframe(X1, X2, Y)
+ax.plot(X1, X2, Y, "o", color="#ff0000", ms=4, mew=0.5)
+
+
+# In[7]:
+
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+X = np.array([
+  X1,
+  X2
+]).T
+
+print(X.shape)
+print(Y.shape)
+lr.fit(X,Y)
+
+print('係数 : ',lr.coef_)
+print('オフセット', lr.intercept_)
+
+
+# 以下の様な線形回帰の式が得られます。
+# 
+# $$
+# y = 5 + 2 * x_1 + x_2
+# $$
+
+# ## まとめ
+# 線形回帰だけでも多くの事がわかります。また、データ分析の実務では、複雑なモデルより簡単なモデルの方が好かれますデータ分析によらないと思いますが･･･）。線形回帰で説明できるのなら、それで十分な気もしています。

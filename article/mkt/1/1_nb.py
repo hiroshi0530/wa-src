@@ -36,6 +36,7 @@ import scipy
 from scipy.stats import binom
 
 get_ipython().run_line_magic('matplotlib', 'inline')
+j
 get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib

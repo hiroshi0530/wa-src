@@ -39,6 +39,7 @@ import scipy
 from scipy.stats import binom
 
 %matplotlib inline
+j
 %config InlineBackend.figure_format = 'svg'
 
 import matplotlib
