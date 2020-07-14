@@ -98,6 +98,8 @@ $$
 y = a_0 + a_1 * x_1 + a_2 * x_2
 $$
 
+データ作成において、$a_0=5, a_1=2, a_2=1$を仮定し、それに少々正規分布に従う乱数を追加します。
+
 
 ```python
 from mpl_toolkits.mplot3d import Axes3D
@@ -109,6 +111,7 @@ x1 = np.linspace(-3,3,10)
 x2 = np.linspace(1,5,10)
 
 # 配列の個々の要素に対して乱数を追加したいので、ブロードキャストをキャンセルする
+# a_0=5, a_1=2, a_2=1
 def get_y(x1, x2):
   return np.array([
     [2 * __x1 + __x2 + np.random.randn() + 5 for __x1, __x2 in zip(_x1,_x2)] for _x1, _x2 in zip(x1,x2)
@@ -136,7 +139,7 @@ ax.plot(X1, X2, Y, "o", color="#ff0000", ms=4, mew=0.5)
 
 
 
-    [<mpl_toolkits.mplot3d.art3d.Line3D at 0x129995828>]
+    [<mpl_toolkits.mplot3d.art3d.Line3D at 0x128dae518>]
 
 
 
@@ -164,8 +167,8 @@ print('オフセット', lr.intercept_)
 
     (100, 2)
     (100,)
-    係数 :  [2.06196262 1.05338036]
-    オフセット 4.862142849331203
+    係数 :  [2.0636788  0.96826547]
+    オフセット 4.94593103523181
 
 
 以下の様な線形回帰の式が得られます。
