@@ -84,6 +84,8 @@ boston = load_boston()
 # $$
 # y = a_0 + a_1 * x_1 + a_2 * x_2
 # $$
+# 
+# データ作成において、$a_0=5, a_1=2, a_2=1$を仮定し、それに少々正規分布に従う乱数を追加します。
 
 # In[6]:
 
@@ -97,6 +99,7 @@ x1 = np.linspace(-3,3,10)
 x2 = np.linspace(1,5,10)
 
 # 配列の個々の要素に対して乱数を追加したいので、ブロードキャストをキャンセルする
+# a_0=5, a_1=2, a_2=1
 def get_y(x1, x2):
   return np.array([
     [2 * __x1 + __x2 + np.random.randn() + 5 for __x1, __x2 in zip(_x1,_x2)] for _x1, _x2 in zip(x1,x2)
