@@ -1,7 +1,7 @@
 
-## scikit-learn で2変数の線形回帰
+## scikit-learn で2変数の線形回帰(重回帰)
 
-scikit-learnを使えば手軽に線形回帰を実践できるので、備忘録として残しておきます。scikit-learnを用いれば、学習(fitting)や予測(predict)など手軽行うことが出来ます。ここでは2つの説明変数の場合の線形回帰をscikit-learnを用いて実行してみます。
+scikit-learnを使えば手軽に線形回帰を実践できるので、備忘録として残しておきます。scikit-learnを用いれば、学習(fitting)や予測(predict)など手軽行うことが出来ます。ここでは2つの説明変数の場合の線形回帰をscikit-learnを用いて実行してみます。2変数なので重回帰といわれる回帰です。説明変数が一つの場合は単回帰といわれます。
 
 ### sickit-learn 解説目次
 
@@ -26,7 +26,7 @@ scikit-learnを使えば手軽に線形回帰を実践できるので、備忘�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G2022
+    BuildVersion:	18G95
 
 
 
@@ -34,21 +34,7 @@ scikit-learnを使えば手軽に線形回帰を実践できるので、備忘�
 !python -V
 ```
 
-    Python 3.7.3
-
-
-
-```python
-import sklearn
-
-sklearn.__version__
-```
-
-
-
-
-    '0.20.3'
-
+    Python 3.5.5 :: Anaconda, Inc.
 
 
 必要なライブラリを読み込みます。
@@ -71,9 +57,23 @@ print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
 ```
 
-    numpy version : 1.16.2
-    matplotlib version : 3.0.3
-    sns version : 0.9.0
+    numpy version : 1.18.1
+    matplotlib version : 2.2.2
+    sns version : 0.8.1
+
+
+
+```python
+import sklearn
+
+sklearn.__version__
+```
+
+
+
+
+    '0.19.1'
+
 
 
 ### データの取得
@@ -139,7 +139,7 @@ ax.plot(X1, X2, Y, "o", color="#ff0000", ms=4, mew=0.5)
 
 
 
-    [<mpl_toolkits.mplot3d.art3d.Line3D at 0x128dae518>]
+    [<mpl_toolkits.mplot3d.art3d.Line3D at 0x11d3a7278>]
 
 
 
@@ -167,15 +167,30 @@ print('オフセット', lr.intercept_)
 
     (100, 2)
     (100,)
-    係数 :  [2.0636788  0.96826547]
-    オフセット 4.94593103523181
+    係数 :  [2.01164799 1.06268247]
+    オフセット 4.735778456031239
 
 
-以下の様な線形回帰の式が得られます。
+となり、パラメタ$a_0,a_1,a_2$が得られます。結果として、以下の様な線形回帰の式が得られます。
 
 $$
 y = 5 + 2 * x_1 + x_2
 $$
+
+このパラメタを使って、新たにテストデータを作成し、平均二乗誤差を計算してみます。
+
+
+```python
+from sklearn.metrics import mean_squared_error
+
+Y_predict = lr.predict(X)
+print("MSE : {:.2f}".format(mean_squared_error(Y_predict, Y)))
+```
+
+    MSE : 0.91
+
+
+となります。とても簡単ですね。sklearn、素晴らしいです。
 
 ## まとめ
 線形回帰だけでも多くの事がわかります。また、データ分析の実務では、複雑なモデルより簡単なモデルの方が好かれますデータ分析によらないと思いますが･･･）。線形回帰で説明できるのなら、それで十分な気もしています。
