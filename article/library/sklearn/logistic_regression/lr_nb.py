@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## scikit-learn でロジスティック回帰
@@ -21,7 +21,7 @@
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
-# In[3]:
+# In[1]:
 
 
 get_ipython().system('sw_vers')
@@ -33,7 +33,7 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[7]:
+# In[3]:
 
 
 import sklearn
@@ -43,15 +43,15 @@ sklearn.__version__
 
 # 必要なライブラリを読み込みます。
 
-# In[6]:
+# In[4]:
 
 
 import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -62,18 +62,12 @@ print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
 
 
-# In[ ]:
+# ロジスティック回帰は二値分類の問題に適用します。ある人物が目的の商品を購入するか否か、ある人物に投票するか否かなどの予想に利用します。
+# 
+# 例えば、ある商品を購入する確率を$p$として、説明変数を$x_1,x_2,x_3 \cdots$として、その対数
 
-
-
-
-
-# In[ ]:
-
-
-
-
-
+# ## ロジット関数
+# 
 # このオッズという言葉は競馬でよく聞くオッズと同じなんでしょうか。競馬はやらないのでわかりませんね。誰か教えてください。とりあえず、ある事象が起こる確率が$p$であるとき、$$\frac{p}{1-p}$$をオッズと言うそうです。その対数を$$\log p - \log(1-p)$$を対数オッズと言います。
 # 
 # $$
@@ -82,14 +76,27 @@ print("sns version :",sns.__version__)
 # これを$p$について解くと、
 # 
 # $$
-# p = \frac{1}{1 + \exp^{-\sum_i x_i x_i}}
+# \displaystyle p = \frac{1}{1 + \exp^{ -\sum_{i=0}^n a_i x_i}}
 # $$
-
-# ### ロジスティック関数
 # 
-# 一般に、$$ f(x)= \frac{1}{1+e^{-x}}$$をロジスティック関数と言います。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
 
-# In[18]:
+# In[6]:
+
+
+from scipy.special import logit
+
+x = np.linspace(0,1,100)
+y = logit(x)
+
+plt.grid()
+plt.plot(x,y)
+
+
+# ## ロジスティック関数 (シグモイド関数)
+# 
+# 一般に、$$ f(x)= \frac{1}{1+e^{-x}}$$をロジスティック関数と言います。シグモイド関数とも言います。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
+
+# In[5]:
 
 
 from scipy.special import expit
@@ -99,12 +106,4 @@ y = expit(x)
 
 plt.grid()
 plt.plot(x,y)
-
-
-# In[15]:
-
-
-from scipy.stats import logistic
-
-get_ipython().run_line_magic('pinfo', 'logistic')
 
