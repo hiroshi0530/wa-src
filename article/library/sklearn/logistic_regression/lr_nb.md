@@ -26,7 +26,7 @@ scikit-learnを使えば手軽にロジスティック回帰を実践できる�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G2022
+    BuildVersion:	18G95
 
 
 
@@ -34,7 +34,7 @@ scikit-learnを使えば手軽にロジスティック回帰を実践できる�
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.5.5 :: Anaconda, Inc.
 
 
 
@@ -47,7 +47,7 @@ sklearn.__version__
 
 
 
-    '0.20.3'
+    '0.19.1'
 
 
 
@@ -71,20 +71,16 @@ print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
 ```
 
-    numpy version : 1.16.2
-    matplotlib version : 3.0.3
-    sns version : 0.9.0
+    numpy version : 1.18.1
+    matplotlib version : 2.2.2
+    sns version : 0.8.1
 
 
+ロジスティック回帰は二値分類の問題に適用します。ある人物が目的の商品を購入するか否か、ある人物に投票するか否かなどの予想に利用します。
 
-```python
+例えば、ある商品を購入する確率を$p$として、説明変数を$x_1,x_2,x_3 \cdots$として、その対数
 
-```
-
-
-```python
-
-```
+## ロジット関数
 
 このオッズという言葉は競馬でよく聞くオッズと同じなんでしょうか。競馬はやらないのでわかりませんね。誰か教えてください。とりあえず、ある事象が起こる確率が$p$であるとき、$$\frac{p}{1-p}$$をオッズと言うそうです。その対数を$$\log p - \log(1-p)$$を対数オッズと言います。
 
@@ -94,12 +90,35 @@ $$
 これを$p$について解くと、
 
 $$
-p = \frac{1}{1 + \exp^{-\sum_i x_i x_i}}
+\displaystyle p = \frac{1}{1 + \exp^{ -\sum_{i=0}^n a_i x_i}}
 $$
 
-### ロジスティック関数
 
-一般に、$$ f(x)= \frac{1}{1+e^{-x}}$$をロジスティック関数と言います。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
+
+```python
+from scipy.special import logit
+
+x = np.linspace(0,1,100)
+y = logit(x)
+
+plt.grid()
+plt.plot(x,y)
+```
+
+
+
+
+    [<matplotlib.lines.Line2D at 0x107cc6668>]
+
+
+
+
+![svg](lr_nb_files/lr_nb_8_1.svg)
+
+
+## ロジスティック関数 (シグモイド関数)
+
+一般に、$$ f(x)= \frac{1}{1+e^{-x}}$$をロジスティック関数と言います。シグモイド関数とも言います。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
 
 
 ```python
@@ -115,17 +134,10 @@ plt.plot(x,y)
 
 
 
-    [<matplotlib.lines.Line2D at 0x11e4988d0>]
+    [<matplotlib.lines.Line2D at 0x107cc69b0>]
 
 
 
 
 ![svg](lr_nb_files/lr_nb_10_1.svg)
 
-
-
-```python
-from scipy.stats import logistic
-
-logistic?
-```

@@ -90,7 +90,7 @@ plt.plot(X, Y)
 # #### サンプリング
 # 標準正規分布から1000個データをサンプリングして、ヒストグラム表示してみます。ちゃんと確率密度関数を再現できていることがわかります。
 
-# In[65]:
+# In[5]:
 
 
 from scipy.stats import norm
@@ -188,7 +188,7 @@ plt.hist(x, bins=20)
 # $
 # #### 確率質量関数
 
-# In[10]:
+# In[6]:
 
 
 from scipy.stats import bernoulli
@@ -202,7 +202,7 @@ print(bernoulli.pmf(1, mu))
 # #### サンプリング
 # 1000個サンプリングして、ヒストグラムで表示してみます。
 
-# In[64]:
+# In[7]:
 
 
 from scipy.stats import bernoulli
@@ -236,7 +236,7 @@ plt.hist(x, bins=3)
 # 
 # $p=0.3, 0.5, 0.9$の場合の二項分布の確率質量関数になります。
 
-# In[33]:
+# In[8]:
 
 
 import numpy as np
@@ -273,8 +273,10 @@ plt.legend()
 
 
 # #### サンプリング
+# 
+# $n=100, p=0.3$のパラメタを持つ二項分布からサンプリングを行い、確率質量関数が正しいことを確認します。
 
-# In[37]:
+# In[19]:
 
 
 from scipy.stats import binom
@@ -284,8 +286,9 @@ p = 0.3
 
 x = binom.rvs(n,p,size=10000)
 
-plt.xlim(0,120)
-plt.hist(x,bins=15)
+plt.xlim(0, 60)
+plt.grid()
+plt.hist(x, bins=15)
 
 
 # ### カテゴリ分布
@@ -330,7 +333,7 @@ plt.hist(x,bins=15)
 # #### 確率質量関数
 # 6面体のサイコロで、1から6それぞれの目が出る確率は、$0.1,0.2,0.25,0.15,0.2,01$とします。そのサイコロを10回振って、それぞれの目が1回,2回,1回,3回,2回,1回出る確率を計算します。
 
-# In[48]:
+# In[10]:
 
 
 from scipy.stats import multinomial
@@ -342,7 +345,7 @@ print('確率 : ',str(rv.pmf([1,2,1,3,2,1]))[:8])
 # #### サンプリング
 # 上記のサイコロを10回投げて、それぞれの目が出る回数をサンプリングします。とりあえず一回だけサンプリングしてみます。
 
-# In[52]:
+# In[11]:
 
 
 multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=1)
@@ -350,7 +353,7 @@ multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=1)
 
 # 10000回サンプリングしてみます。
 
-# In[60]:
+# In[12]:
 
 
 from collections import Counter
@@ -387,22 +390,30 @@ for i in Counter(array).most_common()[:10]:
 # 
 # #### 確率質量関数
 
-# In[45]:
+# In[13]:
 
 
 from scipy.stats import beta
-_alpha = 2
-_beta = 2
 
-x = np.linspace(0,1,100)
-print(x)
+alpha_list = [2,3,4]
+beta_list = [2,2,3]
 
-beta.pdf(x[1:-2], _alpha, _beta)
+for _alpha,_beta in zip(alpha_list, beta_list):
+  x = np.linspace(0,1,100)[1:-1]
+  y = beta.pdf(x, _alpha, _beta)
+  plt.plot(x,y,label="$\\alpha={}, \\beta={}$".format(_alpha,_beta))
+
+plt.xlabel("$x$")
+plt.ylabel("$p(x)$")
+plt.grid()
+plt.legend()
 
 
 # #### サンプリング
+# 
+# $\alpha=2, \beta=2$のベータ関数に対してサンプリングを行いヒストグラム表示して、確率密度関数が確かに正しいことを確認します。
 
-# In[46]:
+# In[14]:
 
 
 from scipy.stats import beta
@@ -410,27 +421,66 @@ from scipy.stats import beta
 _alpha = 2
 _beta = 2
 
-beta.rvs(_alpha, _beta, size=100)
+plt.grid()
+plt.hist(beta.rvs(_alpha, _beta, size=100000))
 
+
+# となり、上記の$\alpha=2, \beta=2$のベータ関数と形状が一致する事が分かります。
 
 # ### ガンマ分布
 # 
-# 
 # #### 表式
+# $ \displaystyle
+# P(x|\alpha, \beta) = \frac{\beta^\alpha x^{\alpha-1}e^{-\beta x}}{\Gamma(\alpha)}
 # $
+# 
+# もしくは、
+# 
+# $ \displaystyle
+# P(x|\alpha, \theta) = \frac{x^{\alpha-1}e^{-\frac{x}{\theta}}}{\Gamma(\alpha)\theta^\alpha }
 # $
 # 
 # #### 平均
 # $ \displaystyle
-# E\left[x \right] = 
+# E\left[x \right] = \frac{\alpha}{\beta}
 # $
 # 
 # #### 分散
 # $ \displaystyle
-# V\left[x \right] = 
+# V\left[x \right] = \frac{\alpha}{\beta^2}
 # $
 # 
 # #### 確率質量関数
+
+# In[15]:
+
+
+from scipy.stats import gamma
+
+_alpha_list = [1.0, 2.0, 3.0, 9.0]
+_beta_list = [2.0, 2.5, 4.5, 5]
+
+for _alpha, _beta in zip(_alpha_list, _beta_list):
+  x = np.linspace(0,4,100)
+  y = gamma.pdf(x,_alpha,scale=1/_beta)
+  plt.plot(x,y,label="$\\alpha = {}, \\beta = {}$".format(_alpha, _beta))
+
+plt.grid()
+plt.legend()
+
+
+# #### サンプリング
+# ベータ分布と同様に、サンプリングを行い、ヒストグラムを作成し、上記の確率密度関数が正しいことを確認します。$\alpha=2.0, \beta=2.5$のヒストグラムを作成します。
+
+# In[16]:
+
+
+_alpha = 2.0
+_alpha = 2.5
+
+plt.grid()
+plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
+
 
 # ### カイ二乗分布
 # 
@@ -451,6 +501,8 @@ beta.rvs(_alpha, _beta, size=100)
 # 
 # #### 確率質量関数
 
+# #### サンプリング
+
 # ### ステューデントのt分布
 # 
 # 
@@ -470,3 +522,5 @@ beta.rvs(_alpha, _beta, size=100)
 # 
 # 
 # #### 確率質量関数
+
+# #### サンプリング

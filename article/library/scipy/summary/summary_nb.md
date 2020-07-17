@@ -2,10 +2,10 @@
 ## scipyによる確率分布と特殊関数
 
 ### github
-- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/scipy/summary/summary_nb.ipynb)
 
 ### google colaboratory
-- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/scipy/dist/dist_nb.ipynb)
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/scipy/summary/summary_nb.ipynb)
 
 ### 筆者の環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -50,7 +50,9 @@ print('numpy version :', np.__version__)
     numpy version : 1.16.2
 
 
-### 主要確率分布まとめ
+## 主要確率分布の使い所
+
+データ分析などでは確率分布が様々な場所で利用されますが、簡単にまとめておきます。負の二項分などはマーケティングなどの分野でよく利用される確率分布になります。
 
 <!-- <div style="width:100%; margin: 10px 40px 10px 40px;"> -->
 <style>.cent td {text-align:center;}</style>
