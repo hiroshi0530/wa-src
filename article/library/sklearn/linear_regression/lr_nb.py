@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
-# ## scikit-learn で2変数の線形回帰
+# ## scikit-learn で2変数の線形回帰(重回帰)
 # 
-# scikit-learnを使えば手軽に線形回帰を実践できるので、備忘録として残しておきます。scikit-learnを用いれば、学習(fitting)や予測(predict)など手軽行うことが出来ます。ここでは2つの説明変数の場合の線形回帰をscikit-learnを用いて実行してみます。
+# scikit-learnを使えば手軽に線形回帰を実践できるので、備忘録として残しておきます。scikit-learnを用いれば、学習(fitting)や予測(predict)など手軽行うことが出来ます。ここでは2つの説明変数の場合の線形回帰をscikit-learnを用いて実行してみます。2変数なので重回帰といわれる回帰です。説明変数が一つの場合は単回帰といわれます。
 # 
 # ### sickit-learn 解説目次
 # 
@@ -33,25 +33,17 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[3]:
-
-
-import sklearn
-
-sklearn.__version__
-
-
 # 必要なライブラリを読み込みます。
 
-# In[4]:
+# In[3]:
 
 
 import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -60,6 +52,14 @@ import seaborn as sns
 print("numpy version :", np.__version__)
 print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
+
+
+# In[4]:
+
+
+import sklearn
+
+sklearn.__version__
 
 
 # ### データの取得
@@ -142,11 +142,24 @@ print('係数 : ',lr.coef_)
 print('オフセット', lr.intercept_)
 
 
-# 以下の様な線形回帰の式が得られます。
+# となり、パラメタ$a_0,a_1,a_2$が得られます。結果として、以下の様な線形回帰の式が得られます。
 # 
 # $$
 # y = 5 + 2 * x_1 + x_2
 # $$
+# 
+# このパラメタを使って、新たにテストデータを作成し、平均二乗誤差を計算してみます。
+
+# In[8]:
+
+
+from sklearn.metrics import mean_squared_error
+
+Y_predict = lr.predict(X)
+print("MSE : {:.2f}".format(mean_squared_error(Y_predict, Y)))
+
+
+# となります。とても簡単ですね。sklearn、素晴らしいです。
 
 # ## まとめ
 # 線形回帰だけでも多くの事がわかります。また、データ分析の実務では、複雑なモデルより簡単なモデルの方が好かれますデータ分析によらないと思いますが･･･）。線形回帰で説明できるのなら、それで十分な気もしています。
