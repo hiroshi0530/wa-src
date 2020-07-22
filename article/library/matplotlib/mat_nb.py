@@ -92,11 +92,112 @@ plt.plot(x,y2, label="$y = 0.8 \\times \\cos x$")
 plt.legend()
 
 
+# ### グラフの線種や色を変更
+
+# In[6]:
+
+
+x = np.linspace(0,10,100)
+y1 = np.sin(x)
+y2 = 0.8 * np.cos(x)
+
+plt.grid()
+plt.title("multi function")
+plt.xlabel("$x$")
+plt.xlim(0,8)
+plt.ylim(-1.2,1.2)
+plt.plot(x, y1, "o", color="red", label="$y = \\sin x$")
+plt.plot(x, y2, "x", color="blue", label="$y = \\sin x$")
+plt.legend()
+
+
+# ## ヒストグラムを作成する
+# 
+# 正規分布から10000サンプルをヒストグラムで表示しています。
+# 密度分布を可視化することと同義です。
+
+# In[7]:
+
+
+x = np.random.randn(10000)
+
+plt.hist(x)
+print(np.random.rand())
+
+
+# binなどを設定する事ができます。この辺は数をこなせば自然と覚えてしまいます。
+
+# In[8]:
+
+
+x = np.random.randn(10000)
+plt.hist(x, bins=20,color="red")
+
+
 # ## 三次元のグラフを書く
-# それほど頻度が多いわけではないですが、3次元のグラフを書いてみます。データ分析は数百次元とか当たり前ですが、人間の感覚では3次元がやっとですね。3次元でも正直辛いです。。。
+# それほど頻度が多いわけではないですが、3次元のグラフを書いてみます。データ分析は数百次元とか当たり前ですが、人間の感覚で理解できる次元数は3次元がやっとですね。私は3次元でも正直辛いです。。。
+# 
+# mplot3dというモジュールを利用します。また、3次元のグラフに特有なのがmeshgridというnumpyの関数を利用します。
+# 
+# 通常、$ z = x + y$という平面を$xyz$空間にプロットするには、$x$と$y$の要素数は$N(x) \times N(y)$で決定されます。本来ならばこの分だけ配列を作成する必要がありますが、これを自動的に作成してくれるのがmeshgridになります。
+# 
+# 例を見てみます。
 
-# In[ ]:
+# In[9]:
 
 
+x = np.array([i for i in range(5)])
+y = np.array([i for i in range(5)])
+
+print('x :', x)
+print('y :', y)
+print()
+xx, yy = np.array(np.meshgrid(x, y))
+print('xx :', xx)
+print()
+print('yy :', yy)
 
 
+# $xx$が25個の座標の$x$座標です。同様に、$yy$が25個の座標の$y$座標になります。とても便利です。
+
+# In[10]:
+
+
+from mpl_toolkits.mplot3d import Axes3D
+
+# 2変数関数を適当に作成
+def get_y(x1,x2):
+  return x1 + 3 * x2 * x2 + 1
+
+x1 = np.linspace(0,10,20)
+x2 = np.linspace(0,10,20)
+
+X1, X2 = np.meshgrid(x1, x2)
+Y = get_y(X1, X2)
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+ax.set_xlabel("$x_1$")
+ax.set_ylabel("$x_2$")
+ax.set_zlabel("$f(x_1, x_2)$")
+
+ax.plot(np.ravel(X1), np.ravel(X2), np.ravel(Y), "o", color='blue')
+plt.show()
+
+
+# In[11]:
+
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111, projection='3d')
+
+ax1.set_xlabel("$x_1$")
+ax1.set_ylabel("$x_2$")
+ax1.set_zlabel("$f(x_1, x_2)$")
+
+ax1.scatter3D(np.ravel(X1), np.ravel(X2), np.ravel(Y))
+plt.show()
+
+
+# 3次元のプロットでは、pyplot(plt)を直接いじると言うよりは、`fig=plt.figure()`でfigureオブジェクトを作り、その中でグラフを作成します。

@@ -97,15 +97,56 @@ $$
 
 
 ## 実装
-
 では、scikit-learnでのロジスティック回帰の実装をしていきます。
+最初に適当なデータを作成します。簡単のため1次元の場合に限定します。
 
 
 ```python
+x = np.linspace(0,1,30)
+y = np.array(list(map(lambda x: 1 if x > 0.5 else 0,x)))
 
-
-
+plt.grid()
+plt.plot(x,y,"o")
+plt.show()
 ```
+
+
+![svg](lr_nb_files/lr_nb_7_0.svg)
+
+
+ちょっと荒いですが、このデータから得られるロジスティック回帰によって、データを予測してみます。
+
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+x = np.linspace(0,1,30)
+y = np.array(list(map(lambda x: 1 if x > 0.5 else 0,x)))
+
+# 現在のversionだとsolverを指定しないとwarningがはかれます。詳細は公式ページにありますが、デフォルトのソルバーはL1正規化をサポートしていない模様です。
+lr = LogisticRegression(solver='lbfgs', penalty='l2')
+
+x = x.reshape(30,-1)
+lr.fit(x,y)
+
+# 予測してみる
+for i in range(10):
+  print('x = {:.1f}, predit ='.format(i * 0.1),lr.predict([[i * 0.1]])[0])
+```
+
+    x = 0.0, predit = 0
+    x = 0.1, predit = 0
+    x = 0.2, predit = 0
+    x = 0.3, predit = 0
+    x = 0.4, predit = 0
+    x = 0.5, predit = 1
+    x = 0.6, predit = 1
+    x = 0.7, predit = 1
+    x = 0.8, predit = 1
+    x = 0.9, predit = 1
+
+
+となり、ちゃんと予測できています。何回か実行して$x=0.5$の時の値が多少ブレがある程度でしょう。
 
 ## ロジット関数
 
@@ -146,12 +187,12 @@ plt.plot(x,y)
 
 
 
-    [<matplotlib.lines.Line2D at 0x122673198>]
+    [<matplotlib.lines.Line2D at 0x1213b5dd8>]
 
 
 
 
-![svg](lr_nb_files/lr_nb_9_1.svg)
+![svg](lr_nb_files/lr_nb_12_1.svg)
 
 
 ## ロジスティック関数 (シグモイド関数)
@@ -178,10 +219,10 @@ plt.plot(x,y)
 
 
 
-    [<matplotlib.lines.Line2D at 0x126855d68>]
+    [<matplotlib.lines.Line2D at 0x11f01d080>]
 
 
 
 
-![svg](lr_nb_files/lr_nb_11_1.svg)
+![svg](lr_nb_files/lr_nb_14_1.svg)
 
