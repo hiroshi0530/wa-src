@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scikit-learn でロジスティック回帰
@@ -50,8 +50,8 @@ import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -62,25 +62,62 @@ print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
 
 
-# ロジスティック回帰は二値分類の問題に適用します。ある人物が目的の商品を購入するか否か、ある人物に投票するか否かなどの予想に利用します。
+# ## 概要
 # 
-# 例えば、ある商品を購入する確率を$p$として、説明変数を$x_1,x_2,x_3 \cdots$として、その対数
-
-# ## ロジット関数
+# ロジスティック回帰は二値分類の問題に適用します。ある人物が目的の商品を購入するか否か、ある人物に投票するか否かなどの予想に利用します。マーケティングなどの分野でもよく利用される回帰方法です。
 # 
-# このオッズという言葉は競馬でよく聞くオッズと同じなんでしょうか。競馬はやらないのでわかりませんね。誰か教えてください。とりあえず、ある事象が起こる確率が$p$であるとき、$$\frac{p}{1-p}$$をオッズと言うそうです。その対数を$$\log p - \log(1-p)$$を対数オッズと言います。
+# 例えば、ある商品を購入する確率を$p$として、説明変数を$x_1,x_2,x_3 \cdots$として、確率$p$の対数オッズに対して線形回帰の式を当てはめます。対数オッズの定義は後に説明します。
+# 
 # 
 # $$
 # a_0 x_0 + a_1 x_1 + a_2 x_2 \cdots a_n x_n = \log \frac{p}{1-p}
 # $$
+# 
 # これを$p$について解くと、
 # 
 # $$
 # \displaystyle p = \frac{1}{1 + \exp^{ -\sum_{i=0}^n a_i x_i}}
 # $$
 # 
+# となり、確率密度の式がロジスティック関数の形になっています。
+# 
+# 
+# ## 実装
+# 
+# では、scikit-learnでのロジスティック回帰の実装をしていきます。
 
-# In[6]:
+# In[ ]:
+
+
+
+
+
+# ## ロジット関数
+# 
+# このオッズという言葉は競馬でよく聞くオッズと同じなんでしょうか。競馬はやらないのでわかりませんね。誰か教えてください。とりあえず、ある事象が起こる確率が$p$であるとき、
+# 
+# $$
+# \frac{p}{1-p}
+# $$
+# 
+# をオッズと言うそうです。その対数を
+# 
+# $$
+# \log p - \log(1-p)
+# $$
+# 
+# を対数オッズと言います。
+# 
+# ### ロジット関数の形
+# 一般に
+# 
+# $$
+# y = \log \frac{x}{1-x} \\,\\,\\,\\,\\, (0 < x < 1)
+# $$
+# 
+# という関数の形をロジット関数と言うようです。scipyを用いてロジット関数の概要を見てみます。$x=0$と$x=1$で発散してしまいます。
+
+# In[5]:
 
 
 from scipy.special import logit
@@ -94,9 +131,15 @@ plt.plot(x,y)
 
 # ## ロジスティック関数 (シグモイド関数)
 # 
-# 一般に、$$ f(x)= \frac{1}{1+e^{-x}}$$をロジスティック関数と言います。シグモイド関数とも言います。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
+# 一般に、
+# 
+# $$
+# f(x)= \frac{1}{1+e^{-x}}
+# $$
+# 
+# をロジスティック関数と言います。シグモイド関数とも言います。ロジット関数の逆関数になっています。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
 
-# In[5]:
+# In[6]:
 
 
 from scipy.special import expit

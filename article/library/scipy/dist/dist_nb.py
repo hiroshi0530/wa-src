@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -310,6 +310,12 @@ plt.hist(x, bins=15)
 # 
 # #### 確率質量関数
 
+# In[ ]:
+
+
+
+
+
 # ### 多項分布
 # 二項分布の多変数版です。いかさまの可能性があるサイコロを複数回振って、それぞれの目が出る回数が従う確率分布になります。サイコロの面が$n$個あり、それぞれが一回の試行で出る確率が$p_1,p_2, \cdots , p_n$で、$N$回そのサイコロを振ったとき、それぞれの面が出る確率を$x_1,x_2, \cdots , x_n$とします。
 # 
@@ -501,7 +507,19 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 # 
 # #### 確率質量関数
 
+# In[ ]:
+
+
+
+
+
 # #### サンプリング
+
+# In[ ]:
+
+
+
+
 
 # ### ステューデントのt分布
 # 
@@ -523,4 +541,16 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 # 
 # #### 確率質量関数
 
+# In[ ]:
+
+
+
+
+
 # #### サンプリング
+
+# In[ ]:
+
+
+
+

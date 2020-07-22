@@ -386,6 +386,11 @@ $
 
 #### 確率質量関数
 
+
+```python
+
+```
+
 ### 多項分布
 二項分布の多変数版です。いかさまの可能性があるサイコロを複数回振って、それぞれの目が出る回数が従う確率分布になります。サイコロの面が$n$個あり、それぞれが一回の試行で出る確率が$p_1,p_2, \cdots , p_n$で、$N$回そのサイコロを振ったとき、それぞれの面が出る確率を$x_1,x_2, \cdots , x_n$とします。
 
@@ -512,7 +517,7 @@ plt.legend()
 
 
 
-![svg](dist_nb_files/dist_nb_29_1.svg)
+![svg](dist_nb_files/dist_nb_30_1.svg)
 
 
 #### サンプリング
@@ -543,7 +548,7 @@ plt.hist(beta.rvs(_alpha, _beta, size=100000))
 
 
 
-![svg](dist_nb_files/dist_nb_31_1.svg)
+![svg](dist_nb_files/dist_nb_32_1.svg)
 
 
 となり、上記の$\alpha=2, \beta=2$のベータ関数と形状が一致する事が分かります。
@@ -597,7 +602,7 @@ plt.legend()
 
 
 
-![svg](dist_nb_files/dist_nb_34_1.svg)
+![svg](dist_nb_files/dist_nb_35_1.svg)
 
 
 #### サンプリング
@@ -625,7 +630,7 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 
 
 
-![svg](dist_nb_files/dist_nb_36_1.svg)
+![svg](dist_nb_files/dist_nb_37_1.svg)
 
 
 ### カイ二乗分布
@@ -647,7 +652,17 @@ $
 
 #### 確率質量関数
 
+
+```python
+
+```
+
 #### サンプリング
+
+
+```python
+
+```
 
 ### ステューデントのt分布
 
@@ -669,4 +684,14 @@ $
 
 #### 確率質量関数
 
+
+```python
+
+```
+
 #### サンプリング
+
+
+```python
+
+```
