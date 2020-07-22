@@ -490,61 +490,83 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 
 # ### カイ二乗分布
 # 
+# 標準正規分布に従う確率変数の二乗和の従う分布だそうです。
+# 
+# $x_i ~ N(0,1)$であり、
+# 
+# $$ \displaystyle
+# Z = \sum_{i=1}^{k}x_i^2
+# $$
+# 
+# が従う分布という事になります。
+# 
 # #### 表式
-# $
+# 
+# $ \displaystyle
+# f(x|k) = \frac{x^{\frac{k}{2}-1}e^{-\frac{x}{2}}}{2^{\frac{k}{2}}\Gamma\left(\frac{k}{2}\right)} \cdots (x \gt 0)
 # $
 # 
 # #### 平均
 # $ \displaystyle
-# E\left[x \right] = 
+# E\left[x \right] =  k
 # $
 # 
 # #### 分散
 # $ \displaystyle
-# V\left[x \right] = 
+# V\left[x \right] = 2k
 # $ 
 # 
 # 
 # #### 確率質量関数
 
-# In[ ]:
+# In[9]:
 
 
+from scipy.stats import chi2
 
+chi2.pdf(1,3.3)
+
+get_ipython().run_line_magic('pinfo', 'chi2')
 
 
 # #### サンプリング
 
-# In[ ]:
+# In[7]:
 
 
 
+
+chi2.rvs(3,size=1000)
 
 
 # ### ステューデントのt分布
 # 
 # 
 # #### 表式
-# $
+# 
+# $ \displaystyle
+# \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\Gamma\left(\frac{\nu}{2}\right)}\left(1+\frac{x^2}{\nu}\right)^{-\left(\frac{\nu+1}{2}\right)}
 # $
 # 
 # #### 平均
 # $ \displaystyle
-# E\left[x \right] = 
+# E\left[x \right] = 0 \cdots (k > 1)
 # $
 # 
 # #### 分散
 # $ \displaystyle
-# V\left[x \right] = 
+# V\left[x \right] = \frac{k}{k-2} \cdots (k > 2)
 # $
 # 
 # 
 # #### 確率質量関数
 
-# In[ ]:
+# In[4]:
 
 
+from scipy.stats import t
 
+t.pdf(1,3)
 
 
 # #### サンプリング

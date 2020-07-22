@@ -26,7 +26,7 @@ scikit-learnを使えば手軽に線形回帰を実践できるので、備忘�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G95
+    BuildVersion:	18G2022
 
 
 
@@ -34,7 +34,7 @@ scikit-learnを使えば手軽に線形回帰を実践できるので、備忘�
 !python -V
 ```
 
-    Python 3.5.5 :: Anaconda, Inc.
+    Python 3.7.3
 
 
 必要なライブラリを読み込みます。
@@ -57,9 +57,9 @@ print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
 ```
 
-    numpy version : 1.18.1
-    matplotlib version : 2.2.2
-    sns version : 0.8.1
+    numpy version : 1.16.2
+    matplotlib version : 3.0.3
+    sns version : 0.9.0
 
 
 
@@ -72,7 +72,7 @@ sklearn.__version__
 
 
 
-    '0.19.1'
+    '0.20.3'
 
 
 
@@ -139,7 +139,7 @@ ax.plot(X1, X2, Y, "o", color="#ff0000", ms=4, mew=0.5)
 
 
 
-    [<mpl_toolkits.mplot3d.art3d.Line3D at 0x11d3a7278>]
+    [<mpl_toolkits.mplot3d.art3d.Line3D at 0x12689aac8>]
 
 
 
@@ -167,8 +167,8 @@ print('オフセット', lr.intercept_)
 
     (100, 2)
     (100,)
-    係数 :  [2.01164799 1.06268247]
-    オフセット 4.735778456031239
+    係数 :  [2.01485573 1.03137701]
+    オフセット 4.967149651408958
 
 
 となり、パラメタ$a_0,a_1,a_2$が得られます。結果として、以下の様な線形回帰の式が得られます。
@@ -187,7 +187,7 @@ Y_predict = lr.predict(X)
 print("MSE : {:.2f}".format(mean_squared_error(Y_predict, Y)))
 ```
 
-    MSE : 0.91
+    MSE : 0.81
 
 
 となります。とても簡単ですね。sklearn、素晴らしいです。
