@@ -83,14 +83,42 @@ print("sns version :",sns.__version__)
 # 
 # 
 # ## 実装
-# 
 # では、scikit-learnでのロジスティック回帰の実装をしていきます。
+# 最初に適当なデータを作成します。簡単のため1次元の場合に限定します。
 
-# In[ ]:
+# In[5]:
 
 
+x = np.linspace(0,1,30)
+y = np.array(list(map(lambda x: 1 if x > 0.5 else 0,x)))
+
+plt.grid()
+plt.plot(x,y,"o")
+plt.show()
 
 
+# ちょっと荒いですが、このデータから得られるロジスティック回帰によって、データを予測してみます。
+
+# In[6]:
+
+
+from sklearn.linear_model import LogisticRegression
+
+x = np.linspace(0,1,30)
+y = np.array(list(map(lambda x: 1 if x > 0.5 else 0,x)))
+
+# 現在のversionだとsolverを指定しないとwarningがはかれます。詳細は公式ページにありますが、デフォルトのソルバーはL1正規化をサポートしていない模様です。
+lr = LogisticRegression(solver='lbfgs', penalty='l2')
+
+x = x.reshape(30,-1)
+lr.fit(x,y)
+
+# 予測してみる
+for i in range(10):
+  print('x = {:.1f}, predit ='.format(i * 0.1),lr.predict([[i * 0.1]])[0])
+
+
+# となり、ちゃんと予測できています。何回か実行して$x=0.5$の時の値が多少ブレがある程度でしょう。
 
 # ## ロジット関数
 # 
@@ -117,7 +145,7 @@ print("sns version :",sns.__version__)
 # 
 # という関数の形をロジット関数と言うようです。scipyを用いてロジット関数の概要を見てみます。$x=0$と$x=1$で発散してしまいます。
 
-# In[5]:
+# In[7]:
 
 
 from scipy.special import logit
@@ -139,7 +167,7 @@ plt.plot(x,y)
 # 
 # をロジスティック関数と言います。シグモイド関数とも言います。ロジット関数の逆関数になっています。ロジスティック関数をグラフ化してみます。scipyにモジュールとしてあるようなので、それを使います。
 
-# In[6]:
+# In[8]:
 
 
 from scipy.special import expit
