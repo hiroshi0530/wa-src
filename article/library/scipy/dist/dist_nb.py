@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -276,7 +276,7 @@ plt.legend()
 # 
 # $n=100, p=0.3$のパラメタを持つ二項分布からサンプリングを行い、確率質量関数が正しいことを確認します。
 
-# In[19]:
+# In[9]:
 
 
 from scipy.stats import binom
@@ -309,12 +309,6 @@ plt.hist(x, bins=15)
 # 
 # 
 # #### 確率質量関数
-
-# In[ ]:
-
-
-
-
 
 # ### 多項分布
 # 二項分布の多変数版です。いかさまの可能性があるサイコロを複数回振って、それぞれの目が出る回数が従う確率分布になります。サイコロの面が$n$個あり、それぞれが一回の試行で出る確率が$p_1,p_2, \cdots , p_n$で、$N$回そのサイコロを振ったとき、それぞれの面が出る確率を$x_1,x_2, \cdots , x_n$とします。
@@ -503,7 +497,7 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 # #### 表式
 # 
 # $ \displaystyle
-# f(x|k) = \frac{x^{\frac{k}{2}-1}e^{-\frac{x}{2}}}{2^{\frac{k}{2}}\Gamma\left(\frac{k}{2}\right)} \cdots (x \gt 0)
+# f(x|k) = \frac{x^{\frac{k}{2}-1}e^{-\frac{x}{2}}}{2^{\frac{k}{2}}\Gamma\left(\frac{k}{2}\right)} \,\, (x \gt 0)
 # $
 # 
 # #### 平均
@@ -519,24 +513,25 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 # 
 # #### 確率質量関数
 
-# In[9]:
+# In[17]:
 
 
 from scipy.stats import chi2
 
 chi2.pdf(1,3.3)
 
-get_ipython().run_line_magic('pinfo', 'chi2')
+get_ipython().magic('pinfo chi2')
 
 
 # #### サンプリング
+# $\nu=3$の場合について、ヒストグラムを作成し、確率密度関数の様子を確認してみます。
 
-# In[7]:
+# In[22]:
 
 
-
-
-chi2.rvs(3,size=1000)
+plt.grid()
+plt.hist(chi2.rvs(3,size=1000),bins=12)
+plt.show()
 
 
 # ### ステューデントのt分布
@@ -545,7 +540,7 @@ chi2.rvs(3,size=1000)
 # #### 表式
 # 
 # $ \displaystyle
-# \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\Gamma\left(\frac{\nu}{2}\right)}\left(1+\frac{x^2}{\nu}\right)^{-\left(\frac{\nu+1}{2}\right)}
+# p(x | \nu) = \frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\nu\pi}\Gamma\left(\frac{\nu}{2}\right)}\left(1+\frac{x^2}{\nu}\right)^{-\left(\frac{\nu+1}{2}\right)}
 # $
 # 
 # #### 平均
@@ -561,7 +556,7 @@ chi2.rvs(3,size=1000)
 # 
 # #### 確率質量関数
 
-# In[4]:
+# In[19]:
 
 
 from scipy.stats import t
@@ -570,9 +565,3 @@ t.pdf(1,3)
 
 
 # #### サンプリング
-
-# In[ ]:
-
-
-
-
