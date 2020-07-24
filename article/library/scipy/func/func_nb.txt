@@ -1,0 +1,44 @@
+
+!sw_vers
+
+!python -V
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+
+from scipy.special import beta
+
+# \alpha = 2, \beta = 2
+print('beta(2,2) = {:.4f}'.format(beta(2,2)))
+
+# \alpha = 3, \beta = 4
+print('beta(3,4) = {:.4f}'.format(beta(3,4)))
+
+# \alpha = 5, \beta = 2
+print('beta(5,2) = {:.4f}'.format(beta(5,2)))
+
+from scipy.special import logit
+
+x = np.linspace(0,1,100)
+y = logit(x)
+
+plt.grid()
+plt.plot(x,y)
+
+from scipy.special import expit
+
+x = np.linspace(-8,8,100)
+y = expit(x)
+
+plt.grid()
+plt.plot(x,y)
+plt.show()
