@@ -484,9 +484,9 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 
 # ### カイ二乗分布
 # 
-# 標準正規分布に従う確率変数の二乗和の従う分布だそうです。
+# 標準正規分布に従う確率変数の二乗和の従う分布だそうです。正直あまり使う機会はないですが、区間推定やカイ二乗検定などに利用します。
 # 
-# $x_i ~ N(0,1)$であり、
+# $x_i \sim N(0,1)$であり、
 # 
 # $$ \displaystyle
 # Z = \sum_{i=1}^{k}x_i^2
@@ -497,7 +497,7 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 # #### 表式
 # 
 # $ \displaystyle
-# f(x|k) = \frac{x^{\frac{k}{2}-1}e^{-\frac{x}{2}}}{2^{\frac{k}{2}}\Gamma\left(\frac{k}{2}\right)} \,\, (x \gt 0)
+# f(x|k) = \frac{x^{\frac{k}{2}-1}e^{-\frac{x}{2}}}{2^{\frac{k}{2}}\Gamma\left(\frac{k}{2}\right)} (x \gt 0)
 # $
 # 
 # #### 平均
@@ -518,15 +518,20 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 
 from scipy.stats import chi2
 
-chi2.pdf(1,3.3)
+k = 3.0
 
-get_ipython().magic('pinfo chi2')
+x = np.linspace(0, 20 ,100)
+y = chi2.pdf(x, k)
+
+plt.grid()
+plt.plot(x, y)
+plt.show()
 
 
 # #### サンプリング
-# $\nu=3$の場合について、ヒストグラムを作成し、確率密度関数の様子を確認してみます。
+# $k=3$の場合について、ヒストグラムを作成し、確率密度関数の様子を確認してみます。
 
-# In[22]:
+# In[18]:
 
 
 plt.grid()
@@ -536,6 +541,7 @@ plt.show()
 
 # ### ステューデントのt分布
 # 
+# 単にt分布という事が多いようです。こちらもt検定などの検定に利用されます。サラリーマン時代、先輩にこの確率分布を紹介され、データ分析に利用したことを覚えています。得られるデータ数が少ない場合に適用可能で、製造業の工場などでも利用できると思います。
 # 
 # #### 表式
 # 
@@ -561,7 +567,35 @@ plt.show()
 
 from scipy.stats import t
 
-t.pdf(1,3)
+nu_list = [1,3,5]
+
+plt.grid()
+
+for nu in nu_list:
+
+  x = np.linspace(-5,5,100)
+  y = t.pdf(x,nu)
+  
+  plt.plot(x,y,label="$\\nu = {}$".format(nu))
+
+plt.title("t-distribution")
+plt.legend()
+plt.show()
 
 
 # #### サンプリング
+# 
+# $\nu = 3$の場合について、確率密度関数からサンプリングを行い、ヒストグラム表示してみます。
+
+# In[20]:
+
+
+from scipy.stats import t
+
+nu = 3
+
+plt.grid()
+plt.xlim(-10,10)
+plt.hist(t.rvs(nu, size=10000), bins=80)
+plt.show()
+

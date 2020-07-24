@@ -1,0 +1,173 @@
+
+!sw_vers
+
+!python -V
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+
+from scipy.stats import norm
+
+mu = 0
+sigma = 1
+
+X = np.arange(-5, 5, 0.1)
+Y = norm.pdf(X, mu, sigma)
+
+plt.xlabel('$x$')
+plt.ylabel('$P$')
+plt.grid()
+plt.plot(X, Y)
+
+from scipy.stats import norm
+
+mu = 0
+sigma = 1
+
+x = norm.rvs(mu, sigma, size=1000)
+plt.grid()
+plt.hist(x, bins=20)
+
+from scipy.stats import bernoulli
+
+mu=0.3
+
+print(bernoulli.pmf(0, mu))
+print(bernoulli.pmf(1, mu))
+
+from scipy.stats import bernoulli
+
+mu=0.3
+size=1000
+
+x = bernoulli.rvs(mu, size=size)
+plt.hist(x, bins=3)
+
+import numpy as np
+import scipy
+from scipy.stats import binom
+import matplotlib.pyplot as plt
+
+n = 100
+x = np.arange(n)
+
+# case.1
+p = 0.3
+y1 = binom.pmf(x,n,p)
+
+# case.2
+p = 0.5
+y2 = binom.pmf(x,n,p)
+
+# case.3
+p = 0.9
+y3 = binom.pmf(x,n,p)
+
+# fig, ax = plt.subplots(facecolor="w")
+plt.plot(x, y1, label="$p=0.3$")
+plt.plot(x, y2, label="$p=0.5$")
+plt.plot(x, y3, label="$p=0.9$")
+
+plt.xlabel('$k$')
+plt.ylabel('$B(n,p)$')
+plt.title('binomial distribution n={}'.format(n))
+plt.grid(True)
+
+plt.legend()
+
+from scipy.stats import binom
+
+n = 100
+p = 0.3
+
+x = binom.rvs(n,p,size=10000)
+
+plt.xlim(0, 60)
+plt.grid()
+plt.hist(x, bins=15)
+
+from scipy.stats import multinomial
+
+rv = multinomial(10,[0.1,0.2,0.25,0.15,0.2,0.1])
+print('確率 : ',str(rv.pmf([1,2,1,3,2,1]))[:8])
+
+multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=1)
+
+from collections import Counter
+
+array = multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=10000)
+array = map(str, array)
+
+print('出現する上位10個のデータ')
+for i in Counter(array).most_common()[:10]:
+  print(i)
+
+from scipy.stats import beta
+
+alpha_list = [2,3,4]
+beta_list = [2,2,3]
+
+for _alpha,_beta in zip(alpha_list, beta_list):
+  x = np.linspace(0,1,100)[1:-1]
+  y = beta.pdf(x, _alpha, _beta)
+  plt.plot(x,y,label="$\\alpha={}, \\beta={}$".format(_alpha,_beta))
+
+plt.xlabel("$x$")
+plt.ylabel("$p(x)$")
+plt.grid()
+plt.legend()
+
+from scipy.stats import beta
+
+_alpha = 2
+_beta = 2
+
+plt.grid()
+plt.hist(beta.rvs(_alpha, _beta, size=100000))
+
+from scipy.stats import gamma
+
+_alpha_list = [1.0, 2.0, 3.0, 9.0]
+_beta_list = [2.0, 2.5, 4.5, 5]
+
+for _alpha, _beta in zip(_alpha_list, _beta_list):
+  x = np.linspace(0,4,100)
+  y = gamma.pdf(x,_alpha,scale=1/_beta)
+  plt.plot(x,y,label="$\\alpha = {}, \\beta = {}$".format(_alpha, _beta))
+
+plt.grid()
+plt.legend()
+
+_alpha = 2.0
+_alpha = 2.5
+
+plt.grid()
+plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
+
+from scipy.stats import chi2
+
+k = 3.0
+
+x = np.linspace(0, 20 ,100)
+y = chi2.pdf(x, k)
+
+plt.grid()
+plt.plot(x, y)
+plt.show()
+
+plt.grid()
+plt.hist(chi2.rvs(3,size=1000),bins=12)
+plt.show()
+
+from scipy.stats import t
+
+t.pdf(1,3)

@@ -60,7 +60,7 @@ print('numpy version :', np.__version__)
 # 
 # sicpyでのベータ関数の値を取得する方法をメモしておきます。
 
-# In[13]:
+# In[4]:
 
 
 from scipy.special import beta
@@ -113,7 +113,7 @@ print('beta(5,2) = {:.4f}'.format(beta(5,2)))
 # $$
 # をロジット関数と言います。
 
-# In[4]:
+# In[5]:
 
 
 from scipy.special import logit
@@ -123,13 +123,20 @@ y = logit(x)
 
 plt.grid()
 plt.plot(x,y)
+plt.show()
 
 
-# ## ロジスティック関数 (シグモイド関数)
+# ## ロジスティック関数 
 # 
-# 一般に、$$ f(x)= \frac{1}{1+e^{-x}}$$をロジスティック関数と言います。ロジスティック関数も良く出てきます。
+# 一般に、$$ f(x)= \frac{a}{1+e^{-k(x-x_0)}}$$をロジスティック関数と言います。ここで$a = k = 1, x_0 = 0$をシグモイド関数と言います。S字カーブというやつですね。ロジスティック関数よりも、シグモイド関数（その多変数版であるも良く出てきます。
 
-# In[5]:
+# ## シグモイド関数
+# 
+# シグモイド関数は以下の通りです。$$ f(x)= \frac{1}{1+e^{-x}}$$
+# 
+# グラフは以下の通りです。綺麗なS字カーブになっています。
+
+# In[6]:
 
 
 from scipy.special import expit
@@ -139,4 +146,5 @@ y = expit(x)
 
 plt.grid()
 plt.plot(x,y)
+plt.show()
 
