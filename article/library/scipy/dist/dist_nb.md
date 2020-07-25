@@ -367,24 +367,39 @@ plt.hist(x, bins=15)
 ![svg](dist_nb_files/dist_nb_19_1.svg)
 
 
-### カテゴリ分布
-ベルヌーイ分布の多変数化になります。
-
+### マルチヌーイ分布（カテゴリ分布）
+ベルヌーイ分布の多変数化になります。ベルヌーイ分布がコインの裏表が出る確率分布を表現するのであれば、サイコロの面が出る確率分布を表現します。次に説明する多項分布の$N=1$の場合に相当します。
 
 #### 表式
 
+$ \displaystyle
+P\left(x_1, x_2, \cdots x_n | n,p_1,p_2 \cdots p_n \right) = p_1^{x_1}p_2^{x_2}\cdots p_n^{x_n}
+$
+
+ただし、$p_i$と$x_i$は $ \displaystyle \sum_i p_i = 1 , \sum_i x_i = 1 $を満たす。
+
 #### 平均
 $ \displaystyle
-E\left[x \right] = 
+E\left[x_i \right] = p_i 
 $
 
 #### 分散
 $ \displaystyle
-V\left[x \right] = 
+V\left[x_i \right] = p_i(1-p_i)
 $
 
-
 #### 確率質量関数
+
+scipyではマルチヌーイ分布専用の関数はないようなので、多項分布の$N=1$の場合を利用します。
+
+
+```python
+from scipy.stats import multinomial
+
+rv = multinomial(1,[0.1,0.2,0.25,0.15,0.2,0.1])
+print('確率 : ',str(rv.pmf([1,2,1,3,2,1]))[:8])
+
+```
 
 ### 多項分布
 二項分布の多変数版です。いかさまの可能性があるサイコロを複数回振って、それぞれの目が出る回数が従う確率分布になります。サイコロの面が$n$個あり、それぞれが一回の試行で出る確率が$p_1,p_2, \cdots , p_n$で、$N$回そのサイコロを振ったとき、それぞれの面が出る確率を$x_1,x_2, \cdots , x_n$とします。
@@ -512,7 +527,7 @@ plt.legend()
 
 
 
-![svg](dist_nb_files/dist_nb_29_1.svg)
+![svg](dist_nb_files/dist_nb_30_1.svg)
 
 
 #### サンプリング
@@ -543,7 +558,7 @@ plt.hist(beta.rvs(_alpha, _beta, size=100000))
 
 
 
-![svg](dist_nb_files/dist_nb_31_1.svg)
+![svg](dist_nb_files/dist_nb_32_1.svg)
 
 
 となり、上記の$\alpha=2, \beta=2$のベータ関数と形状が一致する事が分かります。
@@ -597,7 +612,7 @@ plt.legend()
 
 
 
-![svg](dist_nb_files/dist_nb_34_1.svg)
+![svg](dist_nb_files/dist_nb_35_1.svg)
 
 
 #### サンプリング
@@ -625,7 +640,7 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 
 
 
-![svg](dist_nb_files/dist_nb_36_1.svg)
+![svg](dist_nb_files/dist_nb_37_1.svg)
 
 
 ### カイ二乗分布
@@ -674,7 +689,7 @@ plt.show()
 ```
 
 
-![svg](dist_nb_files/dist_nb_38_0.svg)
+![svg](dist_nb_files/dist_nb_39_0.svg)
 
 
 #### サンプリング
@@ -688,7 +703,7 @@ plt.show()
 ```
 
 
-![svg](dist_nb_files/dist_nb_40_0.svg)
+![svg](dist_nb_files/dist_nb_41_0.svg)
 
 
 ### ステューデントのt分布
@@ -735,7 +750,7 @@ plt.show()
 ```
 
 
-![svg](dist_nb_files/dist_nb_42_0.svg)
+![svg](dist_nb_files/dist_nb_43_0.svg)
 
 
 #### サンプリング
@@ -755,5 +770,10 @@ plt.show()
 ```
 
 
-![svg](dist_nb_files/dist_nb_44_0.svg)
+![svg](dist_nb_files/dist_nb_45_0.svg)
 
+
+## 指数型分布族
+## カテゴリ分布（マルチヌーイ分布）
+
+## 多変数ガウス分布
