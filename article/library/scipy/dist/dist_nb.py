@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -615,14 +615,6 @@ plt.hist(t.rvs(nu, size=10000), bins=80)
 plt.show()
 
 
-# In[ ]:
-
-
-
-
-
-# ## 指数型分布族
-
 # ## 多変数ガウス分布
 # 
 # 統計モデリングでは相関関係のある多変数ガウス分布からサンプリングする事があります。
@@ -666,3 +658,14 @@ sample
 sample = multivariate_normal.rvs(a,b,1000)
 sample
 
+
+# ## 指数型分布族
+# 
+# データ分析やマーケティングの分析の際に出てくる確率分布は、正規分布、二項分布、ポアソン分布など多岐にわたりますが、そのほとんどは、指数型分布属といわれる形をしています。
+# 
+# 
+# #### 表式
+# 
+# $ \displaystyle
+# f(x|\theta) = h(x)\exp (\eta(\theta)\cdot T(x) - A(\theta))
+# $
