@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -52,7 +52,7 @@ print('numpy version :', np.__version__)
 # 
 # #### 表式
 # $
-# \displaystyle P\left( x \| \mu, \sigma \right) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( - \frac{x-\mu}{2 \sigma^2} \right)
+# \displaystyle P\left( x \| \mu, \sigma \right) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( - \frac{(x-\mu)^2}{2 \sigma^2} \right)
 # $
 # 
 # #### 平均
@@ -316,7 +316,7 @@ plt.hist(x, bins=15)
 # 
 # scipyではマルチヌーイ分布専用の関数はないようなので、多項分布の$N=1$の場合を利用します。
 
-# In[ ]:
+# In[10]:
 
 
 from scipy.stats import multinomial
@@ -348,7 +348,7 @@ print('確率 : ',str(rv.pmf([1,2,1,3,2,1]))[:8])
 # #### 確率質量関数
 # 6面体のサイコロで、1から6それぞれの目が出る確率は、$0.1,0.2,0.25,0.15,0.2,01$とします。そのサイコロを10回振って、それぞれの目が1回,2回,1回,3回,2回,1回出る確率を計算します。
 
-# In[10]:
+# In[11]:
 
 
 from scipy.stats import multinomial
@@ -360,7 +360,7 @@ print('確率 : ',str(rv.pmf([1,2,1,3,2,1]))[:8])
 # #### サンプリング
 # 上記のサイコロを10回投げて、それぞれの目が出る回数をサンプリングします。とりあえず一回だけサンプリングしてみます。
 
-# In[11]:
+# In[12]:
 
 
 multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=1)
@@ -368,7 +368,7 @@ multinomial.rvs(10, [0.1,0.2,0.25,0.15,0.2,0.1], size=1)
 
 # 10000回サンプリングしてみます。
 
-# In[12]:
+# In[13]:
 
 
 from collections import Counter
@@ -405,7 +405,7 @@ for i in Counter(array).most_common()[:10]:
 # 
 # #### 確率質量関数
 
-# In[13]:
+# In[14]:
 
 
 from scipy.stats import beta
@@ -428,7 +428,7 @@ plt.legend()
 # 
 # $\alpha=2, \beta=2$のベータ関数に対してサンプリングを行いヒストグラム表示して、確率密度関数が確かに正しいことを確認します。
 
-# In[14]:
+# In[15]:
 
 
 from scipy.stats import beta
@@ -467,7 +467,7 @@ plt.hist(beta.rvs(_alpha, _beta, size=100000))
 # 
 # #### 確率質量関数
 
-# In[15]:
+# In[16]:
 
 
 from scipy.stats import gamma
@@ -487,7 +487,7 @@ plt.legend()
 # #### サンプリング
 # ベータ分布と同様に、サンプリングを行い、ヒストグラムを作成し、上記の確率密度関数が正しいことを確認します。$\alpha=2.0, \beta=2.5$のヒストグラムを作成します。
 
-# In[16]:
+# In[17]:
 
 
 _alpha = 2.0
@@ -528,7 +528,7 @@ plt.hist(gamma.rvs(_alpha, _beta, size=10000), bins=10)
 # 
 # #### 確率質量関数
 
-# In[17]:
+# In[18]:
 
 
 from scipy.stats import chi2
@@ -546,7 +546,7 @@ plt.show()
 # #### サンプリング
 # $k=3$の場合について、ヒストグラムを作成し、確率密度関数の様子を確認してみます。
 
-# In[18]:
+# In[19]:
 
 
 plt.grid()
@@ -577,7 +577,7 @@ plt.show()
 # 
 # #### 確率質量関数
 
-# In[19]:
+# In[20]:
 
 
 from scipy.stats import t
@@ -602,7 +602,7 @@ plt.show()
 # 
 # $\nu = 3$の場合について、確率密度関数からサンプリングを行い、ヒストグラム表示してみます。
 
-# In[20]:
+# In[21]:
 
 
 from scipy.stats import t
@@ -615,7 +615,54 @@ plt.hist(t.rvs(nu, size=10000), bins=80)
 plt.show()
 
 
+# In[ ]:
+
+
+
+
+
 # ## 指数型分布族
-# ## カテゴリ分布（マルチヌーイ分布）
-# 
+
 # ## 多変数ガウス分布
+# 
+# 統計モデリングでは相関関係のある多変数ガウス分布からサンプリングする事があります。
+# 
+# $$ \displaystyle
+# P(x| \mu, \Sigma) = \frac{1}{\sqrt{(2 \pi)^{k} \det\Sigma}} \exp \left( - \frac{(x-\mu)^{T}\Sigma^{-1}(x-\mu)}{2} \right)
+# $$
+# 
+# 
+
+# In[40]:
+
+
+from scipy.stats import multivariate_normal
+
+mu = np.array([0,0])
+sigma = np.array([[1,0],[0,1]])
+
+x1 = np.linspace(-3,3,100)
+x2 = np.linspace(-3,3,100)
+
+X = np.meshgrid(x1,x2)
+
+print(X[0].shape)
+print(X[1].shape)
+print(np.ravel(X[0]))
+X = np.array([np.ravel(X[0]), np.ravel(X[1])])
+XX = []
+for i,j in zip(np.ravel(X[0]), np.ravel(X[1])):
+  XX.append([i,j])
+
+Z = multivariate_normal.pdf(XX, mu,sigma)
+
+sample
+
+
+# In[26]:
+
+
+
+sample = multivariate_normal.rvs(a,b,1000)
+sample
+
