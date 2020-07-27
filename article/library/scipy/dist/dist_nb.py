@@ -669,3 +669,99 @@ sample
 # $ \displaystyle
 # f(x|\theta) = h(x)\exp (\eta(\theta)\cdot T(x) - A(\theta))
 # $
+
+# In[25]:
+
+
+
+get_ipython().magic('matplotlib nbagg')
+import matplotlib.animation as animation
+
+fig = plt.figure()
+
+def plot(data):
+  plt.cla()                      # 現在描写されているグラフを消去
+  rand = np.random.randn(100)    # 100個の乱数を生成
+  im = plt.plot(rand)            # グラフを生成
+
+ani = animation.FuncAnimation(fig, plot, interval=100)
+plt.show()
+
+
+# In[26]:
+
+
+fig = plt.figure()
+
+ims = []
+
+for i in range(10):
+  rand = np.random.randn(100)     # 100個の乱数を生成
+  im = plt.plot(rand)             # 乱数をグラフにする
+  ims.append(im)                  # グラフを配列 ims に追加
+
+# 10枚のプロットを 100ms ごとに表示
+ani = animation.ArtistAnimation(fig, ims, interval=100)
+plt.show()
+
+
+# In[27]:
+
+
+get_ipython().magic('matplotlib nbagg')
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+fig = plt.figure()
+x = np.arange(0, 10, 0.1)
+
+ims = []
+for a in range(50):
+    y = np.sin(x - a)
+    im = plt.plot(x, y, "r")
+    ims.append(im)
+
+ani = animation.ArtistAnimation(fig, ims)
+plt.show()
+
+
+# In[28]:
+
+
+#show animations inline (jupyter notebook)
+get_ipython().magic('matplotlib nbagg')
+
+#import packages
+import matplotlib.pyplot as plt
+from matplotlib.animation import ArtistAnimation
+import numpy as np
+
+fig, ((ax1, ax2) ,(ax3, ax4))= plt.subplots(2,2,figsize=(10,10))
+
+fig.suptitle("animation test")
+ax1.set_title('random1')
+ax2.set_title('random2')
+ax3.set_title('index')
+ax4.set_title('text')
+ax4.axis('off')
+
+artists = []
+
+x = np.arange(10)
+for i in range(10):
+   y = np.random.rand(10)
+   im1 = ax1.plot(x, y, color='b')#artist list
+   im2 = ax2.plot(y, x, color='b')#artist list
+   im3 = [ax3.hlines(y=i,xmin = 0, xmax = 1, color='b')] #artist -> artist list using []
+   im4 = [ax4.text(0,0,str(i)+"\ntext1\ntext2\n$y=ax+b$\n$\sum_{k=1}^n k$\n$\pi$\na\na\n")] #artist -> artist list using []
+   artists.append(im1+im2+im3+im4) #sum of subplots images = fig image
+
+anim = ArtistAnimation(fig, artists, interval=1000)
+
+anim.save('anim.gif', writer='imagemagick', fps=4)
+anim.save('anim.mp4', writer='ffmpeg', fps=4)
+
+fig.show()      
+
