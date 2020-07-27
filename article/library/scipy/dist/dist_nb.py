@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -615,6 +615,12 @@ plt.hist(t.rvs(nu, size=10000), bins=80)
 plt.show()
 
 
+# In[ ]:
+
+
+
+
+
 # ## 多変数ガウス分布
 # 
 # 統計モデリングでは相関関係のある多変数ガウス分布からサンプリングする事があります。
@@ -674,7 +680,7 @@ sample
 
 
 
-get_ipython().magic('matplotlib nbagg')
+get_ipython().run_line_magic('matplotlib', 'nbagg')
 import matplotlib.animation as animation
 
 fig = plt.figure()
@@ -708,7 +714,7 @@ plt.show()
 # In[27]:
 
 
-get_ipython().magic('matplotlib nbagg')
+get_ipython().run_line_magic('matplotlib', 'nbagg')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -731,7 +737,7 @@ plt.show()
 
 
 #show animations inline (jupyter notebook)
-get_ipython().magic('matplotlib nbagg')
+get_ipython().run_line_magic('matplotlib', 'nbagg')
 
 #import packages
 import matplotlib.pyplot as plt
@@ -764,4 +770,10 @@ anim.save('anim.gif', writer='imagemagick', fps=4)
 anim.save('anim.mp4', writer='ffmpeg', fps=4)
 
 fig.show()      
+
+
+# In[ ]:
+
+
+
 
