@@ -19,7 +19,7 @@ matplotlibの使い方をメモしておきます。新しい使い方を覚え�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G2022
+    BuildVersion:	18G6020
 
 
 
@@ -82,7 +82,7 @@ plt.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x120d203c8>
+    <matplotlib.legend.Legend at 0x1175fc4a8>
 
 
 
@@ -112,7 +112,7 @@ plt.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x120e8e390>
+    <matplotlib.legend.Legend at 0x1177909b0>
 
 
 
@@ -141,7 +141,7 @@ plt.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x120f85748>
+    <matplotlib.legend.Legend at 0x117774898>
 
 
 
@@ -162,7 +162,7 @@ plt.hist(x)
 print(np.random.rand())
 ```
 
-    0.6133321064399502
+    0.3934044138335787
 
 
 
@@ -180,15 +180,14 @@ plt.hist(x, bins=20,color="red")
 
 
 
-    (array([1.000e+00, 5.000e+00, 1.200e+01, 2.300e+01, 8.100e+01, 2.310e+02,
-            3.870e+02, 7.010e+02, 1.113e+03, 1.408e+03, 1.533e+03, 1.400e+03,
-            1.224e+03, 8.810e+02, 4.920e+02, 2.910e+02, 1.370e+02, 5.300e+01,
-            1.800e+01, 9.000e+00]),
-     array([-4.12992138, -3.74406193, -3.35820248, -2.97234303, -2.58648358,
-            -2.20062413, -1.81476468, -1.42890523, -1.04304578, -0.65718634,
-            -0.27132689,  0.11453256,  0.50039201,  0.88625146,  1.27211091,
-             1.65797036,  2.04382981,  2.42968926,  2.81554871,  3.20140816,
-             3.58726761]),
+    (array([  14.,   23.,   63.,  155.,  267.,  480.,  677.,  981., 1277.,
+            1287., 1249., 1162.,  912.,  645.,  421.,  222.,   92.,   42.,
+              29.,    2.]),
+     array([-3.30855493, -2.971971  , -2.63538708, -2.29880315, -1.96221922,
+            -1.62563529, -1.28905136, -0.95246744, -0.61588351, -0.27929958,
+             0.05728435,  0.39386828,  0.73045221,  1.06703613,  1.40362006,
+             1.74020399,  2.07678792,  2.41337185,  2.74995577,  3.0865397 ,
+             3.42312363]),
      <a list of 20 Patch objects>)
 
 
@@ -285,3 +284,38 @@ plt.show()
 
 
 3次元のプロットでは、pyplot(plt)を直接いじると言うよりは、`fig=plt.figure()`でfigureオブジェクトを作り、その中でグラフを作成します。
+
+`plot_surface`を利用して、表面にその値に応じた色をつけることが出来ます。
+多変数ガウス分布をプロットしてみます。
+
+少々負の相関関係が強いガウス分布の確率密度を取得してみます。
+
+
+```python
+from scipy.stats import multivariate_normal
+
+mu = np.array([0,0])
+sigma = np.array([[1,-0.8],[-0.8,1]])
+
+x1 = np.linspace(-3,3,100)
+x2 = np.linspace(-3,3,100)
+
+X = np.meshgrid(x1,x2)
+
+X1, X2 = np.meshgrid(x1, x2)
+X = np.c_[np.ravel(X1), np.ravel(X2)]
+Z = multivariate_normal.pdf(X, mu,sigma).reshape(100, -1)
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X1, X2, Z, cmap='bwr', linewidth=0)
+fig.show()
+```
+
+    /Users/hiroshi/anaconda3/lib/python3.7/site-packages/matplotlib/figure.py:445: UserWarning: Matplotlib is currently using module://ipykernel.pylab.backend_inline, which is a non-GUI backend, so cannot show the figure.
+      % get_backend())
+
+
+
+![svg](mat_nb_files/mat_nb_22_1.svg)
+

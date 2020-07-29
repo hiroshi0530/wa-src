@@ -623,7 +623,25 @@ plt.show()
 # P(x| \mu, \Sigma) = \frac{1}{\sqrt{(2 \pi)^{k} \det\Sigma}} \exp \left( - \frac{(x-\mu)^{T}\Sigma^{-1}(x-\mu)}{2} \right)
 # $$
 # 
+# $\Sigma$は共分散行列、$\mu$はそれぞれの確率変数の平均です。2次元以上の場合はベクトルになります。
 # 
+# $\Sigma$を操作することで、変数間の相関を設定すること出来ます。
+# 
+# $$
+#   \Sigma = \left(
+#     \begin{array}{cc}
+#       \sigma_{x_1}^2 & \sigma_{x_1x_2} \\\\
+#       \sigma_{x_1x_2} & \sigma_{x_2}^2
+#     \end{array}
+#   \right)
+# $$
+# 
+# 共分散行列は半正定値対称行列の条件を満たし、すべての固有値は非負などと言った便利な性質があります。数値計算では良く出てくる性質の行列です。
+# 
+# ### 完全非相関のプロット
+# 
+# $\sigma_{x_1x_2}=0$の場合は二つの確率変数に相関関係はありません。
+# わかりやすいように、z軸から見たグラフを示します。
 
 # In[22]:
 
@@ -638,53 +656,87 @@ x2 = np.linspace(-3,3,100)
 
 X = np.meshgrid(x1,x2)
 
-print(X[0].shape)
-print(X[1].shape)
-print(np.ravel(X[0]))
-X = np.array([np.ravel(X[0]), np.ravel(X[1])])
-XX = []
-for i,j in zip(np.ravel(X[0]), np.ravel(X[1])):
-  XX.append([i,j])
+X1, X2 = np.meshgrid(x1, x2)
+X = np.c_[np.ravel(X1), np.ravel(X2)]
+Z = multivariate_normal.pdf(X, mu,sigma).reshape(100, -1)
 
-Z = multivariate_normal.pdf(XX, mu,sigma)
+from mpl_toolkits.mplot3d import Axes3D
 
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=-90, azim=0)
+surf = ax.plot_surface(X1, X2, Z, cmap='bwr', linewidth=0)
+fig.show()
+
+
+# ### 正の相関を持つガウス分布
+# 
+# $\sigma_{x_1x_2} = 0.8$の正の相関を持つ二元ガウス分布のグラフです。
 
 # In[23]:
 
 
-sample = multivariate_normal.rvs(mu, sigma, 1000)
-sample
+from scipy.stats import multivariate_normal
+
+mu = np.array([0,0])
+sigma = np.array([[1,0.8],[0.8,1]])
+
+x1 = np.linspace(-3,3,100)
+x2 = np.linspace(-3,3,100)
+
+X = np.meshgrid(x1,x2)
+
+X1, X2 = np.meshgrid(x1, x2)
+X = np.c_[np.ravel(X1), np.ravel(X2)]
+Z = multivariate_normal.pdf(X, mu,sigma).reshape(100, -1)
+
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=-90, azim=0)
+surf = ax.plot_surface(X1, X2, Z, cmap='bwr', linewidth=0)
+fig.show()
+
+
+# ### 負の相関を持つガウス分布
+# 
+# $\sigma_{x_1x_2} = -0.8$の負の相関を持つ二元ガウス分布のグラフです。
+
+# In[24]:
+
+
+from scipy.stats import multivariate_normal
+
+mu = np.array([0,0])
+sigma = np.array([[1,-0.8],[-0.8,1]])
+
+x1 = np.linspace(-3,3,100)
+x2 = np.linspace(-3,3,100)
+
+X = np.meshgrid(x1,x2)
+
+X1, X2 = np.meshgrid(x1, x2)
+X = np.c_[np.ravel(X1), np.ravel(X2)]
+Z = multivariate_normal.pdf(X, mu,sigma).reshape(100, -1)
+
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.view_init(elev=-90, azim=0)
+surf = ax.plot_surface(X1, X2, Z, cmap='bwr', linewidth=0)
+fig.show()
 
 
 # ## 指数型分布族
 # 
-# データ分析やマーケティングの分析の際に出てくる確率分布は、正規分布、二項分布、ポアソン分布など多岐にわたりますが、そのほとんどは、指数型分布属といわれる形をしています。
-# 
+# データ分析やマーケティングの分析の際に出てくる上記で示した確率分布は、正規分布、二項分布、ポアソン分布など多岐にわたりますが、そのほとんどは、指数型分布族といわれる形をしています。
 # 
 # #### 表式
 # 
 # $ \displaystyle
 # f(x|\theta) = h(x)\exp (\eta(\theta)\cdot T(x) - A(\theta))
 # $
-
-# In[25]:
-
-
-get_ipython().run_line_magic('matplotlib', 'nbagg')
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
-fig = plt.figure()
-x = np.arange(0, 10, 0.1)
-
-ims = []
-for a in range(50):
-  y = np.sin(x - a)
-  im = plt.plot(x, y, "r")
-  ims.append(im)
-
-ani = animation.ArtistAnimation(fig, ims)
-plt.show()
-
+# 
+# この形を持つ分布関数は共益事前分布を持つなどという重要な性質を持ちます。詳細は機会が来たときに書こうと思います。

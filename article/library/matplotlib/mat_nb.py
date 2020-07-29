@@ -201,3 +201,31 @@ plt.show()
 
 
 # 3次元のプロットでは、pyplot(plt)を直接いじると言うよりは、`fig=plt.figure()`でfigureオブジェクトを作り、その中でグラフを作成します。
+
+# `plot_surface`を利用して、表面にその値に応じた色をつけることが出来ます。
+# 多変数ガウス分布をプロットしてみます。
+# 
+# 少々負の相関関係が強いガウス分布の確率密度を取得してみます。
+
+# In[12]:
+
+
+from scipy.stats import multivariate_normal
+
+mu = np.array([0,0])
+sigma = np.array([[1,-0.8],[-0.8,1]])
+
+x1 = np.linspace(-3,3,100)
+x2 = np.linspace(-3,3,100)
+
+X = np.meshgrid(x1,x2)
+
+X1, X2 = np.meshgrid(x1, x2)
+X = np.c_[np.ravel(X1), np.ravel(X2)]
+Z = multivariate_normal.pdf(X, mu,sigma).reshape(100, -1)
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X1, X2, Z, cmap='bwr', linewidth=0)
+fig.show()
+
