@@ -113,7 +113,7 @@ print(np.convolve(a,b, mode='valid'))
 # $$
 # 
 
-# In[168]:
+# In[9]:
 
 
 a = np.random.randint(10,size=10)
@@ -128,7 +128,7 @@ print('2次微分 : ', np.diff(a, 2))
 # s_a[x] = \sum_{i=0}^{x}a[x]
 # $$
 
-# In[173]:
+# In[10]:
 
 
 a = np.random.randint(10,size=10)
@@ -159,7 +159,7 @@ print('積分 : ', np.cumsum(a))
 # ```
 # と表記し、$c=10$に対応します。
 
-# In[9]:
+# In[11]:
 
 
 a = [i for i in range(-2,3)]
@@ -181,7 +181,7 @@ print(np.heaviside(a, 10))
 # このように定義することで、$(x,y) = (0,2), (1,100)$を結ぶ直線の$x=0.5$の値と、$(x,y) = (1,100),(2,50)$を結ぶ直線の$x=1.8$の値を求める事ができます。以下の様にグラフに書くとわかりやすいかと思います。
 # 
 
-# In[10]:
+# In[12]:
 
 
 import matplotlib.pyplot as plt
@@ -207,7 +207,7 @@ plt.scatter(x1,y1,marker='^',c='red')
 # 
 # サイズが12の一次元配列を3x4の二次元配列に変換します。
 
-# In[26]:
+# In[13]:
 
 
 a = np.arange(12)
@@ -220,7 +220,7 @@ print('after shape  : ',b.shape)
 # ### np.tile(a,(N,M,･･･)
 # aをタイル上に配置します。例を見た方がわかりやすいと思います。
 
-# In[163]:
+# In[14]:
 
 
 a = np.arange(5)
@@ -231,7 +231,7 @@ np.tile(a,(2,1))
 # ### ndarray.flatten()
 # 二次以上の配列を一次元の配列に変換します。copyを作成し、一次元に平坦化し、そのオブジェクトを返します。
 
-# In[128]:
+# In[15]:
 
 
 a = np.arange(12).reshape(3,4)
@@ -244,7 +244,7 @@ print('b : ',b)
 # ### ndarray.ravel()
 # 二次以上の配列を一次元の配列に変換します。copyを作成せず、一次元に平坦化します。一般的にflattenよりハードウェアに対する負荷が少ないのでこちらを利用する事が推奨されています。
 
-# In[129]:
+# In[16]:
 
 
 a = np.arange(12).reshape(3,4)
@@ -254,7 +254,7 @@ print('a : ',a)
 print('b : ',b)
 
 
-# In[55]:
+# In[17]:
 
 
 a = np.array([1,2,3])
@@ -286,7 +286,7 @@ print(id(a[:]))
 # 
 # また、ndarray型にはbaseというメソッドがありますが、これはNoneとなっています。baseについて後述します。
 
-# In[148]:
+# In[18]:
 
 
 import sys
@@ -306,7 +306,7 @@ print('a base = ', a.base)
 print('b base = ', b.base)
 
 
-# In[156]:
+# In[19]:
 
 
 import sys
@@ -331,7 +331,7 @@ print('b base = ', b.base)
 # 
 # また、サイズも96バイトと、かなり小さいです。dtypeはint64なので、スライスされた値がそのまま格納されているのなら、どんなに少なくても8バイトx20=160バイトは欲しいのですが、それ以下になっています。よって、aのメモリアドレスが格納されていると考えて良いかと思います。
 
-# In[154]:
+# In[20]:
 
 
 import sys
@@ -353,7 +353,7 @@ print('b base = ', b.base)
 
 # reshapeについてもやってみます。
 
-# In[155]:
+# In[21]:
 
 
 import sys
@@ -383,7 +383,7 @@ print('b base = ', b.base)
 # 
 # この辺は、やや低レベルレイヤーの話ですが、ちゃんと理解しているのとしていないとでは、技術者として大きな差となります。
 
-# In[131]:
+# In[22]:
 
 
 import sys
@@ -421,7 +421,7 @@ for i in [0,1]:
 # ### np.hstack
 # ndarray型の連結です。水平(horizontal, axis=1)方向に連結します。割とよく使います。
 
-# In[12]:
+# In[23]:
 
 
 a = np.array([1,2,3])
@@ -435,7 +435,7 @@ print('hstack : ',np.hstack((a,b)))
 # 結合したい方向の要素サイズが合っていないとエラーが生じます。例えば、
 # `shape=(1,2)`と`shape=(2,1)`はエラーが生じます。
 
-# In[13]:
+# In[24]:
 
 
 a = np.array([[1,2]])
@@ -451,7 +451,7 @@ except Exception as e:
 # ### np.vstack
 # ndarray型の連結です。垂直(vertical, axis=0)方向に連結します。こちらもかなりの頻度で利用します。また、結合したい方向にサイズが合っていないとエラーになります。
 
-# In[14]:
+# In[25]:
 
 
 a = np.array([1,2,3])
@@ -462,30 +462,47 @@ print('b      : ',b)
 print('hstack : ',np.vstack((a,b)))
 
 
+# ### np.r_, np.c_
+# 
+# こちらも配列の結合です。vstackやhstackより簡単で、私はこちらの方をよく利用します。
+# 
+# 特にc_の方は1次元の二つの配列から、それぞれの要素を持つ2次元の配列を作れるので、重宝します。たまに忘れますが･･･
+
+# In[26]:
+
+
+x = [i for i in range(5)]
+y = [i for i in range(5,10)]
+
+print('np.c_ :',np.c_[x,y])
+print()
+print('np.r_ :',np.r_[x,y])
+
+
 # ## 連番の作成
 
 # ### np.arange([start, ]stop, [step, ]dtype=None)
 # 連続する整数や等差数列を作成します。引数の考え方はpythonのrange()と同じです。引数の詳細は[numpy.arange](https://docs.scipy.org/doc/numpy/reference/generated/numpy.arange.html)を参照してください。
 
-# In[15]:
+# In[27]:
 
 
 np.arange(10)
 
 
-# In[16]:
+# In[28]:
 
 
 np.arange(4,12)
 
 
-# In[17]:
+# In[29]:
 
 
 np.arange(3,12,2)
 
 
-# In[18]:
+# In[30]:
 
 
 np.arange(1.5,4.5,0.5)
@@ -506,19 +523,19 @@ np.arange(1.5,4.5,0.5)
 # 
 # 詳細は[numpy.linspace](https://docs.scipy.org/doc/numpy/reference/generated/numpy.linspace.html)を参照してください。
 
-# In[19]:
+# In[31]:
 
 
 np.linspace(0,1,3)
 
 
-# In[20]:
+# In[32]:
 
 
 np.linspace(0,1,3,endpoint=False)
 
 
-# In[21]:
+# In[33]:
 
 
 np.linspace(0,-11,20)
@@ -526,7 +543,7 @@ np.linspace(0,-11,20)
 
 # この関数を使うと、グラフなどを簡単に描画できます。
 
-# In[22]:
+# In[34]:
 
 
 x = np.linspace(- np.pi, np.pi, 100)
