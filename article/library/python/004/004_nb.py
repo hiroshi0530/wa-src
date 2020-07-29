@@ -33,8 +33,6 @@ get_ipython().system('python -V')
 # 
 # 正規表現は通常、解析したい文字列と解析の元となる正規表現のパターンの二つの文字列を必要とします。
 # 
-# 元となる正規表現のパターンにはrをつけると、バックスラッシュが必要な文字もそのまま表現できるので、デフォルトでつけておいた方が良いようです。
-# 
 # 読み込みは以下の通りです。
 
 # In[3]:
@@ -79,24 +77,26 @@ if ret:
   print('findall の結果 : ', ret)
 
 
+# 元となる正規表現のパターンにはrをつけると、バックスラッシュが必要な文字もそのまま表現できるので、デフォルトでつけておいた方が良いようです。
+
 # ## 文字列の検索
 # 
 # 検索関数は4つの方法があります。私個人としてはfindallを利用するのが最も多いです。
 # 
 # - re.match : ターゲットの文字列の先頭が正規表現とマッチするか
-# - re;.search : ターゲットの文字列が正規表現とマッチするか
+# - re;.search : ターゲットの文字列が正規表現とマッチするか(先頭以外もＯＫ)
 # - re.findall : ターゲットの文字列で、正規表現とマッチする部分をリスト化して返す 
 # - re.finditer :ターゲットの文字列で、正規表現とマッチする部分をイテレータとして返す
 # 
 # ### re.match
 
-# In[6]:
+# In[8]:
 
 
 import re
 
-pat = r'aaat(.*)tb([a-z]*)b'
-target = 'aaatestbbbcccbbbbb'
+pat = r'[a-z_]+'
+target = 'this_is_1_apple.'
 
 result_match = re.match(pat, target)
 
@@ -117,11 +117,11 @@ else:
 
 # ### re.search
 
-# In[7]:
+# In[9]:
 
 
-pat = r'aaat(.*)tb([a-z]*)b'
-target = 'aaatestbbbcccbbbbb'
+pat = r'[0-9]+'
+target = 'this_is_1_apple.'
 
 result_search = re.search(pat, target)
 
@@ -140,10 +140,13 @@ else:
   print('search None')
 
 
-# In[8]:
+# In[14]:
 
 
-result_search = re.search('(abc(...)*def)', 'sssabcsabcssdefsssdefsssssssssssssssssssdefs')
+pat = r'(abc(...)*def)'
+target = 'sssabcsabcssdefsssdefsssssssssssssssssssdefs'
+
+result_search = re.search(pat, target)
 
 print("### 文字列 ###")
 print('pat    : ', pat)
@@ -152,10 +155,11 @@ print()
 
 print('### search ###')
 if result_search:
-  print('group :', result_search.group())
-  print('span  :', result_search.span())
-  print('start :', result_search.start())
-  print('end   :', result_search.end())
+  print('group  :', result_search.group())
+  print('span   :', result_search.span())
+  print('start  :', result_search.start())
+  print('end    :', result_search.end())
+  print('groups :', result_search.groups())
 else:
   print('search None')
 
@@ -265,10 +269,3 @@ obj = """080-1234-5678
 
 re.sub(pat,'^0X0-YYYY-ZZZZ', obj, flags=re.MULTILINE)
 
-
-# ### re.subn()
-# 
-# 準備中
-
-# ### re.split()
-# 正規表現で文字列を分割します。
