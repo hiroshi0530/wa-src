@@ -889,12 +889,6 @@ df.describe()
 
 
 
-
-```python
-
-
-```
-
 ## インデックスをdatetime型に変更
 
 インデックスをDateに変更し、上書きします。
@@ -1183,12 +1177,10 @@ df.sort_index(ascending=True).head()
   </thead>
   <tbody>
     <tr>
-      <th>9/9/2014</th>
-      <td>171</td>
+      <th>1/2/2015</th>
+      <td>286</td>
       <td>NaN</td>
-      <td>2407.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>8157.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1196,6 +1188,28 @@ df.sort_index(ascending=True).head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>3496.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1/3/2015</th>
+      <td>287</td>
+      <td>2769.0</td>
+      <td>8166.0</td>
+      <td>9722.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1767.0</td>
+      <td>3496.0</td>
+      <td>2915.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1203,82 +1217,62 @@ df.sort_index(ascending=True).head()
       <td>NaN</td>
     </tr>
     <tr>
-      <th>9/7/2014</th>
-      <td>169</td>
-      <td>861.0</td>
-      <td>2081.0</td>
-      <td>1424.0</td>
-      <td>21.0</td>
-      <td>3.0</td>
+      <th>1/4/2015</th>
+      <td>288</td>
+      <td>2775.0</td>
+      <td>NaN</td>
+      <td>9780.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>557.0</td>
-      <td>1137.0</td>
-      <td>524.0</td>
-      <td>8.0</td>
-      <td>0.0</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>1781.0</td>
       <td>NaN</td>
-    </tr>
-    <tr>
-      <th>9/5/2014</th>
-      <td>167</td>
-      <td>812.0</td>
-      <td>1871.0</td>
-      <td>1261.0</td>
-      <td>22.0</td>
-      <td>1.0</td>
+      <td>2943.0</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>517.0</td>
-      <td>1089.0</td>
-      <td>491.0</td>
-      <td>8.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
     </tr>
     <tr>
-      <th>9/28/2014</th>
-      <td>190</td>
-      <td>1157.0</td>
-      <td>3696.0</td>
-      <td>2304.0</td>
+      <th>1/5/2015</th>
+      <td>289</td>
+      <td>2776.0</td>
+      <td>NaN</td>
+      <td>10030.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1786.0</td>
+      <td>NaN</td>
+      <td>2977.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>10/1/2014</th>
+      <td>193</td>
+      <td>1199.0</td>
+      <td>3834.0</td>
+      <td>2437.0</td>
       <td>20.0</td>
       <td>1.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>710.0</td>
-      <td>1998.0</td>
-      <td>622.0</td>
-      <td>8.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>9/23/2014</th>
-      <td>185</td>
-      <td>1074.0</td>
-      <td>3458.0</td>
-      <td>2021.0</td>
-      <td>20.0</td>
       <td>1.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>648.0</td>
-      <td>1830.0</td>
-      <td>605.0</td>
+      <td>739.0</td>
+      <td>2069.0</td>
+      <td>623.0</td>
       <td>8.0</td>
       <td>0.0</td>
-      <td>NaN</td>
+      <td>0.0</td>
       <td>NaN</td>
       <td>NaN</td>
     </tr>
@@ -2322,6 +2316,818 @@ df['2014-12'].sort_index(ascending=True)
 
 
 
+さらに、平均や合計値などの統計値を、年や月単位で簡単に取得することができます。
+
+
+```python
+df.resample('Y').mean()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Day</th>
+      <th>Cases_Guinea</th>
+      <th>Cases_Liberia</th>
+      <th>Cases_SierraLeone</th>
+      <th>Cases_Nigeria</th>
+      <th>Cases_Senegal</th>
+      <th>Cases_UnitedStates</th>
+      <th>Cases_Spain</th>
+      <th>Cases_Mali</th>
+      <th>Deaths_Guinea</th>
+      <th>Deaths_Liberia</th>
+      <th>Deaths_SierraLeone</th>
+      <th>Deaths_Nigeria</th>
+      <th>Deaths_Senegal</th>
+      <th>Deaths_UnitedStates</th>
+      <th>Deaths_Spain</th>
+      <th>Deaths_Mali</th>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-12-31</th>
+      <td>139.940678</td>
+      <td>848.988889</td>
+      <td>2191.481481</td>
+      <td>2162.488095</td>
+      <td>16.736842</td>
+      <td>1.08</td>
+      <td>3.277778</td>
+      <td>1.0</td>
+      <td>3.5</td>
+      <td>522.292135</td>
+      <td>1040.582278</td>
+      <td>613.297619</td>
+      <td>6.131579</td>
+      <td>0.0</td>
+      <td>0.833333</td>
+      <td>0.1875</td>
+      <td>3.166667</td>
+    </tr>
+    <tr>
+      <th>2015-12-31</th>
+      <td>287.500000</td>
+      <td>2773.333333</td>
+      <td>8161.500000</td>
+      <td>9844.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1778.000000</td>
+      <td>3496.000000</td>
+      <td>2945.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df.resample('M').mean()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Day</th>
+      <th>Cases_Guinea</th>
+      <th>Cases_Liberia</th>
+      <th>Cases_SierraLeone</th>
+      <th>Cases_Nigeria</th>
+      <th>Cases_Senegal</th>
+      <th>Cases_UnitedStates</th>
+      <th>Cases_Spain</th>
+      <th>Cases_Mali</th>
+      <th>Deaths_Guinea</th>
+      <th>Deaths_Liberia</th>
+      <th>Deaths_SierraLeone</th>
+      <th>Deaths_Nigeria</th>
+      <th>Deaths_Senegal</th>
+      <th>Deaths_UnitedStates</th>
+      <th>Deaths_Spain</th>
+      <th>Deaths_Mali</th>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-03-31</th>
+      <td>4.500000</td>
+      <td>94.500000</td>
+      <td>6.500000</td>
+      <td>3.333333</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>62.000000</td>
+      <td>3.750000</td>
+      <td>3.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-04-30</th>
+      <td>24.333333</td>
+      <td>177.818182</td>
+      <td>24.555556</td>
+      <td>2.200000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>113.636364</td>
+      <td>9.625000</td>
+      <td>1.111111</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-05-31</th>
+      <td>51.888889</td>
+      <td>248.777778</td>
+      <td>12.555556</td>
+      <td>7.333333</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>166.666667</td>
+      <td>11.111111</td>
+      <td>1.222222</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-06-30</th>
+      <td>84.636364</td>
+      <td>373.428571</td>
+      <td>35.500000</td>
+      <td>125.571429</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>250.428571</td>
+      <td>28.000000</td>
+      <td>29.375000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-07-31</th>
+      <td>115.700000</td>
+      <td>423.000000</td>
+      <td>212.300000</td>
+      <td>420.500000</td>
+      <td>1.333333</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>316.300000</td>
+      <td>121.300000</td>
+      <td>189.500000</td>
+      <td>0.666667</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-08-31</th>
+      <td>145.090909</td>
+      <td>559.818182</td>
+      <td>868.818182</td>
+      <td>844.000000</td>
+      <td>13.363636</td>
+      <td>1.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>394.363636</td>
+      <td>468.454545</td>
+      <td>353.000000</td>
+      <td>3.545455</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-09-30</th>
+      <td>177.500000</td>
+      <td>967.888889</td>
+      <td>2815.625000</td>
+      <td>1726.000000</td>
+      <td>20.714286</td>
+      <td>1.285714</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>607.000000</td>
+      <td>1508.000000</td>
+      <td>565.777778</td>
+      <td>8.000000</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-10-31</th>
+      <td>207.470588</td>
+      <td>1500.444444</td>
+      <td>4758.750000</td>
+      <td>3668.111111</td>
+      <td>20.000000</td>
+      <td>1.000000</td>
+      <td>2.555556</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>870.555556</td>
+      <td>2419.000000</td>
+      <td>1151.666667</td>
+      <td>8.000000</td>
+      <td>0.0</td>
+      <td>0.666667</td>
+      <td>0.428571</td>
+      <td>1.000</td>
+    </tr>
+    <tr>
+      <th>2014-11-30</th>
+      <td>237.214286</td>
+      <td>1950.500000</td>
+      <td>7039.000000</td>
+      <td>5843.625000</td>
+      <td>20.000000</td>
+      <td>1.000000</td>
+      <td>4.000000</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>1174.500000</td>
+      <td>2928.857143</td>
+      <td>1256.750000</td>
+      <td>8.000000</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>3.625</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>271.181818</td>
+      <td>2579.625000</td>
+      <td>7902.571429</td>
+      <td>8985.875000</td>
+      <td>20.000000</td>
+      <td>1.000000</td>
+      <td>4.000000</td>
+      <td>1.0</td>
+      <td>7.0</td>
+      <td>1612.857143</td>
+      <td>3362.000000</td>
+      <td>2495.375000</td>
+      <td>8.000000</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>0.000000</td>
+      <td>6.000</td>
+    </tr>
+    <tr>
+      <th>2015-01-31</th>
+      <td>287.500000</td>
+      <td>2773.333333</td>
+      <td>8161.500000</td>
+      <td>9844.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1778.000000</td>
+      <td>3496.000000</td>
+      <td>2945.000000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df.resample('Y').sum()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Day</th>
+      <th>Cases_Guinea</th>
+      <th>Cases_Liberia</th>
+      <th>Cases_SierraLeone</th>
+      <th>Cases_Nigeria</th>
+      <th>Cases_Senegal</th>
+      <th>Cases_UnitedStates</th>
+      <th>Cases_Spain</th>
+      <th>Cases_Mali</th>
+      <th>Deaths_Guinea</th>
+      <th>Deaths_Liberia</th>
+      <th>Deaths_SierraLeone</th>
+      <th>Deaths_Nigeria</th>
+      <th>Deaths_Senegal</th>
+      <th>Deaths_UnitedStates</th>
+      <th>Deaths_Spain</th>
+      <th>Deaths_Mali</th>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-12-31</th>
+      <td>16513</td>
+      <td>76409.0</td>
+      <td>177510.0</td>
+      <td>181649.0</td>
+      <td>636.0</td>
+      <td>27.0</td>
+      <td>59.0</td>
+      <td>16.0</td>
+      <td>42.0</td>
+      <td>46484.0</td>
+      <td>82206.0</td>
+      <td>51517.0</td>
+      <td>233.0</td>
+      <td>0.0</td>
+      <td>15.0</td>
+      <td>3.0</td>
+      <td>38.0</td>
+    </tr>
+    <tr>
+      <th>2015-12-31</th>
+      <td>1150</td>
+      <td>8320.0</td>
+      <td>16323.0</td>
+      <td>29532.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5334.0</td>
+      <td>6992.0</td>
+      <td>8835.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df.resample('M').sum()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Day</th>
+      <th>Cases_Guinea</th>
+      <th>Cases_Liberia</th>
+      <th>Cases_SierraLeone</th>
+      <th>Cases_Nigeria</th>
+      <th>Cases_Senegal</th>
+      <th>Cases_UnitedStates</th>
+      <th>Cases_Spain</th>
+      <th>Cases_Mali</th>
+      <th>Deaths_Guinea</th>
+      <th>Deaths_Liberia</th>
+      <th>Deaths_SierraLeone</th>
+      <th>Deaths_Nigeria</th>
+      <th>Deaths_Senegal</th>
+      <th>Deaths_UnitedStates</th>
+      <th>Deaths_Spain</th>
+      <th>Deaths_Mali</th>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-03-31</th>
+      <td>36</td>
+      <td>756.0</td>
+      <td>26.0</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>496.0</td>
+      <td>15.0</td>
+      <td>9.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-04-30</th>
+      <td>365</td>
+      <td>1956.0</td>
+      <td>221.0</td>
+      <td>22.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1250.0</td>
+      <td>77.0</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-05-31</th>
+      <td>467</td>
+      <td>2239.0</td>
+      <td>113.0</td>
+      <td>66.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1500.0</td>
+      <td>100.0</td>
+      <td>11.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-06-30</th>
+      <td>931</td>
+      <td>2614.0</td>
+      <td>284.0</td>
+      <td>879.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1753.0</td>
+      <td>196.0</td>
+      <td>235.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-07-31</th>
+      <td>1157</td>
+      <td>4230.0</td>
+      <td>2123.0</td>
+      <td>4205.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>3163.0</td>
+      <td>1213.0</td>
+      <td>1895.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-08-31</th>
+      <td>1596</td>
+      <td>6158.0</td>
+      <td>9557.0</td>
+      <td>9284.0</td>
+      <td>147.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>4338.0</td>
+      <td>5153.0</td>
+      <td>3883.0</td>
+      <td>39.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-09-30</th>
+      <td>2130</td>
+      <td>8711.0</td>
+      <td>22525.0</td>
+      <td>15534.0</td>
+      <td>145.0</td>
+      <td>9.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5463.0</td>
+      <td>12064.0</td>
+      <td>5092.0</td>
+      <td>56.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-10-31</th>
+      <td>3527</td>
+      <td>13504.0</td>
+      <td>38070.0</td>
+      <td>33013.0</td>
+      <td>160.0</td>
+      <td>8.0</td>
+      <td>23.0</td>
+      <td>7.0</td>
+      <td>3.0</td>
+      <td>7835.0</td>
+      <td>19352.0</td>
+      <td>10365.0</td>
+      <td>64.0</td>
+      <td>0.0</td>
+      <td>6.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>2014-11-30</th>
+      <td>3321</td>
+      <td>15604.0</td>
+      <td>49273.0</td>
+      <td>46749.0</td>
+      <td>160.0</td>
+      <td>8.0</td>
+      <td>32.0</td>
+      <td>8.0</td>
+      <td>32.0</td>
+      <td>9396.0</td>
+      <td>20502.0</td>
+      <td>10054.0</td>
+      <td>64.0</td>
+      <td>0.0</td>
+      <td>8.0</td>
+      <td>0.0</td>
+      <td>29.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>2983</td>
+      <td>20637.0</td>
+      <td>55318.0</td>
+      <td>71887.0</td>
+      <td>20.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>7.0</td>
+      <td>11290.0</td>
+      <td>23534.0</td>
+      <td>19963.0</td>
+      <td>8.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-31</th>
+      <td>1150</td>
+      <td>8320.0</td>
+      <td>16323.0</td>
+      <td>29532.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5334.0</td>
+      <td>6992.0</td>
+      <td>8835.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+とても便利です。さらに、datetime型のもう一つの利点として、`.year`や`.month`などのメソッドを利用して、年月日を取得することが出来ます。
+
 
 ```python
 df.index.year
@@ -2339,28 +3145,238 @@ df.index.year
 
 
 ```python
-df.index
+df.index.month
 ```
 
 
 
 
-    Index(['1/5/2015', '1/4/2015', '1/3/2015', '1/2/2015', '12/31/2014',
-           '12/28/2014', '12/27/2014', '12/24/2014', '12/21/2014', '12/20/2014',
-           ...
-           '4/4/2014', '4/1/2014', '3/31/2014', '3/29/2014', '3/28/2014',
-           '3/27/2014', '3/26/2014', '3/25/2014', '3/24/2014', '3/22/2014'],
-          dtype='object', name='Date', length=122)
+    DatetimeIndex(['2015-01-05', '2015-01-04', '2015-01-03', '2015-01-02',
+                   '2014-12-31', '2014-12-28', '2014-12-27', '2014-12-24',
+                   '2014-12-21', '2014-12-20',
+                   ...
+                   '2014-04-04', '2014-04-01', '2014-03-31', '2014-03-29',
+                   '2014-03-28', '2014-03-27', '2014-03-26', '2014-03-25',
+                   '2014-03-24', '2014-03-22'],
+                  dtype='datetime64[ns]', name='Date', length=122, freq=None)
+
+
+
+
+```python
+df.index.day
+```
+
+
+
+
+    Int64Index([ 5,  4,  3,  2, 31, 28, 27, 24, 21, 20,
+                ...
+                 4,  1, 31, 29, 28, 27, 26, 25, 24, 22],
+               dtype='int64', name='Date', length=122)
+
+
+
+## cut処理（ヒストグラムの作成）
+
+
+```python
+labels = ['上旬', '中旬', '下旬']
+df['period'] = pd.cut(list(df.index.day),  bins=[0,10,20,31], labels=labels, right=True) # 0<day≦10, 10<day≦20, 20<day≦31
+
+df.head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Day</th>
+      <th>Cases_Guinea</th>
+      <th>Cases_Liberia</th>
+      <th>Cases_SierraLeone</th>
+      <th>Cases_Nigeria</th>
+      <th>Cases_Senegal</th>
+      <th>Cases_UnitedStates</th>
+      <th>Cases_Spain</th>
+      <th>Cases_Mali</th>
+      <th>Deaths_Guinea</th>
+      <th>Deaths_Liberia</th>
+      <th>Deaths_SierraLeone</th>
+      <th>Deaths_Nigeria</th>
+      <th>Deaths_Senegal</th>
+      <th>Deaths_UnitedStates</th>
+      <th>Deaths_Spain</th>
+      <th>Deaths_Mali</th>
+      <th>period</th>
+    </tr>
+    <tr>
+      <th>Date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2015-01-05</th>
+      <td>289</td>
+      <td>2776.0</td>
+      <td>NaN</td>
+      <td>10030.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1786.0</td>
+      <td>NaN</td>
+      <td>2977.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>上旬</td>
+    </tr>
+    <tr>
+      <th>2015-01-04</th>
+      <td>288</td>
+      <td>2775.0</td>
+      <td>NaN</td>
+      <td>9780.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1781.0</td>
+      <td>NaN</td>
+      <td>2943.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>上旬</td>
+    </tr>
+    <tr>
+      <th>2015-01-03</th>
+      <td>287</td>
+      <td>2769.0</td>
+      <td>8166.0</td>
+      <td>9722.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1767.0</td>
+      <td>3496.0</td>
+      <td>2915.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>上旬</td>
+    </tr>
+    <tr>
+      <th>2015-01-02</th>
+      <td>286</td>
+      <td>NaN</td>
+      <td>8157.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3496.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>上旬</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>284</td>
+      <td>2730.0</td>
+      <td>8115.0</td>
+      <td>9633.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1739.0</td>
+      <td>3471.0</td>
+      <td>2827.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>下旬</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 
 
 ## queryとwhereの使い方 (ソートも)
 
-## 列名やインデックス名の変更
-
 ## nullの使い方
 
+## 列名やインデックス名の変更
+上で既に出てきていますが、列名やインデックスの名前を変更したい場合はよくあります。renameを使います。
+
+
+```python
+df.rename(columns={'before': 'after'}, inplace=True)
+df.rename(index={'before': 'after'}, inplace=True)
+```
+
 ## get_dummiesの使い方
+
+## CSVへ出力
 
 ## 頻出のコマンド一覧
 概要として、よく利用するコマンドを以下に載せます。
@@ -2380,20 +3396,6 @@ df.unique()
 df.drop_duplicates()
 ```
 
-#### 
-```python
-df.describe()
-```
-
-#### 
-```python
-df.set_index()
-```
-
-#### 
-```python
-df.rename()
-```
 
 #### 
 ```python
@@ -2493,7 +3495,7 @@ pd.options.display.max_columns = None
 
 ## よく使う関数
 
-最後のまとめとして、良く使う関数をまとめておきます。
+最後のまとめとして、良く使う関数をまとめておきます。個人的なsnipetみたいなものです。
 
 #### インデックスの変更(既存のカラム名に変更)
 
@@ -2505,6 +3507,7 @@ df.set_index('xxxx')
 
 ```python
 df.rename(columns={'before': 'after'}, inplace=True)
+df.rename(index={'before': 'after'}, inplace=True)
 ```
 
 #### あるカラムでソートする
