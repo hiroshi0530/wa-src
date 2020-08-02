@@ -151,12 +151,6 @@ df[df['Deaths_Liberia'] > 3000][['Deaths_Liberia']]
 df.describe()
 
 
-# In[ ]:
-
-
-
-
-
 # ## インデックスをdatetime型に変更
 # 
 # インデックスをDateに変更し、上書きします。
@@ -176,13 +170,13 @@ df.head()
 
 # ついでにDateというインデックス名も変更します。rename関数を利用します。
 
-# In[26]:
+# In[17]:
 
 
 df.rename(index={'Date':'YYYYMMDD'}, inplace=True)
 
 
-# In[27]:
+# In[18]:
 
 
 df.columns
@@ -191,7 +185,7 @@ df.columns
 
 # インデックスでソートします。ただ、日付が文字列のオブジェクトになっているので、目論見通りのソートになっていません。
 
-# In[30]:
+# In[19]:
 
 
 df.sort_index(ascending=True).head()
@@ -199,13 +193,13 @@ df.sort_index(ascending=True).head()
 
 # インデックスをdatetime型に変更します。
 
-# In[31]:
+# In[20]:
 
 
 df.index
 
 
-# In[33]:
+# In[21]:
 
 
 df.index = pd.to_datetime(df.index, format='%m/%d/%Y')
@@ -214,13 +208,13 @@ df.index
 
 # となり、dtype='object'からobject='datetime64'とdatetime型に変更されていることが分かります。そこでソートしてみます。
 
-# In[35]:
+# In[22]:
 
 
 df.sort_index(ascending=True).head(10)
 
 
-# In[36]:
+# In[23]:
 
 
 df.sort_index(ascending=True).tail(10)
@@ -231,37 +225,92 @@ df.sort_index(ascending=True).tail(10)
 # また、datetime型がインデックスに設定されたので、日付を扱いのが容易になっています。
 # 例えば、2015年のデータを取得するのに、以下の様になります。
 
-# In[41]:
+# In[24]:
 
 
 df['2015']
 
 
-# In[46]:
+# In[25]:
 
 
 df['2014-12'].sort_index(ascending=True)
 
 
-# In[38]:
+# さらに、平均や合計値などの統計値を、年や月単位で簡単に取得することができます。
+
+# In[30]:
+
+
+df.resample('Y').mean()
+
+
+# In[31]:
+
+
+df.resample('M').mean()
+
+
+# In[33]:
+
+
+df.resample('Y').sum()
+
+
+# In[32]:
+
+
+df.resample('M').sum()
+
+
+# とても便利です。さらに、datetime型のもう一つの利点として、`.year`や`.month`などのメソッドを利用して、年月日を取得することが出来ます。
+
+# In[27]:
 
 
 df.index.year
 
 
-# In[25]:
+# In[28]:
 
 
-df.index
+df.index.month
+
+
+# In[29]:
+
+
+df.index.day
+
+
+# ## cut処理（ヒストグラムの作成）
+
+# In[34]:
+
+
+labels = ['上旬', '中旬', '下旬']
+df['period'] = pd.cut(list(df.index.day),  bins=[0,10,20,31], labels=labels, right=True) # 0<day≦10, 10<day≦20, 20<day≦31
+
+df.head()
 
 
 # ## queryとwhereの使い方 (ソートも)
 
-# ## 列名やインデックス名の変更
-
 # ## nullの使い方
 
+# ## 列名やインデックス名の変更
+# 上で既に出てきていますが、列名やインデックスの名前を変更したい場合はよくあります。renameを使います。
+
+# In[ ]:
+
+
+df.rename(columns={'before': 'after'}, inplace=True)
+df.rename(index={'before': 'after'}, inplace=True)
+
+
 # ## get_dummiesの使い方
+
+# ## CSVへ出力
 
 # ## 頻出のコマンド一覧
 # 概要として、よく利用するコマンドを以下に載せます。
@@ -281,20 +330,6 @@ df.index
 # df.drop_duplicates()
 # ```
 # 
-# #### 
-# ```python
-# df.describe()
-# ```
-# 
-# #### 
-# ```python
-# df.set_index()
-# ```
-# 
-# #### 
-# ```python
-# df.rename()
-# ```
 # 
 # #### 
 # ```python
@@ -394,7 +429,7 @@ df.index
 
 # ## よく使う関数
 # 
-# 最後のまとめとして、良く使う関数をまとめておきます。
+# 最後のまとめとして、良く使う関数をまとめておきます。個人的なsnipetみたいなものです。
 # 
 # #### インデックスの変更(既存のカラム名に変更)
 # 
@@ -406,6 +441,7 @@ df.index
 # 
 # ```python
 # df.rename(columns={'before': 'after'}, inplace=True)
+# df.rename(index={'before': 'after'}, inplace=True)
 # ```
 # 
 # #### あるカラムでソートする
