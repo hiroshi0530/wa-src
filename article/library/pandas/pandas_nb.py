@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## pandasとデータ分析
@@ -31,8 +31,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -141,51 +141,69 @@ df.iloc[[6,7],[0,3]]
 df[df['Deaths_Liberia'] > 3000][['Deaths_Liberia']]
 
 
+# #### カラムの削除
+# Deaths_Guineaというカラムを削除しています。
+
+# In[14]:
+
+
+df.drop(['Deaths_Guinea'], axis=1, inplace=True)
+df.columns
+
+
 # #### 統計量の取得
 # 
 # describe()を利用して、列ごとの統計量を取得することが出来ます。ぱっと見、概要を得たいときに有力です。
 
-# In[14]:
+# In[15]:
 
 
 df.describe()
 
 
-# ## インデックスをdatetime型に変更
-# 
-# インデックスをDateに変更し、上書きします。
-
-# In[15]:
-
-
-df.set_index('Date', inplace=True)
-df.index
-
+# また、value_countsメソッドを利用して、値の頻度を簡単に求める事ができます。今回用いたデータが連続量のため、少々わかりにくいですが、0.0のデータ数が15である事がわかります。その他のデータ数はすべて1個である事がわかります。
 
 # In[16]:
 
 
-df.head()
+df['Deaths_Liberia'].value_counts()
 
 
-# ついでにDateというインデックス名も変更します。rename関数を利用します。
+# In[ ]:
+
+
+
+
+
+# ## インデックスをdatetime型に変更
+# 
+# インデックスをDateに変更し、上書きします。時系列データの場合、インデックスを日付にすると解析しやすいことが多いです。ただ、単純に文字列としてインデックスするよりも、pandaに標準で備わっているdatetime型に変換すると集計処理などが便利になります。
+# 
+# Dateというインデックス名をYYYYMMDDに変更します。。rename関数を利用します。
 
 # In[17]:
 
 
-df.rename(index={'Date':'YYYYMMDD'}, inplace=True)
+df.rename(columns={'Date':'YYYYMMDD'}, inplace=True)
+df.set_index('YYYYMMDD', inplace=True)
+df.index
 
 
 # In[18]:
 
 
+df.head()
+
+
+# In[19]:
+
+
 df.columns
-# df.sort_values(by="YYYYMMDD", ascending=True).head()
 
 
 # インデックスでソートします。ただ、日付が文字列のオブジェクトになっているので、目論見通りのソートになっていません。
 
-# In[19]:
+# In[20]:
 
 
 df.sort_index(ascending=True).head()
@@ -193,13 +211,13 @@ df.sort_index(ascending=True).head()
 
 # インデックスをdatetime型に変更します。
 
-# In[20]:
+# In[21]:
 
 
 df.index
 
 
-# In[21]:
+# In[22]:
 
 
 df.index = pd.to_datetime(df.index, format='%m/%d/%Y')
@@ -208,16 +226,17 @@ df.index
 
 # となり、dtype='object'からobject='datetime64'とdatetime型に変更されていることが分かります。そこでソートしてみます。
 
-# In[22]:
-
-
-df.sort_index(ascending=True).head(10)
-
-
 # In[23]:
 
 
-df.sort_index(ascending=True).tail(10)
+df.sort_index(ascending=True, inplace=True)
+df.head(10)
+
+
+# In[24]:
+
+
+df.tail(10)
 
 
 # となり、想定通りのソートになっている事が分かります。
@@ -225,13 +244,13 @@ df.sort_index(ascending=True).tail(10)
 # また、datetime型がインデックスに設定されたので、日付を扱いのが容易になっています。
 # 例えば、2015年のデータを取得するのに、以下の様になります。
 
-# In[24]:
+# In[25]:
 
 
 df['2015']
 
 
-# In[25]:
+# In[26]:
 
 
 df['2014-12'].sort_index(ascending=True)
@@ -239,25 +258,25 @@ df['2014-12'].sort_index(ascending=True)
 
 # さらに、平均や合計値などの統計値を、年や月単位で簡単に取得することができます。
 
-# In[30]:
+# In[27]:
 
 
 df.resample('Y').mean()
 
 
-# In[31]:
+# In[28]:
 
 
 df.resample('M').mean()
 
 
-# In[33]:
+# In[29]:
 
 
 df.resample('Y').sum()
 
 
-# In[32]:
+# In[30]:
 
 
 df.resample('M').sum()
@@ -265,167 +284,203 @@ df.resample('M').sum()
 
 # とても便利です。さらに、datetime型のもう一つの利点として、`.year`や`.month`などのメソッドを利用して、年月日を取得することが出来ます。
 
-# In[27]:
+# In[31]:
 
 
 df.index.year
 
 
-# In[28]:
+# In[32]:
 
 
 df.index.month
 
 
-# In[29]:
+# In[33]:
 
 
 df.index.day
 
 
 # ## cut処理（ヒストグラムの作成）
+# データの解析をしていると、データを特定の条件の下分割して、集計したいという場面がよくあります。例えば、季節ごとに集計したい場合などがあると思います。ちょっと月と季節が合っていませんが、季節でラベリングする例です。
 
 # In[34]:
 
 
-labels = ['上旬', '中旬', '下旬']
-df['period'] = pd.cut(list(df.index.day),  bins=[0,10,20,31], labels=labels, right=True) # 0<day≦10, 10<day≦20, 20<day≦31
+labels = ['春', '夏', '秋', '冬']
+df['season'] = pd.cut(list(df.index.month),  bins=[0,3,6,9,12], labels=labels, right=True)
+df[['season']][5:10]
 
-df.head()
+
+# In[35]:
 
 
-# ## queryとwhereの使い方 (ソートも)
+df[['season']][73:78]
+
+
+# ## query, where, maskの使い方 (ソートも)
+# numpyと同じように、queryやwhereなども使うことが出来ます。使い方は直感的にnumpyと同じなので、すぐに使えると思います。感染者と死者数でクエリを実行してみます。
+# 
+# queryは抽出したい条件式を指定します。
+
+# In[36]:
+
+
+df[['Deaths_Liberia','Cases_Liberia']].query('Deaths_Liberia > 100 and Cases_Liberia > 7000')
+
+
+# whereも条件を指定すると、条件を満たすデータはそのまま、見たさないデータはNaNが格納されたデータを返します。
+
+# In[37]:
+
+
+df[['Deaths_Liberia']].where(df['Deaths_Liberia'] > 1000)
+
+
+# NaNではなく、別の数字を入れることも可能です。この辺はnumpyと同じでとても助かります。
+
+# In[38]:
+
+
+df[['Deaths_Liberia']].where(df['Deaths_Liberia'] > 3000,0)
+
+
+# maskメソッドはwhereと逆で、条件を満たすものを第二引数に書き換えます。
+
+# In[39]:
+
+
+df[['Deaths_Liberia']].mask(df['Deaths_Liberia'] > 3000, 0)
+
 
 # ## nullの使い方
+# 
+# データにはしばしばNullが含まれるので、正しいデータ分析のためにはNullがどの程度含まれていて、それがどの程度解析に影響を及ぼすのか確認する必要があります。
+# 
+# `isnull`によって、Nullの部分をFalseにしたテーブルを作成する事が出来ます。
+
+# In[40]:
+
+
+df.isnull()
+
+
+# また、sumメソッドを利用すると、各カラムごとにNullの個数をカウントする事が出来ます。
+
+# In[41]:
+
+
+df.isnull().sum()
+
+
+# 同様に、meanメソッドで平均を出すことが出来ます。
+
+# In[42]:
+
+
+df.isnull().mean()
+
+
+# Nullのデータを書き換えます。`fillna`というメソッドを利用します。
+
+# In[43]:
+
+
+df.fillna(value={'Cases_Liberia': 0.0, 'Deaths_Liberia': 0.0}, inplace=True)
+df.isnull().sum()
+
+
+# これで確かにCases_LiberiaとDeath_Liberiaのnullの数が0になりました。
+
+# また、ある列にNullがある行を削除することが出来ます。dropnaを適用した前後のデータ数を比較してみるとわかります。削除前は、
+
+# In[44]:
+
+
+df.shape
+
+
+# となります。削除後は以下の通りで、確かに削除されていることがわかります。
+
+# In[45]:
+
+
+df.dropna(subset=['Cases_Nigeria'], axis=0).shape
+
+
+# In[46]:
+
+
+df.dropna(subset=['Cases_Nigeria'], axis=0).isnull().sum()
+
+
+# In[47]:
+
+
+df.dropna(subset=['Cases_Nigeria'], axis=0).head()
+
 
 # ## 列名やインデックス名の変更
-# 上で既に出てきていますが、列名やインデックスの名前を変更したい場合はよくあります。renameを使います。
+# 上で既に出てきていますが、列名やインデックスの名前を変更したい場合はよくあります。renameメソッドを使います。
 
-# In[ ]:
+# In[48]:
 
 
 df.rename(columns={'before': 'after'}, inplace=True)
 df.rename(index={'before': 'after'}, inplace=True)
 
 
-# ## get_dummiesの使い方
+# ## SQL likeなメソッド
+# SQLおなじみのgroupbyがpandasで利用できます。こちらは個人的にはよく利用しますね。
+
+# In[49]:
+
+
+df.groupby(['season'])['season'].count()
+
 
 # ## CSVへ出力
+# 
+# メモリに格納されているすべてのデータを出力します。
 
-# ## 頻出のコマンド一覧
-# 概要として、よく利用するコマンドを以下に載せます。
-# 
-# #### 
-# ```python
-# df.query()
-# ```
-# 
-# #### 
-# ```python
-# df.unique()
-# ```
-# 
-# #### 
-# ```python
-# df.drop_duplicates()
-# ```
-# 
-# 
-# #### 
-# ```python
-# df.apply()
-# ```
-# 
-# #### 
-# ```python
-# pd.cut()
-# ```
-# 
-# #### 
-# ```python
-# df.isnull()
-# ```
-# 
-# #### 
-# ```python
-# df.any()
-# ```
-# 
-# #### 
-# ```python
-# df.fillna()
-# ```
-# 
-# #### 
-# ```python
-# df.dropna()
-# ```
-# 
-# #### 
-# ```python
-# df.replace()
-# ```
-# 
-# #### 
-# ```python
-# df.mask()
-# ```
-# 
-# #### 
-# ```python
-# df.drop()
-# ```
-# 
-# #### 
-# ```python
-# df.value_counts()
-# ```
-# 
-# #### 
-# ```python
-# df.groupby()
-# ```
-# 
-# #### 
-# ```python
-# df.diff()
-# ```
-# 
-# #### 
-# ```python
-# df.rolling()
-# ```
-# 
-# #### 
-# ```python
-# df.pct_change()
-# ```
-# 
-# #### 
-# ```python
-# df.plot()
-# ```
-# 
-# #### 
-# ```python
-# df.pivot()
-# ```
-# 
-# #### 
-# ```python
-# pd.get_dummies()
-# ```
-# 
-# #### 
-# ```python
-# df.to_csv()
-# ```
-# 
-# #### 
-# ```python
-# pd.options.display.max_columns = None
-# ```
-# 
+# In[50]:
+
+
+df.to_csv('./out.csv')
+
+
+# In[51]:
+
+
+get_ipython().system('head  -n 10 out.csv')
+
+
+# In[52]:
+
+
+df.to_csv('./out.csv', columns=['Deaths_Liberia'])
+
+
+# In[53]:
+
+
+get_ipython().system('head  -n 10 out.csv')
+
+
+# ヘッダーとインデックスを記述しないように出来ます。
+
+# In[54]:
+
+
+df.to_csv('./out.csv', header=False, index=False)
+
+
+# In[55]:
+
+
+get_ipython().system('head  -n 10 out.csv')
+
 
 # ## よく使う関数
 # 
@@ -472,3 +527,5 @@ df.rename(index={'before': 'after'}, inplace=True)
 # ## 参考文献
 # - [チートシート](https://github.com/pandas-dev/pandas/blob/master/doc/cheatsheet/Pandas_Cheat_Sheet.pdf)
 # - [read_csvの全引数について解説してくれてます](https://own-search-and-study.xyz/2015/09/03/pandas%E3%81%AEread_csv%E3%81%AE%E5%85%A8%E5%BC%95%E6%95%B0%E3%82%92%E4%BD%BF%E3%81%84%E3%81%93%E3%81%AA%E3%81%99/)
+# - [データ分析で頻出のPandas基本操作](https://qiita.com/ysdyt/items/9ccca82fc5b504e7913a)
+# 実務レベルで重要な部分を丁寧に書かれています。とても参考になります。
