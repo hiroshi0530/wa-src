@@ -1,0 +1,6 @@
+
+using Gadfly
+
+x = linspace(-5.0, 5.0)
+y = sigmoid(x)
+plot(x=x, y=y, Geom.line)
