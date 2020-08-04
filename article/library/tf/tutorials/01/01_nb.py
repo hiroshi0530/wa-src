@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## tensorflow tutorials メモ
@@ -65,8 +65,8 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -106,29 +106,11 @@ train_images[0]
 train_labels[0]
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
 # In[7]:
 
 
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
-
-
-# In[ ]:
-
-
-
 
 
 # In[8]:
@@ -283,33 +265,5 @@ plot_value_array(i, predictions,  test_labels)
 plt.show()
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
 # ## 感想
 # tensorflow 2.0 形式になり、dry-by-runで実行できるようになったため、より直感的に利用できるという印象です。
-
-# ## 参考資料
-# - [scikit-learn 公式ページ](https://scikit-learn.org/stable/datasets/index.html)
-# - いつも参考にしている[nkmkさん](https://note.nkmk.me/python-sklearn-datasets-load-fetch/)の記事です。
