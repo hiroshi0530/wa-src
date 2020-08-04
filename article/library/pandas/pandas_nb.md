@@ -19,7 +19,7 @@ pandasはデータ分析では必ず利用する重要なツールです。こ�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G95
+    BuildVersion:	18G6020
 
 
 
@@ -27,7 +27,7 @@ pandasはデータ分析では必ず利用する重要なツールです。こ�
 !python -V
 ```
 
-    Python 3.5.5 :: Anaconda, Inc.
+    Python 3.7.3
 
 
 基本的なライブラリをインポートしそのバージョンを確認しておきます。
@@ -47,9 +47,9 @@ print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 ```
 
-    matplotlib version : 2.2.2
+    matplotlib version : 3.0.3
     scipy version : 1.4.1
-    numpy version : 1.18.1
+    numpy version : 1.16.2
 
 
 ### importとバージョン確認
@@ -61,7 +61,7 @@ import pandas as pd
 print('pandas version :', pd.__version__)
 ```
 
-    pandas version : 0.24.2
+    pandas version : 1.0.3
 
 
 ## 基本操作
@@ -407,26 +407,28 @@ df.info()
     <class 'pandas.core.frame.DataFrame'>
     RangeIndex: 122 entries, 0 to 121
     Data columns (total 18 columns):
-    Date                   122 non-null object
-    Day                    122 non-null int64
-    Cases_Guinea           93 non-null float64
-    Cases_Liberia          83 non-null float64
-    Cases_SierraLeone      87 non-null float64
-    Cases_Nigeria          38 non-null float64
-    Cases_Senegal          25 non-null float64
-    Cases_UnitedStates     18 non-null float64
-    Cases_Spain            16 non-null float64
-    Cases_Mali             12 non-null float64
-    Deaths_Guinea          92 non-null float64
-    Deaths_Liberia         81 non-null float64
-    Deaths_SierraLeone     87 non-null float64
-    Deaths_Nigeria         38 non-null float64
-    Deaths_Senegal         22 non-null float64
-    Deaths_UnitedStates    18 non-null float64
-    Deaths_Spain           16 non-null float64
-    Deaths_Mali            12 non-null float64
+     #   Column               Non-Null Count  Dtype  
+    ---  ------               --------------  -----  
+     0   Date                 122 non-null    object 
+     1   Day                  122 non-null    int64  
+     2   Cases_Guinea         93 non-null     float64
+     3   Cases_Liberia        83 non-null     float64
+     4   Cases_SierraLeone    87 non-null     float64
+     5   Cases_Nigeria        38 non-null     float64
+     6   Cases_Senegal        25 non-null     float64
+     7   Cases_UnitedStates   18 non-null     float64
+     8   Cases_Spain          16 non-null     float64
+     9   Cases_Mali           12 non-null     float64
+     10  Deaths_Guinea        92 non-null     float64
+     11  Deaths_Liberia       81 non-null     float64
+     12  Deaths_SierraLeone   87 non-null     float64
+     13  Deaths_Nigeria       38 non-null     float64
+     14  Deaths_Senegal       22 non-null     float64
+     15  Deaths_UnitedStates  18 non-null     float64
+     16  Deaths_Spain         16 non-null     float64
+     17  Deaths_Mali          12 non-null     float64
     dtypes: float64(16), int64(1), object(1)
-    memory usage: 17.2+ KB
+    memory usage: 17.3+ KB
 
 
 #### 大きさ（行数と列数）の確認
@@ -673,6 +675,26 @@ df[df['Deaths_Liberia'] > 3000][['Deaths_Liberia']]
 
 
 
+#### カラムの削除
+Deaths_Guineaというカラムを削除しています。
+
+
+```python
+df.drop(['Deaths_Guinea'], axis=1, inplace=True)
+df.columns
+```
+
+
+
+
+    Index(['Date', 'Day', 'Cases_Guinea', 'Cases_Liberia', 'Cases_SierraLeone',
+           'Cases_Nigeria', 'Cases_Senegal', 'Cases_UnitedStates', 'Cases_Spain',
+           'Cases_Mali', 'Deaths_Liberia', 'Deaths_SierraLeone', 'Deaths_Nigeria',
+           'Deaths_Senegal', 'Deaths_UnitedStates', 'Deaths_Spain', 'Deaths_Mali'],
+          dtype='object')
+
+
+
 #### 統計量の取得
 
 describe()を利用して、列ごとの統計量を取得することが出来ます。ぱっと見、概要を得たいときに有力です。
@@ -712,7 +734,6 @@ df.describe()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -734,7 +755,6 @@ df.describe()
       <td>18.000000</td>
       <td>16.0</td>
       <td>12.000000</td>
-      <td>92.000000</td>
       <td>81.000000</td>
       <td>87.000000</td>
       <td>38.000000</td>
@@ -754,7 +774,6 @@ df.describe()
       <td>3.277778</td>
       <td>1.0</td>
       <td>3.500000</td>
-      <td>563.239130</td>
       <td>1101.209877</td>
       <td>693.701149</td>
       <td>6.131579</td>
@@ -774,7 +793,6 @@ df.describe()
       <td>1.178511</td>
       <td>0.0</td>
       <td>2.746899</td>
-      <td>508.511345</td>
       <td>1297.208568</td>
       <td>869.947073</td>
       <td>2.781901</td>
@@ -794,7 +812,6 @@ df.describe()
       <td>1.000000</td>
       <td>1.0</td>
       <td>1.000000</td>
-      <td>29.000000</td>
       <td>2.000000</td>
       <td>0.000000</td>
       <td>0.000000</td>
@@ -814,7 +831,6 @@ df.describe()
       <td>3.000000</td>
       <td>1.0</td>
       <td>1.000000</td>
-      <td>157.750000</td>
       <td>12.000000</td>
       <td>6.000000</td>
       <td>4.000000</td>
@@ -834,7 +850,6 @@ df.describe()
       <td>4.000000</td>
       <td>1.0</td>
       <td>2.500000</td>
-      <td>360.500000</td>
       <td>294.000000</td>
       <td>334.000000</td>
       <td>8.000000</td>
@@ -854,7 +869,6 @@ df.describe()
       <td>4.000000</td>
       <td>1.0</td>
       <td>6.250000</td>
-      <td>847.750000</td>
       <td>2413.000000</td>
       <td>1176.000000</td>
       <td>8.000000</td>
@@ -874,7 +888,6 @@ df.describe()
       <td>4.000000</td>
       <td>1.0</td>
       <td>7.000000</td>
-      <td>1786.000000</td>
       <td>3496.000000</td>
       <td>2977.000000</td>
       <td>8.000000</td>
@@ -889,13 +902,46 @@ df.describe()
 
 
 
-## インデックスをdatetime型に変更
-
-インデックスをDateに変更し、上書きします。
+また、value_countsメソッドを利用して、値の頻度を簡単に求める事ができます。今回用いたデータが連続量のため、少々わかりにくいですが、0.0のデータ数が15である事がわかります。その他のデータ数はすべて1個である事がわかります。
 
 
 ```python
-df.set_index('Date', inplace=True)
+df['Deaths_Liberia'].value_counts()
+```
+
+
+
+
+    11.0      9
+    12.0      4
+    3496.0    2
+    13.0      2
+    24.0      2
+             ..
+    2963.0    1
+    88.0      1
+    3413.0    1
+    3177.0    1
+    105.0     1
+    Name: Deaths_Liberia, Length: 66, dtype: int64
+
+
+
+
+```python
+
+```
+
+## インデックスをdatetime型に変更
+
+インデックスをDateに変更し、上書きします。時系列データの場合、インデックスを日付にすると解析しやすいことが多いです。ただ、単純に文字列としてインデックスするよりも、pandaに標準で備わっているdatetime型に変換すると集計処理などが便利になります。
+
+Dateというインデックス名をYYYYMMDDに変更します。。rename関数を利用します。
+
+
+```python
+df.rename(columns={'Date':'YYYYMMDD'}, inplace=True)
+df.set_index('YYYYMMDD', inplace=True)
 df.index
 ```
 
@@ -907,7 +953,7 @@ df.index
            ...
            '4/4/2014', '4/1/2014', '3/31/2014', '3/29/2014', '3/28/2014',
            '3/27/2014', '3/26/2014', '3/25/2014', '3/24/2014', '3/22/2014'],
-          dtype='object', name='Date', length=122)
+          dtype='object', name='YYYYMMDD', length=122)
 
 
 
@@ -946,7 +992,6 @@ df.head()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -956,8 +1001,7 @@ df.head()
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -988,7 +1032,6 @@ df.head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1786.0</td>
       <td>NaN</td>
       <td>2977.0</td>
       <td>NaN</td>
@@ -1008,7 +1051,6 @@ df.head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1781.0</td>
       <td>NaN</td>
       <td>2943.0</td>
       <td>NaN</td>
@@ -1028,7 +1070,6 @@ df.head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1767.0</td>
       <td>3496.0</td>
       <td>2915.0</td>
       <td>NaN</td>
@@ -1042,7 +1083,6 @@ df.head()
       <td>286</td>
       <td>NaN</td>
       <td>8157.0</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1068,7 +1108,6 @@ df.head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1739.0</td>
       <td>3471.0</td>
       <td>2827.0</td>
       <td>NaN</td>
@@ -1083,17 +1122,9 @@ df.head()
 
 
 
-ついでにDateというインデックス名も変更します。rename関数を利用します。
-
-
-```python
-df.rename(index={'Date':'YYYYMMDD'}, inplace=True)
-```
-
 
 ```python
 df.columns
-# df.sort_values(by="YYYYMMDD", ascending=True).head()
 ```
 
 
@@ -1101,9 +1132,8 @@ df.columns
 
     Index(['Day', 'Cases_Guinea', 'Cases_Liberia', 'Cases_SierraLeone',
            'Cases_Nigeria', 'Cases_Senegal', 'Cases_UnitedStates', 'Cases_Spain',
-           'Cases_Mali', 'Deaths_Guinea', 'Deaths_Liberia', 'Deaths_SierraLeone',
-           'Deaths_Nigeria', 'Deaths_Senegal', 'Deaths_UnitedStates',
-           'Deaths_Spain', 'Deaths_Mali'],
+           'Cases_Mali', 'Deaths_Liberia', 'Deaths_SierraLeone', 'Deaths_Nigeria',
+           'Deaths_Senegal', 'Deaths_UnitedStates', 'Deaths_Spain', 'Deaths_Mali'],
           dtype='object')
 
 
@@ -1145,7 +1175,6 @@ df.sort_index(ascending=True).head()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -1155,8 +1184,7 @@ df.sort_index(ascending=True).head()
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -1187,7 +1215,6 @@ df.sort_index(ascending=True).head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>NaN</td>
       <td>3496.0</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1207,7 +1234,6 @@ df.sort_index(ascending=True).head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1767.0</td>
       <td>3496.0</td>
       <td>2915.0</td>
       <td>NaN</td>
@@ -1227,7 +1253,6 @@ df.sort_index(ascending=True).head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1781.0</td>
       <td>NaN</td>
       <td>2943.0</td>
       <td>NaN</td>
@@ -1247,7 +1272,6 @@ df.sort_index(ascending=True).head()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1786.0</td>
       <td>NaN</td>
       <td>2977.0</td>
       <td>NaN</td>
@@ -1267,7 +1291,6 @@ df.sort_index(ascending=True).head()
       <td>1.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>739.0</td>
       <td>2069.0</td>
       <td>623.0</td>
       <td>8.0</td>
@@ -1297,7 +1320,7 @@ df.index
            ...
            '4/4/2014', '4/1/2014', '3/31/2014', '3/29/2014', '3/28/2014',
            '3/27/2014', '3/26/2014', '3/25/2014', '3/24/2014', '3/22/2014'],
-          dtype='object', name='Date', length=122)
+          dtype='object', name='YYYYMMDD', length=122)
 
 
 
@@ -1317,7 +1340,7 @@ df.index
                    '2014-04-04', '2014-04-01', '2014-03-31', '2014-03-29',
                    '2014-03-28', '2014-03-27', '2014-03-26', '2014-03-25',
                    '2014-03-24', '2014-03-22'],
-                  dtype='datetime64[ns]', name='Date', length=122, freq=None)
+                  dtype='datetime64[ns]', name='YYYYMMDD', length=122, freq=None)
 
 
 
@@ -1325,7 +1348,8 @@ df.index
 
 
 ```python
-df.sort_index(ascending=True).head(10)
+df.sort_index(ascending=True, inplace=True)
+df.head(10)
 ```
 
 
@@ -1358,7 +1382,6 @@ df.sort_index(ascending=True).head(10)
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -1368,8 +1391,7 @@ df.sort_index(ascending=True).head(10)
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -1400,7 +1422,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>29.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1420,7 +1441,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>59.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1440,7 +1460,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>60.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1460,7 +1479,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>62.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1480,7 +1498,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>66.0</td>
       <td>6.0</td>
       <td>5.0</td>
       <td>NaN</td>
@@ -1500,7 +1517,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>70.0</td>
       <td>3.0</td>
       <td>2.0</td>
       <td>NaN</td>
@@ -1520,7 +1536,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>70.0</td>
       <td>2.0</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1540,7 +1555,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>80.0</td>
       <td>4.0</td>
       <td>2.0</td>
       <td>NaN</td>
@@ -1560,7 +1574,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>83.0</td>
       <td>5.0</td>
       <td>2.0</td>
       <td>NaN</td>
@@ -1580,7 +1593,6 @@ df.sort_index(ascending=True).head(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>86.0</td>
       <td>7.0</td>
       <td>2.0</td>
       <td>NaN</td>
@@ -1597,7 +1609,7 @@ df.sort_index(ascending=True).head(10)
 
 
 ```python
-df.sort_index(ascending=True).tail(10)
+df.tail(10)
 ```
 
 
@@ -1630,7 +1642,6 @@ df.sort_index(ascending=True).tail(10)
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -1640,8 +1651,7 @@ df.sort_index(ascending=True).tail(10)
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -1672,7 +1682,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1586.0</td>
       <td>3384.0</td>
       <td>2556.0</td>
       <td>NaN</td>
@@ -1692,7 +1701,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1607.0</td>
       <td>NaN</td>
       <td>2582.0</td>
       <td>NaN</td>
@@ -1707,7 +1715,6 @@ df.sort_index(ascending=True).tail(10)
       <td>2630.0</td>
       <td>7977.0</td>
       <td>9203.0</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1732,7 +1739,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1697.0</td>
       <td>NaN</td>
       <td>2732.0</td>
       <td>NaN</td>
@@ -1752,7 +1758,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1708.0</td>
       <td>3423.0</td>
       <td>2758.0</td>
       <td>NaN</td>
@@ -1772,7 +1777,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1739.0</td>
       <td>3471.0</td>
       <td>2827.0</td>
       <td>NaN</td>
@@ -1786,7 +1790,6 @@ df.sort_index(ascending=True).tail(10)
       <td>286</td>
       <td>NaN</td>
       <td>8157.0</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1812,7 +1815,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1767.0</td>
       <td>3496.0</td>
       <td>2915.0</td>
       <td>NaN</td>
@@ -1832,7 +1834,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1781.0</td>
       <td>NaN</td>
       <td>2943.0</td>
       <td>NaN</td>
@@ -1852,7 +1853,6 @@ df.sort_index(ascending=True).tail(10)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1786.0</td>
       <td>NaN</td>
       <td>2977.0</td>
       <td>NaN</td>
@@ -1907,7 +1907,6 @@ df['2015']
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -1917,8 +1916,7 @@ df['2015']
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -1939,39 +1937,18 @@ df['2015']
   </thead>
   <tbody>
     <tr>
-      <th>2015-01-05</th>
-      <td>289</td>
-      <td>2776.0</td>
+      <th>2015-01-02</th>
+      <td>286</td>
       <td>NaN</td>
-      <td>10030.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1786.0</td>
-      <td>NaN</td>
-      <td>2977.0</td>
+      <td>8157.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-    </tr>
-    <tr>
-      <th>2015-01-04</th>
-      <td>288</td>
-      <td>2775.0</td>
       <td>NaN</td>
-      <td>9780.0</td>
+      <td>3496.0</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1781.0</td>
-      <td>NaN</td>
-      <td>2943.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1989,7 +1966,6 @@ df['2015']
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1767.0</td>
       <td>3496.0</td>
       <td>2915.0</td>
       <td>NaN</td>
@@ -1999,19 +1975,37 @@ df['2015']
       <td>NaN</td>
     </tr>
     <tr>
-      <th>2015-01-02</th>
-      <td>286</td>
+      <th>2015-01-04</th>
+      <td>288</td>
+      <td>2775.0</td>
       <td>NaN</td>
-      <td>8157.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>9780.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>3496.0</td>
       <td>NaN</td>
+      <td>NaN</td>
+      <td>2943.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2015-01-05</th>
+      <td>289</td>
+      <td>2776.0</td>
+      <td>NaN</td>
+      <td>10030.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2977.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -2059,7 +2053,6 @@ df['2014-12'].sort_index(ascending=True)
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -2069,8 +2062,7 @@ df['2014-12'].sort_index(ascending=True)
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -2101,7 +2093,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>NaN</td>
       <td>3177.0</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -2121,7 +2112,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>4.0</td>
       <td>1.0</td>
       <td>7.0</td>
-      <td>1428.0</td>
       <td>NaN</td>
       <td>1768.0</td>
       <td>8.0</td>
@@ -2135,7 +2125,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>262</td>
       <td>NaN</td>
       <td>7797.0</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -2161,7 +2150,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1525.0</td>
       <td>NaN</td>
       <td>2085.0</td>
       <td>NaN</td>
@@ -2175,7 +2163,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>271</td>
       <td>NaN</td>
       <td>7830.0</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -2201,7 +2188,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1586.0</td>
       <td>3384.0</td>
       <td>2556.0</td>
       <td>NaN</td>
@@ -2221,7 +2207,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1607.0</td>
       <td>NaN</td>
       <td>2582.0</td>
       <td>NaN</td>
@@ -2236,7 +2221,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>2630.0</td>
       <td>7977.0</td>
       <td>9203.0</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -2261,7 +2245,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1697.0</td>
       <td>NaN</td>
       <td>2732.0</td>
       <td>NaN</td>
@@ -2281,7 +2264,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1708.0</td>
       <td>3423.0</td>
       <td>2758.0</td>
       <td>NaN</td>
@@ -2301,7 +2283,6 @@ df['2014-12'].sort_index(ascending=True)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1739.0</td>
       <td>3471.0</td>
       <td>2827.0</td>
       <td>NaN</td>
@@ -2353,7 +2334,6 @@ df.resample('Y').mean()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -2363,8 +2343,7 @@ df.resample('Y').mean()
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -2395,7 +2374,6 @@ df.resample('Y').mean()
       <td>3.277778</td>
       <td>1.0</td>
       <td>3.5</td>
-      <td>522.292135</td>
       <td>1040.582278</td>
       <td>613.297619</td>
       <td>6.131579</td>
@@ -2415,7 +2393,6 @@ df.resample('Y').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1778.000000</td>
       <td>3496.000000</td>
       <td>2945.000000</td>
       <td>NaN</td>
@@ -2465,7 +2442,6 @@ df.resample('M').mean()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -2475,8 +2451,7 @@ df.resample('M').mean()
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -2507,7 +2482,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>62.000000</td>
       <td>3.750000</td>
       <td>3.000000</td>
       <td>NaN</td>
@@ -2527,7 +2501,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>113.636364</td>
       <td>9.625000</td>
       <td>1.111111</td>
       <td>NaN</td>
@@ -2547,7 +2520,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>166.666667</td>
       <td>11.111111</td>
       <td>1.222222</td>
       <td>NaN</td>
@@ -2567,7 +2539,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>250.428571</td>
       <td>28.000000</td>
       <td>29.375000</td>
       <td>NaN</td>
@@ -2587,7 +2558,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>316.300000</td>
       <td>121.300000</td>
       <td>189.500000</td>
       <td>0.666667</td>
@@ -2607,7 +2577,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>394.363636</td>
       <td>468.454545</td>
       <td>353.000000</td>
       <td>3.545455</td>
@@ -2627,7 +2596,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>607.000000</td>
       <td>1508.000000</td>
       <td>565.777778</td>
       <td>8.000000</td>
@@ -2647,7 +2615,6 @@ df.resample('M').mean()
       <td>2.555556</td>
       <td>1.0</td>
       <td>1.0</td>
-      <td>870.555556</td>
       <td>2419.000000</td>
       <td>1151.666667</td>
       <td>8.000000</td>
@@ -2667,7 +2634,6 @@ df.resample('M').mean()
       <td>4.000000</td>
       <td>1.0</td>
       <td>4.0</td>
-      <td>1174.500000</td>
       <td>2928.857143</td>
       <td>1256.750000</td>
       <td>8.000000</td>
@@ -2687,7 +2653,6 @@ df.resample('M').mean()
       <td>4.000000</td>
       <td>1.0</td>
       <td>7.0</td>
-      <td>1612.857143</td>
       <td>3362.000000</td>
       <td>2495.375000</td>
       <td>8.000000</td>
@@ -2707,7 +2672,6 @@ df.resample('M').mean()
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1778.000000</td>
       <td>3496.000000</td>
       <td>2945.000000</td>
       <td>NaN</td>
@@ -2757,7 +2721,6 @@ df.resample('Y').sum()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -2767,8 +2730,7 @@ df.resample('Y').sum()
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -2799,7 +2761,6 @@ df.resample('Y').sum()
       <td>59.0</td>
       <td>16.0</td>
       <td>42.0</td>
-      <td>46484.0</td>
       <td>82206.0</td>
       <td>51517.0</td>
       <td>233.0</td>
@@ -2819,7 +2780,6 @@ df.resample('Y').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>5334.0</td>
       <td>6992.0</td>
       <td>8835.0</td>
       <td>0.0</td>
@@ -2869,7 +2829,6 @@ df.resample('M').sum()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -2879,8 +2838,7 @@ df.resample('M').sum()
       <th>Deaths_Mali</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -2911,7 +2869,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>496.0</td>
       <td>15.0</td>
       <td>9.0</td>
       <td>0.0</td>
@@ -2931,7 +2888,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>1250.0</td>
       <td>77.0</td>
       <td>10.0</td>
       <td>0.0</td>
@@ -2951,7 +2907,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>1500.0</td>
       <td>100.0</td>
       <td>11.0</td>
       <td>0.0</td>
@@ -2971,7 +2926,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>1753.0</td>
       <td>196.0</td>
       <td>235.0</td>
       <td>0.0</td>
@@ -2991,7 +2945,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>3163.0</td>
       <td>1213.0</td>
       <td>1895.0</td>
       <td>2.0</td>
@@ -3011,7 +2964,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>4338.0</td>
       <td>5153.0</td>
       <td>3883.0</td>
       <td>39.0</td>
@@ -3031,7 +2983,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>5463.0</td>
       <td>12064.0</td>
       <td>5092.0</td>
       <td>56.0</td>
@@ -3051,7 +3002,6 @@ df.resample('M').sum()
       <td>23.0</td>
       <td>7.0</td>
       <td>3.0</td>
-      <td>7835.0</td>
       <td>19352.0</td>
       <td>10365.0</td>
       <td>64.0</td>
@@ -3071,7 +3021,6 @@ df.resample('M').sum()
       <td>32.0</td>
       <td>8.0</td>
       <td>32.0</td>
-      <td>9396.0</td>
       <td>20502.0</td>
       <td>10054.0</td>
       <td>64.0</td>
@@ -3091,7 +3040,6 @@ df.resample('M').sum()
       <td>4.0</td>
       <td>1.0</td>
       <td>7.0</td>
-      <td>11290.0</td>
       <td>23534.0</td>
       <td>19963.0</td>
       <td>8.0</td>
@@ -3111,7 +3059,6 @@ df.resample('M').sum()
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>5334.0</td>
       <td>6992.0</td>
       <td>8835.0</td>
       <td>0.0</td>
@@ -3136,10 +3083,10 @@ df.index.year
 
 
 
-    Int64Index([2015, 2015, 2015, 2015, 2014, 2014, 2014, 2014, 2014, 2014,
+    Int64Index([2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014,
                 ...
-                2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014, 2014],
-               dtype='int64', name='Date', length=122)
+                2014, 2014, 2014, 2014, 2014, 2014, 2015, 2015, 2015, 2015],
+               dtype='int64', name='YYYYMMDD', length=122)
 
 
 
@@ -3151,14 +3098,10 @@ df.index.month
 
 
 
-    DatetimeIndex(['2015-01-05', '2015-01-04', '2015-01-03', '2015-01-02',
-                   '2014-12-31', '2014-12-28', '2014-12-27', '2014-12-24',
-                   '2014-12-21', '2014-12-20',
-                   ...
-                   '2014-04-04', '2014-04-01', '2014-03-31', '2014-03-29',
-                   '2014-03-28', '2014-03-27', '2014-03-26', '2014-03-25',
-                   '2014-03-24', '2014-03-22'],
-                  dtype='datetime64[ns]', name='Date', length=122, freq=None)
+    Int64Index([ 3,  3,  3,  3,  3,  3,  3,  3,  4,  4,
+                ...
+                12, 12, 12, 12, 12, 12,  1,  1,  1,  1],
+               dtype='int64', name='YYYYMMDD', length=122)
 
 
 
@@ -3170,21 +3113,520 @@ df.index.day
 
 
 
-    Int64Index([ 5,  4,  3,  2, 31, 28, 27, 24, 21, 20,
+    Int64Index([22, 24, 25, 26, 27, 28, 29, 31,  1,  4,
                 ...
-                 4,  1, 31, 29, 28, 27, 26, 25, 24, 22],
-               dtype='int64', name='Date', length=122)
+                20, 21, 24, 27, 28, 31,  2,  3,  4,  5],
+               dtype='int64', name='YYYYMMDD', length=122)
 
 
 
 ## cut処理（ヒストグラムの作成）
+データの解析をしていると、データを特定の条件の下分割して、集計したいという場面がよくあります。例えば、季節ごとに集計したい場合などがあると思います。ちょっと月と季節が合っていませんが、季節でラベリングする例です。
 
 
 ```python
-labels = ['上旬', '中旬', '下旬']
-df['period'] = pd.cut(list(df.index.day),  bins=[0,10,20,31], labels=labels, right=True) # 0<day≦10, 10<day≦20, 20<day≦31
+labels = ['春', '夏', '秋', '冬']
+df['season'] = pd.cut(list(df.index.month),  bins=[0,3,6,9,12], labels=labels, right=True)
+df[['season']][5:10]
+```
 
-df.head()
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>season</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-03-28</th>
+      <td>春</td>
+    </tr>
+    <tr>
+      <th>2014-03-29</th>
+      <td>春</td>
+    </tr>
+    <tr>
+      <th>2014-03-31</th>
+      <td>春</td>
+    </tr>
+    <tr>
+      <th>2014-04-01</th>
+      <td>夏</td>
+    </tr>
+    <tr>
+      <th>2014-04-04</th>
+      <td>夏</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+df[['season']][73:78]
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>season</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-09-21</th>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-09-23</th>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-09-28</th>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-10-01</th>
+      <td>冬</td>
+    </tr>
+    <tr>
+      <th>2014-10-04</th>
+      <td>冬</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+## query, where, maskの使い方 (ソートも)
+numpyと同じように、queryやwhereなども使うことが出来ます。使い方は直感的にnumpyと同じなので、すぐに使えると思います。感染者と死者数でクエリを実行してみます。
+
+queryは抽出したい条件式を指定します。
+
+
+```python
+df[['Deaths_Liberia','Cases_Liberia']].query('Deaths_Liberia > 100 and Cases_Liberia > 7000')
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Deaths_Liberia</th>
+      <th>Cases_Liberia</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-11-15</th>
+      <td>2964.0</td>
+      <td>7069.0</td>
+    </tr>
+    <tr>
+      <th>2014-11-18</th>
+      <td>2963.0</td>
+      <td>7082.0</td>
+    </tr>
+    <tr>
+      <th>2014-11-22</th>
+      <td>3016.0</td>
+      <td>7168.0</td>
+    </tr>
+    <tr>
+      <th>2014-11-28</th>
+      <td>3145.0</td>
+      <td>7635.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-03</th>
+      <td>3177.0</td>
+      <td>7719.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-09</th>
+      <td>3290.0</td>
+      <td>7797.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-18</th>
+      <td>3376.0</td>
+      <td>7830.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-20</th>
+      <td>3384.0</td>
+      <td>7862.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-24</th>
+      <td>3413.0</td>
+      <td>7977.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-28</th>
+      <td>3423.0</td>
+      <td>8018.0</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>3471.0</td>
+      <td>8115.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-02</th>
+      <td>3496.0</td>
+      <td>8157.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-03</th>
+      <td>3496.0</td>
+      <td>8166.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+whereも条件を指定すると、条件を満たすデータはそのまま、見たさないデータはNaNが格納されたデータを返します。
+
+
+```python
+df[['Deaths_Liberia']].where(df['Deaths_Liberia'] > 1000)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Deaths_Liberia</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-03-22</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-24</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-25</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-26</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-27</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>3471.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-02</th>
+      <td>3496.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-03</th>
+      <td>3496.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-04</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2015-01-05</th>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>122 rows × 1 columns</p>
+</div>
+
+
+
+NaNではなく、別の数字を入れることも可能です。この辺はnumpyと同じでとても助かります。
+
+
+```python
+df[['Deaths_Liberia']].where(df['Deaths_Liberia'] > 3000,0)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Deaths_Liberia</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-03-22</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-03-24</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-03-25</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-03-26</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2014-03-27</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>3471.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-02</th>
+      <td>3496.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-03</th>
+      <td>3496.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-04</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-05</th>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>122 rows × 1 columns</p>
+</div>
+
+
+
+maskメソッドはwhereと逆で、条件を満たすものを第二引数に書き換えます。
+
+
+```python
+df[['Deaths_Liberia']].mask(df['Deaths_Liberia'] > 3000, 0)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Deaths_Liberia</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-03-22</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-24</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-25</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-26</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2014-03-27</th>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2014-12-31</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-02</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-03</th>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2015-01-04</th>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2015-01-05</th>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>122 rows × 1 columns</p>
+</div>
+
+
+
+## nullの使い方
+
+データにはしばしばNullが含まれるので、正しいデータ分析のためにはNullがどの程度含まれていて、それがどの程度解析に影響を及ぼすのか確認する必要があります。
+
+`isnull`によって、Nullの部分をFalseにしたテーブルを作成する事が出来ます。
+
+
+```python
+df.isnull()
 ```
 
 
@@ -3217,7 +3659,6 @@ df.head()
       <th>Cases_UnitedStates</th>
       <th>Cases_Spain</th>
       <th>Cases_Mali</th>
-      <th>Deaths_Guinea</th>
       <th>Deaths_Liberia</th>
       <th>Deaths_SierraLeone</th>
       <th>Deaths_Nigeria</th>
@@ -3225,11 +3666,10 @@ df.head()
       <th>Deaths_UnitedStates</th>
       <th>Deaths_Spain</th>
       <th>Deaths_Mali</th>
-      <th>period</th>
+      <th>season</th>
     </tr>
     <tr>
-      <th>Date</th>
-      <th></th>
+      <th>YYYYMMDD</th>
       <th></th>
       <th></th>
       <th></th>
@@ -3251,109 +3691,550 @@ df.head()
   </thead>
   <tbody>
     <tr>
-      <th>2015-01-05</th>
-      <td>289</td>
-      <td>2776.0</td>
-      <td>NaN</td>
-      <td>10030.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1786.0</td>
-      <td>NaN</td>
-      <td>2977.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>上旬</td>
+      <th>2014-03-22</th>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
-      <th>2015-01-04</th>
-      <td>288</td>
-      <td>2775.0</td>
-      <td>NaN</td>
-      <td>9780.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1781.0</td>
-      <td>NaN</td>
-      <td>2943.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>上旬</td>
+      <th>2014-03-24</th>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
-      <th>2015-01-03</th>
-      <td>287</td>
-      <td>2769.0</td>
-      <td>8166.0</td>
-      <td>9722.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1767.0</td>
-      <td>3496.0</td>
-      <td>2915.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>上旬</td>
+      <th>2014-03-25</th>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
     </tr>
     <tr>
-      <th>2015-01-02</th>
-      <td>286</td>
-      <td>NaN</td>
-      <td>8157.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>3496.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>上旬</td>
+      <th>2014-03-26</th>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2014-03-27</th>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
       <th>2014-12-31</th>
-      <td>284</td>
-      <td>2730.0</td>
-      <td>8115.0</td>
-      <td>9633.0</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2015-01-02</th>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2015-01-03</th>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2015-01-04</th>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>2015-01-05</th>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+<p>122 rows × 17 columns</p>
+</div>
+
+
+
+また、sumメソッドを利用すると、各カラムごとにNullの個数をカウントする事が出来ます。
+
+
+```python
+df.isnull().sum()
+```
+
+
+
+
+    Day                      0
+    Cases_Guinea            29
+    Cases_Liberia           39
+    Cases_SierraLeone       35
+    Cases_Nigeria           84
+    Cases_Senegal           97
+    Cases_UnitedStates     104
+    Cases_Spain            106
+    Cases_Mali             110
+    Deaths_Liberia          41
+    Deaths_SierraLeone      35
+    Deaths_Nigeria          84
+    Deaths_Senegal         100
+    Deaths_UnitedStates    104
+    Deaths_Spain           106
+    Deaths_Mali            110
+    season                   0
+    dtype: int64
+
+
+
+同様に、meanメソッドで平均を出すことが出来ます。
+
+
+```python
+df.isnull().mean()
+```
+
+
+
+
+    Day                    0.000000
+    Cases_Guinea           0.237705
+    Cases_Liberia          0.319672
+    Cases_SierraLeone      0.286885
+    Cases_Nigeria          0.688525
+    Cases_Senegal          0.795082
+    Cases_UnitedStates     0.852459
+    Cases_Spain            0.868852
+    Cases_Mali             0.901639
+    Deaths_Liberia         0.336066
+    Deaths_SierraLeone     0.286885
+    Deaths_Nigeria         0.688525
+    Deaths_Senegal         0.819672
+    Deaths_UnitedStates    0.852459
+    Deaths_Spain           0.868852
+    Deaths_Mali            0.901639
+    season                 0.000000
+    dtype: float64
+
+
+
+Nullのデータを書き換えます。`fillna`というメソッドを利用します。
+
+
+```python
+df.fillna(value={'Cases_Liberia': 0.0, 'Deaths_Liberia': 0.0}, inplace=True)
+df.isnull().sum()
+```
+
+
+
+
+    Day                      0
+    Cases_Guinea            29
+    Cases_Liberia            0
+    Cases_SierraLeone       35
+    Cases_Nigeria           84
+    Cases_Senegal           97
+    Cases_UnitedStates     104
+    Cases_Spain            106
+    Cases_Mali             110
+    Deaths_Liberia           0
+    Deaths_SierraLeone      35
+    Deaths_Nigeria          84
+    Deaths_Senegal         100
+    Deaths_UnitedStates    104
+    Deaths_Spain           106
+    Deaths_Mali            110
+    season                   0
+    dtype: int64
+
+
+
+これで確かにCases_LiberiaとDeath_Liberiaのnullの数が0になりました。
+
+また、ある列にNullがある行を削除することが出来ます。dropnaを適用した前後のデータ数を比較してみるとわかります。削除前は、
+
+
+```python
+df.shape
+```
+
+
+
+
+    (122, 17)
+
+
+
+となります。削除後は以下の通りで、確かに削除されていることがわかります。
+
+
+```python
+df.dropna(subset=['Cases_Nigeria'], axis=0).shape
+```
+
+
+
+
+    (38, 17)
+
+
+
+
+```python
+df.dropna(subset=['Cases_Nigeria'], axis=0).isnull().sum()
+```
+
+
+
+
+    Day                     0
+    Cases_Guinea            2
+    Cases_Liberia           0
+    Cases_SierraLeone       0
+    Cases_Nigeria           0
+    Cases_Senegal          13
+    Cases_UnitedStates     21
+    Cases_Spain            23
+    Cases_Mali             27
+    Deaths_Liberia          0
+    Deaths_SierraLeone      0
+    Deaths_Nigeria          0
+    Deaths_Senegal         16
+    Deaths_UnitedStates    21
+    Deaths_Spain           23
+    Deaths_Mali            27
+    season                  0
+    dtype: int64
+
+
+
+
+```python
+df.dropna(subset=['Cases_Nigeria'], axis=0).head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Day</th>
+      <th>Cases_Guinea</th>
+      <th>Cases_Liberia</th>
+      <th>Cases_SierraLeone</th>
+      <th>Cases_Nigeria</th>
+      <th>Cases_Senegal</th>
+      <th>Cases_UnitedStates</th>
+      <th>Cases_Spain</th>
+      <th>Cases_Mali</th>
+      <th>Deaths_Liberia</th>
+      <th>Deaths_SierraLeone</th>
+      <th>Deaths_Nigeria</th>
+      <th>Deaths_Senegal</th>
+      <th>Deaths_UnitedStates</th>
+      <th>Deaths_Spain</th>
+      <th>Deaths_Mali</th>
+      <th>season</th>
+    </tr>
+    <tr>
+      <th>YYYYMMDD</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2014-07-23</th>
+      <td>123</td>
+      <td>427.0</td>
+      <td>249.0</td>
+      <td>525.0</td>
+      <td>0.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>1739.0</td>
-      <td>3471.0</td>
-      <td>2827.0</td>
-      <td>NaN</td>
+      <td>129.0</td>
+      <td>224.0</td>
+      <td>0.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>下旬</td>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-07-27</th>
+      <td>126</td>
+      <td>460.0</td>
+      <td>329.0</td>
+      <td>533.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>156.0</td>
+      <td>233.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-07-30</th>
+      <td>129</td>
+      <td>472.0</td>
+      <td>391.0</td>
+      <td>574.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>227.0</td>
+      <td>252.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-08-01</th>
+      <td>132</td>
+      <td>485.0</td>
+      <td>468.0</td>
+      <td>646.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>255.0</td>
+      <td>273.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>秋</td>
+    </tr>
+    <tr>
+      <th>2014-08-04</th>
+      <td>135</td>
+      <td>495.0</td>
+      <td>516.0</td>
+      <td>691.0</td>
+      <td>9.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>282.0</td>
+      <td>286.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>秋</td>
     </tr>
   </tbody>
 </table>
@@ -3361,12 +4242,8 @@ df.head()
 
 
 
-## queryとwhereの使い方 (ソートも)
-
-## nullの使い方
-
 ## 列名やインデックス名の変更
-上で既に出てきていますが、列名やインデックスの名前を変更したい場合はよくあります。renameを使います。
+上で既に出てきていますが、列名やインデックスの名前を変更したい場合はよくあります。renameメソッドを使います。
 
 
 ```python
@@ -3374,123 +4251,96 @@ df.rename(columns={'before': 'after'}, inplace=True)
 df.rename(index={'before': 'after'}, inplace=True)
 ```
 
-## get_dummiesの使い方
+## SQL likeなメソッド
+SQLおなじみのgroupbyがpandasで利用できます。こちらは個人的にはよく利用しますね。
+
+
+```python
+df.groupby(['season'])['season'].count()
+```
+
+
+
+
+    season
+    春    12
+    夏    35
+    秋    33
+    冬    42
+    Name: season, dtype: int64
+
+
 
 ## CSVへ出力
 
-## 頻出のコマンド一覧
-概要として、よく利用するコマンドを以下に載せます。
+メモリに格納されているすべてのデータを出力します。
 
-#### 
-```python
-df.query()
-```
 
-#### 
 ```python
-df.unique()
-```
-
-#### 
-```python
-df.drop_duplicates()
+df.to_csv('./out.csv')
 ```
 
 
-#### 
 ```python
-df.apply()
+!head  -n 10 out.csv
 ```
 
-#### 
+    YYYYMMDD,Day,Cases_Guinea,Cases_Liberia,Cases_SierraLeone,Cases_Nigeria,Cases_Senegal,Cases_UnitedStates,Cases_Spain,Cases_Mali,Deaths_Liberia,Deaths_SierraLeone,Deaths_Nigeria,Deaths_Senegal,Deaths_UnitedStates,Deaths_Spain,Deaths_Mali,season
+    2014-03-22,0,49.0,0.0,,,,,,,0.0,,,,,,,春
+    2014-03-24,2,86.0,0.0,,,,,,,0.0,,,,,,,春
+    2014-03-25,3,86.0,0.0,,,,,,,0.0,,,,,,,春
+    2014-03-26,4,86.0,0.0,,,,,,,0.0,,,,,,,春
+    2014-03-27,5,103.0,8.0,6.0,,,,,,6.0,5.0,,,,,,春
+    2014-03-28,6,112.0,3.0,2.0,,,,,,3.0,2.0,,,,,,春
+    2014-03-29,7,112.0,7.0,,,,,,,2.0,,,,,,,春
+    2014-03-31,9,122.0,8.0,2.0,,,,,,4.0,2.0,,,,,,春
+    2014-04-01,10,127.0,8.0,2.0,,,,,,5.0,2.0,,,,,,夏
+
+
+
 ```python
-pd.cut()
+df.to_csv('./out.csv', columns=['Deaths_Liberia'])
 ```
 
-#### 
+
 ```python
-df.isnull()
+!head  -n 10 out.csv
 ```
 
-#### 
+    YYYYMMDD,Deaths_Liberia
+    2014-03-22,0.0
+    2014-03-24,0.0
+    2014-03-25,0.0
+    2014-03-26,0.0
+    2014-03-27,6.0
+    2014-03-28,3.0
+    2014-03-29,2.0
+    2014-03-31,4.0
+    2014-04-01,5.0
+
+
+ヘッダーとインデックスを記述しないように出来ます。
+
+
 ```python
-df.any()
+df.to_csv('./out.csv', header=False, index=False)
 ```
 
-#### 
+
 ```python
-df.fillna()
+!head  -n 10 out.csv
 ```
 
-#### 
-```python
-df.dropna()
-```
-
-#### 
-```python
-df.replace()
-```
-
-#### 
-```python
-df.mask()
-```
-
-#### 
-```python
-df.drop()
-```
-
-#### 
-```python
-df.value_counts()
-```
-
-#### 
-```python
-df.groupby()
-```
-
-#### 
-```python
-df.diff()
-```
-
-#### 
-```python
-df.rolling()
-```
-
-#### 
-```python
-df.pct_change()
-```
-
-#### 
-```python
-df.plot()
-```
-
-#### 
-```python
-df.pivot()
-```
-
-#### 
-```python
-pd.get_dummies()
-```
-
-#### 
-```python
-df.to_csv()
-```
-
-#### 
-```python
-pd.options.display.max_columns = None
-```
+    0,49.0,0.0,,,,,,,0.0,,,,,,,春
+    2,86.0,0.0,,,,,,,0.0,,,,,,,春
+    3,86.0,0.0,,,,,,,0.0,,,,,,,春
+    4,86.0,0.0,,,,,,,0.0,,,,,,,春
+    5,103.0,8.0,6.0,,,,,,6.0,5.0,,,,,,春
+    6,112.0,3.0,2.0,,,,,,3.0,2.0,,,,,,春
+    7,112.0,7.0,,,,,,,2.0,,,,,,,春
+    9,122.0,8.0,2.0,,,,,,4.0,2.0,,,,,,春
+    10,127.0,8.0,2.0,,,,,,5.0,2.0,,,,,,夏
+    13,143.0,18.0,2.0,,,,,,7.0,2.0,,,,,,夏
 
 
 ## よく使う関数
@@ -3538,3 +4388,5 @@ df.isnull().sum()
 ## 参考文献
 - [チートシート](https://github.com/pandas-dev/pandas/blob/master/doc/cheatsheet/Pandas_Cheat_Sheet.pdf)
 - [read_csvの全引数について解説してくれてます](https://own-search-and-study.xyz/2015/09/03/pandas%E3%81%AEread_csv%E3%81%AE%E5%85%A8%E5%BC%95%E6%95%B0%E3%82%92%E4%BD%BF%E3%81%84%E3%81%93%E3%81%AA%E3%81%99/)
+- [データ分析で頻出のPandas基本操作](https://qiita.com/ysdyt/items/9ccca82fc5b504e7913a)
+実務レベルで重要な部分を丁寧に書かれています。とても参考になります。
