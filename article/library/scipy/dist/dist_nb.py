@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## scipyによる確率分布と特殊関数
@@ -29,8 +29,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
