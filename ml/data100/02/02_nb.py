@@ -2,10 +2,19 @@
 # coding: utf-8
 
 # ## 第2章 小売店のデータでデータ加工を行う10本ノック
+# 
+# 第２章では小売店の売り上げデータの解析、予測になります。汚いデータをいかに加工して予測のモデルを構築をして行くかという演習になっています。
+# 
+# こういう実務的な問題を演習として用意してくれているので、とてもありがたいです。
+# 
 # 結果だけ載せました。正解かどうかは保障しません笑
 # 
 # ### github
-# - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/02/02_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/02/02_nb.ipynb)
+# 
+# ### google colaboratory
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/ml/data100/02/02_nb.ipynb)
+# 
 # ### 筆者の環境
 
 # In[1]:
@@ -51,11 +60,25 @@ uriage_data = pd.read_csv('uriage.csv')
 uriage_data.head()
 
 
+# 途中で半角スペースが入っていたり、大文字、小文字の差異などいい感じに表記が揺れています。一応カラム名を確認しておきます。
+
+# In[13]:
+
+
+uriage_data.columns
+
+
 # In[5]:
 
 
 kokyaku_data = pd.read_excel('kokyaku_daicho.xlsx')
 kokyaku_data.head()
+
+
+# In[16]:
+
+
+kokyaku_data.columns
 
 
 # ### ノック12 : データの揺れを見てみよう
@@ -75,6 +98,8 @@ uriage_data['item_price'].head()
 # かなりデータが揺れがあるのがわかります。
 
 # ### ノック13 : データに揺れがあるまま集計してみよう 
+# 
+# 日付がobject型なのでdatetime型に変換します。
 
 # In[8]:
 
@@ -82,13 +107,15 @@ uriage_data['item_price'].head()
 uriage_data['purchase_date'] = pd.to_datetime(uriage_data['purchase_date'])
 
 
-# In[9]:
+# In[22]:
 
 
-uriage_data['purchase_date']
+uriage_data[['purchase_date']].head()
 
 
-# datetime型に変換されています。
+# daetime型に変換されています。
+# 
+# 月ごとの集計値を計算します。
 
 # In[10]:
 
@@ -105,7 +132,7 @@ res.shape
 
 
 # 商品数が99個になっています。
-# 次に価格についても見てみます。
+# 次に価格の集計についても見てみます。
 
 # In[12]:
 
@@ -114,7 +141,92 @@ res = uriage_data.pivot_table(index='purchase_month', columns='item_name', value
 res
 
 
+# こちらも全く意味をなしてないことがわかります。
+
 # ### ノック14 : 
+# 
+# まずは商品名の揺れを補正していくようです。今回抽出された商品の一覧です。
+
+# In[24]:
+
+
+pd.unique(uriage_data['item_name'])
+
+
+# 商品数は９９個です。
+
+# In[25]:
+
+
+len(pd.unique(uriage_data['item_name']))
+
+
+# スペースの有無、半角全角統一をします。文字列を扱うメソッド`str`を利用します。
+
+# In[32]:
+
+
+uriage_data['item_name'] = uriage_data['item_name'].str.upper()
+uriage_data['item_name'] = uriage_data['item_name'].str.replace("　","")
+uriage_data['item_name'] = uriage_data['item_name'].str.replace(" ","")
+uriage_data.sort_values(by=['item_name'], ascending=True).head(3)
+
+
+# In[30]:
+
+
+uriage_data['item_name'].unique()
+
+
+# In[31]:
+
+
+len(uriage_data['item_name'].unique())
+
+
+# となり、商品名の揺れは解消されました。
+
+# ### ノック15 :  金額欠損値の補完をしよう
+# 
+# 金額にどれぐらいの欠損値（Null)があるか確認しています。
+
+# In[36]:
+
+
+uriage_data.isnull().sum()
+
+
+# In[37]:
+
+
+uriage_data.shape
+
+
+# 行数が2999で、387行が欠損値で約１２％が欠落していることになります。
+
+# 教科書では、
+
+# In[38]:
+
+
+uriage_data.isnull().any(axis=0)
+
+
+# とデータの欠損の有無を確認しています。
+
+# In[40]:
+
+
+uriage_data.isnull().head()
+
+
+# anyメソッド、引数のオプションにaxisを指定することで、一つでもNullがあればTrueを返し、Nullの有無を確認出来ます。
+
+# In[41]:
+
+
+uriage_data.isnull().any(axis=0)
+
 
 # In[ ]:
 
@@ -122,7 +234,36 @@ res
 
 
 
-# ### ノック15 : 
+# In[45]:
+
+
+flg_is_null = uriage_data['item_price'].isnull()
+
+
+# In[46]:
+
+
+uriage_data.loc[flg_is_null, 'item_name'].unique()
+
+
+# In[48]:
+
+
+flg_is_null = uriage_data['item_price'].isnull()
+
+for trg in list(uriage_data.loc[flg_is_null, 'item_name'].unique()):
+  price = uriage_data.loc[(~flg_is_null) & (uriage_data['item_name'] == trg), 'item_price'].max()
+  uriage_data['item_price'].loc[(flg_is_null) & (uriage_data['item_name'] == trg)] = price
+  
+uriage_data.head()
+
+
+# In[51]:
+
+
+uriage_data['item_price'].isnull().any(axis=0)
+uriage_data.isnull().any(axis=0)
+
 
 # In[ ]:
 
@@ -130,7 +271,51 @@ res
 
 
 
-# ### ノック16 : 
+# ### ノック16 : 顧客名の揺れを補正しよう
+# 
+# 次は文字列の揺れの修正になります。
+
+# In[52]:
+
+
+kokyaku_data['顧客名'].head()
+
+
+# こちらもスペースが有無に違いがある事尾がわかります。
+
+# In[53]:
+
+
+uriage_data['customer_name'].head()
+
+
+# こちらはスペースがありません。こういった名前の表式の差異は、名前が一意キーとなっている場合ｌ、ジョインできないなどの大きいな問題になります。
+
+# こちらは、スペースを削除する方向でデータの補正を行います。
+
+# In[54]:
+
+
+kokyaku_data['顧客名'] = kokyaku_data['顧客名'].str.replace(" ","")
+kokyaku_data['顧客名'] = kokyaku_data['顧客名'].str.replace("　","")
+kokyaku_data['顧客名'].head()
+
+
+# 事務レベルでは名前の補正は本当にやっかいです。このほかにも、同姓同名の処理や、漢字が同じなのに読み方が異なる場合など、大変です。
+
+# ### ノック17 : 日付の揺れを補正しよう
+# 
+# 次に日付の揺れを補正します。教科書の場合は、日付の表記が異なっていたり、エクセルの設定により日付が数字になっていたりするので、それを補正します。
+# 
+# まずは数値として取り込まれているデータを取得します。
+
+# In[58]:
+
+
+flg_is_series = kokyaku_data['登録日'].astype('str').str.isdigit()
+
+flg_is_series.sum()
+
 
 # In[ ]:
 
@@ -138,7 +323,7 @@ res
 
 
 
-# ### ノック17 : 
+# ### ノック18 : 顧客名をキーに二つのデータを結合しよう
 
 # In[ ]:
 
@@ -146,7 +331,7 @@ res
 
 
 
-# ### ノック18 : 
+# ### ノック19 : クレンジングしたデータをダンプしよう
 
 # In[ ]:
 
@@ -154,15 +339,7 @@ res
 
 
 
-# ### ノック19 : 
-
-# In[ ]:
-
-
-
-
-
-# ### ノック20 : 
+# ### ノック20 : データを集計しよう
 
 # In[ ]:
 
