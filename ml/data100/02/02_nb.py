@@ -20,44 +20,38 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
+# 基本的なライブラリをインポートしそのバージョンを確認しておきます。
+
 # In[3]:
 
 
-import pandas as pd
-
-pd.__version__
-
-
-# In[4]:
-
-
-import matplotlib
-
-matplotlib.__version__
-
-
-# matplotlibを呼び込み、保存する画像をsvgに設定します。
-
-# In[5]:
-
-
-import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+import pandas as pd
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+print('pandas version :', pd.__version__)
 
 
 # ## 解答
 
 # ### ノック11 : データを読み込んでみよう
 
-# In[6]:
+# In[4]:
 
 
 uriage_data = pd.read_csv('uriage.csv')
 uriage_data.head()
 
 
-# In[7]:
+# In[5]:
 
 
 kokyaku_data = pd.read_excel('kokyaku_daicho.xlsx')
@@ -66,13 +60,13 @@ kokyaku_data.head()
 
 # ### ノック12 : データの揺れを見てみよう
 
-# In[8]:
+# In[6]:
 
 
 uriage_data['item_name'].head()
 
 
-# In[9]:
+# In[7]:
 
 
 uriage_data['item_price'].head()
@@ -82,13 +76,13 @@ uriage_data['item_price'].head()
 
 # ### ノック13 : データに揺れがあるまま集計してみよう 
 
-# In[10]:
+# In[8]:
 
 
 uriage_data['purchase_date'] = pd.to_datetime(uriage_data['purchase_date'])
 
 
-# In[17]:
+# In[9]:
 
 
 uriage_data['purchase_date']
@@ -96,7 +90,7 @@ uriage_data['purchase_date']
 
 # datetime型に変換されています。
 
-# In[18]:
+# In[10]:
 
 
 uriage_data['purchase_month'] = uriage_data['purchase_date'].dt.strftime('%Y%m')
@@ -104,7 +98,7 @@ res = uriage_data.pivot_table(index='purchase_month', columns='item_name', aggfu
 res
 
 
-# In[20]:
+# In[11]:
 
 
 res.shape
@@ -113,7 +107,7 @@ res.shape
 # 商品数が99個になっています。
 # 次に価格についても見てみます。
 
-# In[21]:
+# In[12]:
 
 
 res = uriage_data.pivot_table(index='purchase_month', columns='item_name', values='item_price', aggfunc='sum', fill_value=0)
