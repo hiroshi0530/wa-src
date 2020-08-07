@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第2章 小売店のデータでデータ加工を行う10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -228,12 +228,6 @@ uriage_data.isnull().head()
 uriage_data.isnull().any(axis=0)
 
 
-# In[ ]:
-
-
-
-
-
 # In[45]:
 
 
@@ -263,12 +257,6 @@ uriage_data.head()
 
 uriage_data['item_price'].isnull().any(axis=0)
 uriage_data.isnull().any(axis=0)
-
-
-# In[ ]:
-
-
-
 
 
 # ### ノック16 : 顧客名の揺れを補正しよう
@@ -317,35 +305,11 @@ flg_is_series = kokyaku_data['登録日'].astype('str').str.isdigit()
 flg_is_series.sum()
 
 
-# In[ ]:
-
-
-
-
-
 # ### ノック18 : 顧客名をキーに二つのデータを結合しよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック19 : クレンジングしたデータをダンプしよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック20 : データを集計しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
