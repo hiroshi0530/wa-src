@@ -1,9 +1,7 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 第2章 小売店のデータでデータ加工を行う10本ノック
-# 
-# この記事は[「Python実践データ分析100本ノック」](https://www.amazon.co.jp/dp/B07ZSGSN9S/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)の演習を実際にやってみたという内容になっています。今まで自己流でやってきましたが、一度他の方々がどのような考え方やコーディングをしているのか勉強してみようと思ってやってみました。本書は実際の業務に活用する上でとても参考になる内容だと思っています。データ分析に関わる仕事をしたい方にお勧めしたいです。
 # 
 # 第２章では小売店の売り上げデータの解析、予測になります。汚いデータをいかに加工して予測のモデルを構築をして行くかという演習になっています。
 # 
@@ -36,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -230,6 +228,12 @@ uriage_data.isnull().head()
 uriage_data.isnull().any(axis=0)
 
 
+# In[ ]:
+
+
+
+
+
 # In[45]:
 
 
@@ -259,6 +263,12 @@ uriage_data.head()
 
 uriage_data['item_price'].isnull().any(axis=0)
 uriage_data.isnull().any(axis=0)
+
+
+# In[ ]:
+
+
+
 
 
 # ### ノック16 : 顧客名の揺れを補正しよう
@@ -305,13 +315,38 @@ kokyaku_data['顧客名'].head()
 flg_is_series = kokyaku_data['登録日'].astype('str').str.isdigit()
 
 flg_is_series.sum()
+flg_is_series.sum()
+
+
+# In[ ]:
+
+
+
 
 
 # ### ノック18 : 顧客名をキーに二つのデータを結合しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック19 : クレンジングしたデータをダンプしよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック20 : データを集計しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
