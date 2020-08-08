@@ -1,9 +1,13 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
-# ## 第4章 
+# ## 第4章 顧客の行動を予測する10本ノック
 # 
 # この記事は[「Python実践データ分析100本ノック」](https://www.amazon.co.jp/dp/B07ZSGSN9S/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)の演習を実際にやってみたという内容になっています。今まで自己流でやってきましたが、一度他の方々がどのような考え方やコーディングをしているのか勉強してみようと思ってやってみました。本書は実際の業務に活用する上でとても参考になる内容だと思っています。データ分析に関わる仕事をしたい方にお勧めしたいです。
+# 
+# 本演習で利用しているデータは本サイトからは利用できません。ぜひとも「Python実践データ分析１００本ノック」を購入し、本に沿ってダウンロードして自分の手でコーディングしてみてください。（私は決して回し者ではないので安心してください笑）
+# 
+# 結果だけ載せました。正解かどうかは保障しません笑
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/04/04_nb.ipynb)
@@ -30,8 +34,8 @@ get_ipython().system('python -V')
 # In[ ]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -47,7 +51,85 @@ print('pandas version :', pd.__version__)
 
 # ## 解答
 
-# ### ノック
+# ### ノック 31 : データを読み込んで確認しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 32 : クラスタリングで顧客をグループ化しよう 
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 33 :クラスタリングの結果を分析しよう 
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 34 : クラスタリングの結果を可視化してみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 35 : クラスタリングの結果を基に退会顧客の傾向を把握しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 36 : 翌日の利用回数予測を行うための準備をしよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 37 : 特徴となる変数を付与しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 38 : 来月の利用回数予測モデルを構築しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 39 : モデルに寄与している変数を確認しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 40 : 来月の利用回数を予測しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
