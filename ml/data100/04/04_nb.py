@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第4章 顧客の行動を予測する10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[ ]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -53,83 +53,23 @@ print('pandas version :', pd.__version__)
 
 # ### ノック 31 : データを読み込んで確認しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 32 : クラスタリングで顧客をグループ化しよう 
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 33 :クラスタリングの結果を分析しよう 
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 34 : クラスタリングの結果を可視化してみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 35 : クラスタリングの結果を基に退会顧客の傾向を把握しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 36 : 翌日の利用回数予測を行うための準備をしよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 37 : 特徴となる変数を付与しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 38 : 来月の利用回数予測モデルを構築しよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 39 : モデルに寄与している変数を確認しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 40 : 来月の利用回数を予測しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
