@@ -927,11 +927,6 @@ df['Deaths_Liberia'].value_counts()
 
 
 
-
-```python
-
-```
-
 ## インデックスをdatetime型に変更
 
 インデックスをDateに変更し、上書きします。時系列データの場合、インデックスを日付にすると解析しやすいことが多いです。ただ、単純に文字列としてインデックスするよりも、pandaに標準で備わっているdatetime型に変換すると集計処理などが便利になります。
@@ -4341,6 +4336,49 @@ df.to_csv('./out.csv', header=False, index=False)
     9,122.0,8.0,2.0,,,,,,4.0,2.0,,,,,,春
     10,127.0,8.0,2.0,,,,,,5.0,2.0,,,,,,夏
     13,143.0,18.0,2.0,,,,,,7.0,2.0,,,,,,夏
+
+
+### その他追記
+
+#### 型変換
+型を指定して上書きします。一括の変換の表記方法です。inplaceがなく、少し時間を使ってしまい、メモしておきます。
+
+
+```python
+test = pd.DataFrame({'max':[1], 'min':[2], 'mean':[1.5]})
+
+test.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 1 entries, 0 to 0
+    Data columns (total 3 columns):
+     #   Column  Non-Null Count  Dtype  
+    ---  ------  --------------  -----  
+     0   max     1 non-null      int64  
+     1   min     1 non-null      int64  
+     2   mean    1 non-null      float64
+    dtypes: float64(1), int64(2)
+    memory usage: 152.0 bytes
+
+
+
+```python
+test = test.astype({'max': float, 'min': float, 'mean': float})
+
+test.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 1 entries, 0 to 0
+    Data columns (total 3 columns):
+     #   Column  Non-Null Count  Dtype  
+    ---  ------  --------------  -----  
+     0   max     1 non-null      float64
+     1   min     1 non-null      float64
+     2   mean    1 non-null      float64
+    dtypes: float64(3)
+    memory usage: 152.0 bytes
 
 
 ## よく使う関数
