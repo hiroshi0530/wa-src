@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 第5章 顧客の退会を予測する10本ノック
@@ -6,6 +6,8 @@
 # この記事は[「Python実践データ分析100本ノック」](https://www.amazon.co.jp/dp/B07ZSGSN9S/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)の演習を実際にやってみたという内容になっています。今まで自己流でやってきましたが、一度他の方々がどのような考え方やコーディングをしているのか勉強してみようと思ってやってみました。本書は実際の業務に活用する上でとても参考になる内容だと思っています。データ分析に関わる仕事をしたい方にお勧めしたいです。
 # 
 # 本演習で利用しているデータは本サイトからは利用できません。ぜひとも「Python実践データ分析１００本ノック」を購入し、本に沿ってダウンロードして自分の手でコーディングしてみてください。（私は決して回し者ではないので安心してください笑）
+# 
+# 前章（4章）では、クラスタリングと線形回帰をして見ました。今回は決定木のようです。データ分析や予測において最初に使われるのがほとんど決定木を基本とする、XGBoostやLightGBM、ランダムフォレストの元となっています。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
@@ -29,11 +31,11 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[ ]:
+# In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -51,23 +53,102 @@ print('pandas version :', pd.__version__)
 
 # ### ノック : 41 データを読み込んで利用で他を整形しよう
 
+# In[5]:
+
+
+customer = pd.read_csv('customer_join.csv')
+uselog_months = pd.read_csv('use_log_months.csv')
+
+
+# In[9]:
+
+
+year_months = list(uselog_months['年月'].unique())
+uselog = pd.DataFrame()
+
+for i in range(1, len(year_months)):
+  tmp = uselog_months.loc[uselog_months['年月'] == year_months[i]]
+  tmp.rename(columns={'count': 'count_0'}, inplace=True)
+  tmp_before = uselog_months.loc[uselog_months['年月'] == year_months[i-1]]
+  del tmp_before['年月']
+  tmp_before.rename(columns={'count': 'count_1'}, inplace=True)
+  tmp = pd.merge(tmp, tmp_before, on='customer_id', how='left')
+  uselog = pd.concat([uselog, tmp], ignore_index=True)
+  
+uselog.head()
+
+
 # ### ノック : 42 大会前日の大会顧客データを作成しよう
+
+# In[ ]:
+
+
+
+
 
 # ### ノック : 43 継続顧客のデータを作成しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 44 予測する月の在籍期間を作成しよう
+
+# In[ ]:
+
+
+
+
 
 # ### ノック : 45 欠損値を除去しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 46 文字列型の変数を処理できるように整形しよう
+
+# In[ ]:
+
+
+
+
 
 # ### ノック : 47 決定木を用いて大会予測モデルを作成してみよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 48 予測モデルの評価を行い、モデルのチューニングをしてみよう
+
+# In[ ]:
+
+
+
+
 
 # ### ノック : 49 モデルに寄与している変数を確認しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 50 顧客の退会を予測しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
