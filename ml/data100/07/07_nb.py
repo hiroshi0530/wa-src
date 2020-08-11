@@ -1,7 +1,7 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
-# ## 第7章 
+# ## 第7章 ロジスティクスネットワークの最適設計を行う10本ノック
 # 
 # この記事は[「Python実践データ分析100本ノック」](https://www.amazon.co.jp/dp/B07ZSGSN9S/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)の演習を実際にやってみたという内容になっています。今まで自己流でやってきましたが、一度他の方々がどのような考え方やコーディングをしているのか勉強してみようと思ってやってみました。本書は実際の業務に活用する上でとても参考になる内容だと思っています。データ分析に関わる仕事をしたい方にお勧めしたいです。
 # 
@@ -30,8 +30,8 @@ get_ipython().system('python -V')
 # In[ ]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -47,7 +47,85 @@ print('pandas version :', pd.__version__)
 
 # ## 解答
 
-# ### ノック
+# ### ノック 61 : 輸送最適化問題を解いてみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 62 : 最適輸送ルートをネットワークで確認しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 63 : 最適輸送ルートが制約条件内に収まっているか確認してみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 64 : 生産計画に関するデータを読み込んでみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 65 : 利益を計算する関数を作って見よう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 66 : 生産最適化問題を問いてみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 67 : 最適生産計画が制約条件内に長待て散るどうかを確認しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 68 : ロジスティックネットワーク設計問題を解いてみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 69 : 最適ネットワークにおける輸送コストとその内訳を計算しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 70 : 最適ネットワークにおける生産コストとその内訳を計算しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)

@@ -476,9 +476,9 @@ df.to_csv('./out.csv', header=False, index=False)
 get_ipython().system('head  -n 10 out.csv')
 
 
-# ### その他追記
+# ## その他追記
 
-# #### 型変換
+# ### 型変換
 # 型を指定して上書きします。一括の変換の表記方法です。inplaceがなく、少し時間を使ってしまい、メモしておきます。
 
 # In[56]:

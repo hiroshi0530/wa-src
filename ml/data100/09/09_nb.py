@@ -1,9 +1,11 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
-# ## 第9章 
+# ## 第9章 潜在顧客を把握するための画像処理10本ノック
 # 
 # この記事は[「Python実践データ分析100本ノック」](https://www.amazon.co.jp/dp/B07ZSGSN9S/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)の演習を実際にやってみたという内容になっています。今まで自己流でやってきましたが、一度他の方々がどのような考え方やコーディングをしているのか勉強してみようと思ってやってみました。本書は実際の業務に活用する上でとても参考になる内容だと思っています。データ分析に関わる仕事をしたい方にお勧めしたいです。
+# 
+# 私は画像やテキストの処理は割と経験あるので、前章のネットワークの可視化などよりかなりスムーズに演習することが出来ました。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/09/09_nb.ipynb)
@@ -30,8 +32,8 @@ get_ipython().system('python -V')
 # In[ ]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -47,7 +49,85 @@ print('pandas version :', pd.__version__)
 
 # ## 解答
 
-# ### ノック
+# ### ノック 81 : 画像データを読み込んでみよう 
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 82 : 映像データを読み込んでみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 83 : 映像を画像に分割し、保存してみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 84 : 画像内のどこに人がいるのか検出しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 85 : 画像内の人の顔を検出してみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 86 : 画像内の人がどこに顔を向けているのかを検出してみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 87 : 検出した情報を統合し、タイムラプスを作ってみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 88 : 全体像をグラフにして可視化してみよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 89 : 人通りの変化をグラフで確認しよう
+
+# In[ ]:
+
+
+
+
+
+# ### ノック 90 : 移動平均を計算することでノイズの影響を除去しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
