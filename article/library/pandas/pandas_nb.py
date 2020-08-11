@@ -169,12 +169,6 @@ df.describe()
 df['Deaths_Liberia'].value_counts()
 
 
-# In[ ]:
-
-
-
-
-
 # ## インデックスをdatetime型に変更
 # 
 # インデックスをDateに変更し、上書きします。時系列データの場合、インデックスを日付にすると解析しやすいことが多いです。ただ、単純に文字列としてインデックスするよりも、pandaに標準で備わっているdatetime型に変換すると集計処理などが便利になります。
@@ -480,6 +474,27 @@ df.to_csv('./out.csv', header=False, index=False)
 
 
 get_ipython().system('head  -n 10 out.csv')
+
+
+# ### その他追記
+
+# #### 型変換
+# 型を指定して上書きします。一括の変換の表記方法です。inplaceがなく、少し時間を使ってしまい、メモしておきます。
+
+# In[56]:
+
+
+test = pd.DataFrame({'max':[1], 'min':[2], 'mean':[1.5]})
+
+test.info()
+
+
+# In[57]:
+
+
+test = test.astype({'max': float, 'min': float, 'mean': float})
+
+test.info()
 
 
 # ## よく使う関数
