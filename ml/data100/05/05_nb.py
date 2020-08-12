@@ -53,11 +53,23 @@ print('pandas version :', pd.__version__)
 
 # ### ノック : 41 データを読み込んで利用で他を整形しよう
 
-# In[5]:
+# In[4]:
 
 
 customer = pd.read_csv('customer_join.csv')
 uselog_months = pd.read_csv('use_log_months.csv')
+
+
+# In[7]:
+
+
+customer.head()
+
+
+# In[8]:
+
+
+uselog_months.head()
 
 
 # In[9]:
@@ -74,16 +86,55 @@ for i in range(1, len(year_months)):
   tmp_before.rename(columns={'count': 'count_1'}, inplace=True)
   tmp = pd.merge(tmp, tmp_before, on='customer_id', how='left')
   uselog = pd.concat([uselog, tmp], ignore_index=True)
-  
+
+
+# In[12]:
+
+
 uselog.head()
+
+
+# In[13]:
+
+
+uselog.shape
 
 
 # ### ノック : 42 大会前日の大会顧客データを作成しよう
 
-# In[ ]:
+# In[24]:
 
 
+from dateutil.relativedelta import relativedelta
+exit_customer = customer.loc[customer['is_deleted'] == 1]
 
+exit_customer.head()
+
+
+# In[32]:
+
+
+exit_customer['exit_date'] = None
+exit_customer['end_date'] = pd.to_datetime(exit_customer['end_date'])
+
+for i in range(len(exit_customer)):
+  exit_customer['exit_date'].iloc[i] = exit_customer['end_date'].iloc[i] - relativedelta(months=1)
+
+exit_customer['年月'] = exit_customer['exit_date'].dt.strftime('%Y%m')
+uselog['年月'] = uselog['年月'] .astype(str)
+exit_uselog = pd.merge(uselog, exit_customer, on=['customer_id', '年月'], how='left')
+
+
+# In[33]:
+
+
+len(uselog)
+
+
+# In[34]:
+
+
+exit_uselog.head()
 
 
 # ### ノック : 43 継続顧客のデータを作成しよう
