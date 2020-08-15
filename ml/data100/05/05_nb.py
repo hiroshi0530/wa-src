@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第5章 顧客の退会を予測する10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -60,19 +60,19 @@ customer = pd.read_csv('customer_join.csv')
 uselog_months = pd.read_csv('use_log_months.csv')
 
 
-# In[7]:
+# In[5]:
 
 
 customer.head()
 
 
-# In[8]:
+# In[6]:
 
 
 uselog_months.head()
 
 
-# In[9]:
+# In[7]:
 
 
 year_months = list(uselog_months['年月'].unique())
@@ -88,13 +88,13 @@ for i in range(1, len(year_months)):
   uselog = pd.concat([uselog, tmp], ignore_index=True)
 
 
-# In[12]:
+# In[8]:
 
 
 uselog.head()
 
 
-# In[13]:
+# In[9]:
 
 
 uselog.shape
@@ -102,7 +102,7 @@ uselog.shape
 
 # ### ノック : 42 大会前日の大会顧客データを作成しよう
 
-# In[24]:
+# In[10]:
 
 
 from dateutil.relativedelta import relativedelta
@@ -111,7 +111,7 @@ exit_customer = customer.loc[customer['is_deleted'] == 1]
 exit_customer.head()
 
 
-# In[32]:
+# In[ ]:
 
 
 exit_customer['exit_date'] = None
@@ -125,13 +125,13 @@ uselog['年月'] = uselog['年月'] .astype(str)
 exit_uselog = pd.merge(uselog, exit_customer, on=['customer_id', '年月'], how='left')
 
 
-# In[33]:
+# In[ ]:
 
 
 len(uselog)
 
 
-# In[34]:
+# In[ ]:
 
 
 exit_uselog.head()
@@ -142,64 +142,41 @@ exit_uselog.head()
 # In[ ]:
 
 
+conti_customer = customer.loc[customer['is_deleted'] == 0]
+conti_uselog = pd.merge(uselog, conti_customer, on=['customer_id'], how='left')
 
+
+# In[ ]:
+
+
+conti_uselog
+
+
+# In[ ]:
+
+
+conti_uselog = conti_uselog
+
+
+# In[ ]:
+
+
+conti_uselog
 
 
 # ### ノック : 44 予測する月の在籍期間を作成しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 45 欠損値を除去しよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック : 46 文字列型の変数を処理できるように整形しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 47 決定木を用いて大会予測モデルを作成してみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック : 48 予測モデルの評価を行い、モデルのチューニングをしてみよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 49 モデルに寄与している変数を確認しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 50 顧客の退会を予測しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
