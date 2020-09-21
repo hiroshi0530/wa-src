@@ -111,7 +111,7 @@ exit_customer = customer.loc[customer['is_deleted'] == 1]
 exit_customer.head()
 
 
-# In[ ]:
+# In[11]:
 
 
 exit_customer['exit_date'] = None
@@ -125,13 +125,13 @@ uselog['年月'] = uselog['年月'] .astype(str)
 exit_uselog = pd.merge(uselog, exit_customer, on=['customer_id', '年月'], how='left')
 
 
-# In[ ]:
+# In[12]:
 
 
 len(uselog)
 
 
-# In[ ]:
+# In[13]:
 
 
 exit_uselog.head()
@@ -139,26 +139,26 @@ exit_uselog.head()
 
 # ### ノック : 43 継続顧客のデータを作成しよう
 
-# In[ ]:
+# In[14]:
 
 
 conti_customer = customer.loc[customer['is_deleted'] == 0]
 conti_uselog = pd.merge(uselog, conti_customer, on=['customer_id'], how='left')
 
 
-# In[ ]:
+# In[15]:
 
 
 conti_uselog
 
 
-# In[ ]:
+# In[16]:
 
 
 conti_uselog = conti_uselog
 
 
-# In[ ]:
+# In[17]:
 
 
 conti_uselog
