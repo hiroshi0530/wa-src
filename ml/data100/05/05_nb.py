@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 第5章 顧客の退会を予測する10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -149,7 +149,7 @@ conti_uselog = pd.merge(uselog, conti_customer, on=['customer_id'], how='left')
 # In[15]:
 
 
-conti_uselog
+conti_uselog.head()
 
 
 # In[16]:
@@ -161,22 +161,65 @@ conti_uselog = conti_uselog
 # In[17]:
 
 
-conti_uselog
+conti_uselog.head()
 
 
 # ### ノック : 44 予測する月の在籍期間を作成しよう
 
+# In[18]:
+
+
+for i in range(5):
+  print(i)
+
+
 # ### ノック : 45 欠損値を除去しよう
+
+# In[ ]:
+
+
+
+
 
 # ### ノック : 46 文字列型の変数を処理できるように整形しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 47 決定木を用いて大会予測モデルを作成してみよう
+
+# In[ ]:
+
+
+
+
 
 # ### ノック : 48 予測モデルの評価を行い、モデルのチューニングをしてみよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 49 モデルに寄与している変数を確認しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック : 50 顧客の退会を予測しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
