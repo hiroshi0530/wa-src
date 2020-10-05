@@ -170,7 +170,7 @@ conti_uselog.head()
 
 
 for i in range(5):
-  print(i)
+  print(i, ' : ABC')
 
 
 # ### ノック : 45 欠損値を除去しよう

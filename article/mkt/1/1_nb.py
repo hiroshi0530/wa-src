@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 準備
@@ -35,8 +35,8 @@ import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -426,7 +426,82 @@ plt.show()
 # という事が導けました。
 
 # ### パート2
-# #### 準備中
+# #### 定義
+# 
+# test
+# 
+# <div>
+# $
+# \quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
+# $
+# <div>
+# 
+# 関数$G$は$r$の関数なので、これを確率$p$の関数に変換します。
+# 
+# ここで気をつけるのは、確率分布に関する変数変換は、単純に変数を入れ替える以外に、ヤコビアンという量が必要になります。それが教科書にある$|J|$です。
+# 
+# 例えば、$p(x,y)$を変数$x,y$を確率変数とする連続確率分布を表すとします。普段はあまり意識することはないですが、連続確率分布はその値だけでは実は意味をなしません。例えば、$\displaystyle p(2,3)=\frac{1}{3}$という結果は、
+# 
+# 
+# 正確な数学的な表現はルベーグ積分や知識が必要となりますが、マーケティングの世界では不要かと思います。ただ、このように数式をしっかり追うときに知識として必要になります。
+# 
+# ただし、離散型の確率分布の場合は異なるので注意が必要です。
+# 
+# これは実務レベルになると実感します。現実的なレベルでコンピュータに積分を計算施用とするとき、この$dxdy$を考慮しないと訳のわからない数値になり、モデルが意味をなさなくなるというのは、数値計算をしていれば誰も経験する事だと思います。
+# 
+# 
+# よく利用されるガウス積分を例にヤコビアンの計算をしてみます。$x=r\cos \theta, y=r\sin \theta$という極座標への変数変換を例に取ります。
+# 
+# 
+# <div>
+# $$
+# dxdy = |J|drd\theta
+# $$
+# </div>
+# 
+# なので、
+# 
+# <div>
+# $$
+# \mathrm{det}J = |J| = \left|
+#   \begin{array}{cc}
+#     \displaystyle \frac{\partial x}{\partial r} & \displaystyle \frac{\partial x}{\partial \theta} \\
+#     \displaystyle \frac{\partial y}{\partial r} & \displaystyle \frac{\partial y}{\partial \theta}
+#   \end{array}
+# \right| = \left| 
+#   \begin{array}{cc}
+#     \cos \theta & -r\sin \theta\\
+#     \sin \theta & r\cos \theta\\
+#   \end{array}
+# \right| = r
+# $$
+# </div>
+# 
+# 
+# <div>
+# $$
+# p(x,y)dxdy = p(r,\theta)rdrd\theta
+# $$
+# </div>
+# 
+# 
+# <div>
+# $$
+# \int_{-\infty}^{\infty}dx\int_{-\infty}^{\infty}dye^{-(x^2+y^2)} = \int_0^{\infty}dr\int_0^{2\pi}d\theta re^{-r^2} = \pi
+# $$
+# </div>
+# 
+# これより、
+# 
+# <div>
+# $$
+# \int_{-\infty}^{\infty}e^{-x^2}dx = \sqrt{\pi} 
+# $$
+# </div>
+# 
+# となり、ガウス積分の有名な公式が導けます。この辺の説明がないので、数学や確率・統計の知識があまりないと完全に理解するのは厳しいかもしれません。
+# 
+# #### test
 # 
 # <div>
 # $$
@@ -434,6 +509,130 @@ plt.show()
 # $$
 # </div>
 # 
+# 
+# <div>
+# $$
+# D=\{(r_1,r_2,\dots, r_j \cdots,  r_g): 0 \leqq r_j < \infty , j = 1,2,\cdots j \cdots g \}
+# $$
+# </div>
+# 
+# <div>
+# $$
+# F=\{(p_1,p_2,\dots,p_j, \cdots,  p_g): 0 \leqq p_j < 1 , j = 1,2,\cdots j \cdots g \}
+# $$
+# </div>
+# 
+# $0 < p_g < \infty$となっていますが、おそらく誤植だと思います。
+# 
+# 
+# <div>
+# $$
+# $$
+# </div>
+# 
+# <div>
+# $$
+# $$
+# </div>
+# 
+# <div>
+# $$
+# $$
+# </div>
+# 
+# <div>
+# $$
+# $$
+# </div>
+# 
+# 
+# <div>
+# $$
+# |J| = \left|
+#   \begin{array}{cccc}
+#     \displaystyle \frac{\partial r_1}{\partial p_1} & \displaystyle \frac{\partial r_1}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_1}{\partial p_{g'}} \\
+#     \displaystyle \frac{\partial r_2}{\partial p_1} & \displaystyle \frac{\partial r_2}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_2}{\partial p_{g'}} \\
+#     \vdots & \vdots    & \ddots & \vdots \\
+#   \displaystyle \frac{\partial r_g}{\partial p_1} & \displaystyle \frac{\partial r_g}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_g}{\partial p_{g'}} 
+#   \end{array}
+# \right|
+# $$
+# </div>
+# 
+# =======
+# 
+# <div>
+# $$
+# \left|
+#   \begin{array}{cccc}
+#     p_{g'} & 0 & \cdots & p_1 \\
+#     0 & p_{g'} & \cdots & p_2 \\
+#     \vdots & \vdots & \ddots & \vdots \\
+#     -p_{g'} & -p_{g'} & \cdots & \displaystyle 1- \sum_{j=1}^{g-1}\
+#   \end{array}
+# \right|
+# $$
+# </div>
+# 
+# 
+# 行列式の特徴として、ある行にある行を足しても変わらないという特性があります。式で書くと以下の通りです。
+# 
+# <div>
+# $$
+# \left|
+#   \begin{array}{cc}
+#     a & b \\
+#     c & d
+#   \end{array}
+# \right| = \left|
+#   \begin{array}{cc}
+#     a & b \\
+#     c + a & d + b
+#   \end{array}
+# \right|
+# $$
+# </div>
+# 
+# 
+# P267の下から2行目の「行を足しても変わらない」といっているのは、
+# 
+# 1. 1行目をg行目に加える <br>
+# 2. 2行目をg行目に加える <br>
+# <br>
+# g-1. g-1行目をg行目に加える <br>
+# 
+# というように、g行目にそれ以外の行の値を加えることを示しています。
+# 
+# <div>
+# $$
+# \left|
+#   \begin{array}{cccc}
+#     p_{g'} & 0 & \cdots & p_1 \\
+#     0 & p_{g'} & \cdots & p_2 \\
+#     \vdots & \vdots & \ddots & \vdots \\
+#     0 & 0 & \cdots & 1
+#   \end{array}
+# \right|=(p_{g'})^{g-1}
+# $$
+# </div>
+# 
+# となります。
+# 
+# 
+# <div>
+# $$
+# \begin{aligned}
+# H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{(1-\sum_{j=1}^{g-1}p_j)p_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right]\cdot |J| \\
+# &=abc
+# \end{aligned}
+# $$
+# </div>
+# 
+# 
+# #### sample
+# sample
+# sample 
+# sample 
 # 
 # <div>
 # $$
@@ -449,5 +648,17 @@ plt.show()
 # $$
 # </div>
 
+# In[ ]:
+
+
+
+
+
 # ### パート3
 # #### 準備中
+
+# In[ ]:
+
+
+
+
