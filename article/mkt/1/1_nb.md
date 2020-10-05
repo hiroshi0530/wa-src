@@ -19,7 +19,7 @@
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G2022
+    BuildVersion:	18G95
 
 
 
@@ -27,7 +27,7 @@
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.5.5 :: Anaconda, Inc.
 
 
 必要なライブラリを読み込みます。
@@ -39,7 +39,6 @@ import scipy
 from scipy.stats import binom
 
 %matplotlib inline
-j
 %config InlineBackend.figure_format = 'svg'
 
 import matplotlib
@@ -51,9 +50,9 @@ print("matplotlib version :", matplotlib.__version__)
 print("sns version :",sns.__version__)
 ```
 
-    numpy version : 1.16.2
-    matplotlib version : 3.0.3
-    sns version : 0.9.0
+    numpy version : 1.18.1
+    matplotlib version : 2.2.2
+    sns version : 0.8.1
 
 
 ## 概要
@@ -117,6 +116,8 @@ y = binom.pmf(x,n,p)
 plt.scatter(x,y)
 # sns.plot(x=x, y=y)  
 # sns.scatterplot(data=tips, x='total_bill', y='tip')
+
+plt.show()
 ```
 
     平均    :  30.0
@@ -124,14 +125,7 @@ plt.scatter(x,y)
 
 
 
-
-
-    <matplotlib.collections.PathCollection at 0x122717f98>
-
-
-
-
-![svg](1_nb_files/1_nb_8_2.svg)
+![svg](1_nb_files/1_nb_8_1.svg)
 
 
 ## 1-2. ポアソン分布 (Poisson Distribution)
@@ -188,6 +182,8 @@ plt.title('poisson distribution mu=%.1f' % (mu))
 plt.grid(True)
 
 plt.plot(x,y)
+
+plt.show()
 ```
 
     平均    :  0.6
@@ -195,14 +191,7 @@ plt.plot(x,y)
 
 
 
-
-
-    [<matplotlib.lines.Line2D at 0x12288b908>]
-
-
-
-
-![svg](1_nb_files/1_nb_10_2.svg)
+![svg](1_nb_files/1_nb_10_1.svg)
 
 
 ## 1-3. 負の二項分布 (Negative Binomical Distribution)
@@ -318,10 +307,13 @@ mean, var, skew, kurt = gamma.stats(a, scale=b, moments='mvsk')
 print('a : {}, b : {:,.3f}, mean : {}'.format(a,b,mean))
 y3 = gamma.pdf(x, a, scale=b)
 
+plt.grid()
 plt.ylim([-0.01,0.40])
 plt.xlim([0,15])
 
 plt.plot(x, y1, x, y2, x, y3)
+
+plt.show()
 ```
 
     a : 1.0, b : 5.000, mean : 5.0
@@ -330,16 +322,7 @@ plt.plot(x, y1, x, y2, x, y3)
 
 
 
-
-
-    [<matplotlib.lines.Line2D at 0x122949e80>,
-     <matplotlib.lines.Line2D at 0x122949f98>,
-     <matplotlib.lines.Line2D at 0x12293a320>]
-
-
-
-
-![svg](1_nb_files/1_nb_15_2.svg)
+![svg](1_nb_files/1_nb_15_1.svg)
 
 
 ## 1-5. 売り上げを支配する重要な式
@@ -366,6 +349,19 @@ $$
 デリシュレーNBDモデルとは、あるカテゴリーの中のブランド間の関係を教えてくれる確率分布になります。この分布を用いてわかる具体例として本書で上げられているのが、P31の表1-4になります。与えら得た式(後述の式１)に対して、どのようにパラメタを計算しているのかが具体的に示されています。
 
 本章の内容はかなり高度なレベルとなっています。少しずつ読み解いてみます。
+
+### 勝手な注釈
+私ごときが注釈をつけるのは失礼に当たるのですが、私と同じレベルの読者が少々戸惑う場面もあると思いますので、少し追記しておきます。
+
+#### デリシュレーについて
+著者は「Dirichlet」をデリシュレーと表記していますが、おそらく一般的にはディリクレと表記される場合が多いかと思います。統計の分野でもディリクレ分布、数値計算の分野でも境界値問題でディリクレ問題などと言いますので、混同しないように気をつけた方が良いかと思います。私も普段はディリクレと言いますが、以下ではデリシュレーに統一します。
+
+#### ガンマ分布からデリシュレー分布の導出について
+ヤコビアンの計算などが重なり、計算が複雑になっているように思えます。最初から、ブランドが選択される
+
+もしかしたらマーケティング系の論文では教科書のような導出が定石となっていたりした場合は私の知識不足となります。
+
+以下では、本書に従い、ブランドの購入回数が、ガンマ分布よりサンプリングされ、それを変数変換によりデリシュレー分布を導出する部分の数式の説明もしようと思います。
 
 ### 概要
 
@@ -453,11 +449,35 @@ $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left
 
 となり、1-3の負の二項分布の章で示した以下の式と一致します。以上から、
 
-```text
+<div class="box1">
 消費者個人の購買活動がポアソン分布しており、その長期平均購入回数がガンマ分布していることを仮定することによって、ある期間における消費者全体の購入回数は負の二項分布している
-```
+</div>
 
 という事が導けました。
 
 ### パート2
+#### 準備中
+
+<div>
+$$
+G(r_1,r_2,\cdots ,r_g) = \prod_{j=1}^{g} \frac{r_j^{\alpha_{j-1}}e^{-\frac{r_j}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}}
+$$
+</div>
+
+
+<div>
+$$
+\mathrm{det}A = |A| = \left|
+  \begin{array}{ccccc}
+    \displaystyle \frac{\partial r_1}{\partial p_1} & \cdots & a_{1i} & \cdots & a_{1n} \\
+    \vdots & \ddots &        &        & \vdots \\
+    a_{i1} &        & a_{ii} &        & a_{in} \\
+    \vdots &        &        & \ddots & \vdots \\
+    a_{n1} & \cdots & a_{ni} & \cdots & a_{nn}
+  \end{array}
+\right|
+$$
+</div>
+
+### パート3
 #### 準備中
