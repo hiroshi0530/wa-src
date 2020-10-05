@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 準備
@@ -35,8 +35,8 @@ import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -575,7 +575,39 @@ plt.show()
 # </div>
 # 
 # 
-# 行列式の特徴として、ある行にある行を足しても変わらないという特性があります。式で書くと以下の通りです。
+# 行列式の特徴として、ある行にある行を足しても変わらないという特性があります。
+# 
+# ２次の正方行列の場合の具体的な計算をしてみます。
+# 
+# <br>
+# 
+# 式で書くと以下の通りです。
+# 
+# 
+# <div>
+# $$
+# \left|
+#   \begin{array}{cc}
+#     a & b \\
+#     c & d
+#   \end{array}
+# \right| = ad-bc
+# $$
+# </div>
+# 
+# 
+# <div>
+# $$
+# \left|
+#   \begin{array}{cc}
+#     a & b \\
+#     c + a & d + b
+#   \end{array}
+# \right| = a(d + b) - b(c + a) = ad - bc +ab -ab = ad -bc
+# $$
+# </div>
+# 
+# となり、
 # 
 # <div>
 # $$
@@ -593,15 +625,18 @@ plt.show()
 # $$
 # </div>
 # 
+# となることが分かります。3次以上の場合も同様に計算できます。
+# 
+# <br>
 # 
 # P267の下から2行目の「行を足しても変わらない」といっているのは、
 # 
-# 1. 1行目をg行目に加える <br>
-# 2. 2行目をg行目に加える <br>
-# <br>
-# g-1. g-1行目をg行目に加える <br>
+# - 1行目をg行目に加える <br>
+# - 2行目をg行目に加える <br>
+# - $\cdots$
+# - g-1行目をg行目に加える <br>
 # 
-# というように、g行目にそれ以外の行の値を加えることを示しています。
+# というように、g行目にそれ以外の行の値をすべて加えることを示しています。
 # 
 # <div>
 # $$
@@ -616,13 +651,13 @@ plt.show()
 # $$
 # </div>
 # 
-# となります。
+# となります。この辺の行列の式の変形もある程度知識がないときついかもしれません。
 # 
 # 
 # <div>
 # $$
 # \begin{aligned}
-# H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{(1-\sum_{j=1}^{g-1}p_j)p_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right]\cdot |J| \\
+# H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{\left(1-\sum_{j=1}^{g-1}p_j\right)p_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right]\cdot |J| \\
 # &=abc
 # \end{aligned}
 # $$
@@ -647,18 +682,42 @@ plt.show()
 # \right|
 # $$
 # </div>
-
-# In[ ]:
-
-
-
-
+# 
+# 
+# #### ブランドの購入回数が多項分布に従い、購入確率がデリシュレー分布に従うと考える場合
+# 
+# <div>
+# $$
+# r_i \sim Multi\left(p_1,p_2, \cdots, p_g\right)
+# $$
+# </div>
+# 
+# 
+# <div>
+# $$
+# p_i \sim Dir\left(\alpha_1,\alpha_2, \cdots, \alpha_g\right)
+# $$
+# </div>
+# 
+# 正直言うと、このモデリングいいような気がしますが、どうでしょうか。おそらく、ガンマ分布を仮定してからの流れがマーケティングではよく利用されているのかもしれません。
+# 
+# 多項分布のパラメタである確率に対して、ディリクレ分布（あえてここではディリクレ分布と表記します）を仮定するのは、ベイズ統計における共益事前分布に慣れてる身からするとかなり自然な感じを受けます。
+# 
+# <div>
+# $$ 
+# Multi\left(r_1,r_2, \cdots, r_g| p_1,p_2, \cdots, p_g\right) = \frac{\displaystyle \sum_{j=1}^{g}\Gamma\left(r_j\right)}{\Gamma\left(\displaystyle\sum_{j=1}^{g}r_j\right)} \prod_{j=1}^{g}p_j^{r_j}
+# $$
+# </div>
+# 
+# $\alpha$はハイパーパラメタになります。
+# 
+# <div>
+# $$ 
+# Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \frac{\displaystyle \sum_{j=1}^{g}\Gamma\left(p_j\right)}{\Gamma\left(\displaystyle\sum_{j=1}^{g}p_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1}
+# $$
+# </div>
+# 
+# 
 
 # ### パート3
 # #### 準備中
-
-# In[ ]:
-
-
-
-
