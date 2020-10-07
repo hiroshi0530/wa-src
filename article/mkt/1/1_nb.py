@@ -805,6 +805,41 @@ plt.show()
 # </div>
 # 
 # $g=2$の場合は、デリシュレー分布はベータ分布となります。一般的にベータ分布の多変数化がデリシュレー分布（ディリクレ分布）となります。
+# 
+# #### test
+# ![png](1_nb_files_local/nbd_1.png)
+
+# In[58]:
+
+
+import numpy as np
+import math
+from scipy.special import gamma
+
+def get_nbd(M, T, K, R):
+  return ((1 + M * T / K)**(-1 * K)) *          (gamma(K + R) / math.factorial(R) / gamma(K)) *          ((M * T / (M * T + K)) ** R)
+
+def get_p_rj_0(r, a, S, R):
+   return (math.factorial(R)/ math.factorial(r) / math.factorial(R - r)) *           (gamma(S) / gamma(a) / gamma(S - a)) *           (gamma(a + r) * gamma(S - a + R - r) / gamma(S + R))
+
+def print01():
+  for R in range(0,11):
+    print(' | ', end='')
+    for r in range(R + 1):
+      print('{:.3f} | '.format(round(get_p_rj_0(r=r, a=1.2 * 0.25, S=1.2, R=R), 3)), end='')
+    print()
+    
+def print02():
+  for R in range(0,11):
+    print(' | ', end='')
+    for r in range(R + 1):
+      print('{:.1f} | '.format(round(100 * get_nbd(M=1.46, T=1, K=0.78,R=R) * get_p_rj_0(r=r, a=1.2 * 0.25, S=1.2, R=R), 3)), end='')
+    print()
+
+print01()
+print()
+print02()
+
 
 # ## まとめ
 # 1-6に関してはポアソン分布や負の二項分布などといった基本的な確率分布の他に、ガンマ分布やベータ分布、連続確率分布の変数変換、ヤコビアンの計算、行列式の性質、多項分布とデリシュレー分布（ディリクレ分布）、ガンマ関数の性質などといった一連の数学の知見がないと理解が厳しいかと思います。読者の方の理解の一助になれば幸いです。
