@@ -550,3 +550,8 @@ print(np.matmul(a,b))
 
 
 ## 線形代数に必要な計算
+
+
+```python
+
+```

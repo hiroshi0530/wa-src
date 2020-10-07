@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## Numpy個人的tips
@@ -358,3 +358,9 @@ print(np.matmul(a,b))
 
 
 # ## 線形代数に必要な計算
+
+# In[ ]:
+
+
+
+
