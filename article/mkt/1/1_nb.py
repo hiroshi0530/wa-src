@@ -361,17 +361,59 @@ plt.show()
 # $$R_i \sim Poisson\left(\mu_i \right)$$
 # 4. カテゴリーの長期平均購入回数$\left(\mu \right)$は消費者間で異なり、ガンマ分布している。
 # $$\mu \sim Gamma\left(K,\frac{M}{K} \right)$$
-# 5. 期間$T$における各ブランドの購入回数$\left(r_j \right)$は、ガンマ分布$Gamma\left(\alpha_j,\beta \right)$に従う。$\alpha$はブランド間で異なるが、$\beta$はブランド間で同一。
+# 5. 期間$T$における各ブランドの購入回数$\left(r_j \right)$は、ガンマ分布$Gamma\left(\alpha_j,\beta \right)$に従う。$\alpha$はブランド間で異なるが、$\beta$はブランド間で同一。この購入回数に関する過程は結果としてブランドを選ぶ確率$p$がデリシュレー分布する。
+# 本来、(1)から(4)のカテゴリーに関する仮定をブランドに関する仮定に当てはめると、各ブランドの購入回数は負の二項分布になる。よって、この仮定はガンマ分布でNBDを近似している事に相当。
+# ※個人的には、このカテゴリーの理論をそのまま当てはめれば、ブランドもNBDになるが、ガンマ分布で仮定するという事は重要なポイントだと思っています。
 # 6. 各消費者は、各ブランドに対して一定の購買確率を持っており、ブランドの購入$\left(r \right)$ は多項分布に従う。各々のカテゴリーの購入時のブランドの購入確率$\left(p \right)$は、それぞれのブランドについて長期的に見ると決まっている。ただ、カテゴリー購入時にどれを選ぶかはランダムである。
 # 7. 異なる人々の各々のカテゴリー平均購入回数と、人々のそれぞれのブランドを選択する確率とは、互いに独立。すなわち、特定のカテゴリー購入回数の人が、特定のブランドを特定の確率で購入しているような事が起こらない。
 # 
+# 
+# #### 式(17)の意味
+# 
+# 仮定1〜7をまとめたものが式(17)になっています。以下では教科書の式(17)を式(17')として、少し変えて表記しています。
+# 
+# <div>
+# $$
+# \begin{aligned}
+# &P(R,r_1,\cdots,r_g) = \\ \int &Multi(r|p,R) Dir(p|\alpha)dp \int Poisson(R|\mu T) Gamma(\mu|K,\frac{M}{K}) d\mu \cdots 式(17')
+# \end{aligned}
+# $$
+# </div>
+# 
+# <div>
+# $$
+# \int Poisson(R|\mu T)\cdot Gamma(\mu|K,\frac{M}{K}) d\mu
+# $$
+# </div>
+# 
+# aaaa
+# 
+# <div>
+# $$
+# \int Multi(r|p,R)\cdot Dir(p|\alpha)dp
+# $$
+# </div>
+# 
+# 
+# 
+# 式(17)が生成されるモデルを私が勝手に解釈したものが以下になります。
+# ![png](1_nb_files_local/nbd_1.png)
+
 # ### パート1
+# 
+# #### (ア)ガンマ分布と$S$の正体：
+# 
+# 
+# 
+# 
+
+# #### (イ) ポアソン分布とガンマ分布から負の二項分布へ：
 # ポアソン分布とガンマ分布の混合分布から負の二項分布を導きます。
 # 
 # <div>
 # $$
 # \begin{aligned}
-# P\left(r \right) &=\int_0^{\infty} Po\left(r|\lambda \right) Ga\left(\lambda | \alpha, \theta \right)  d\lambda    \\
+# P\left(r \right) &=\int_0^{\infty} Poisson\left(r|\lambda \right) Gamma\left(\lambda | \alpha, \theta \right)  d\lambda    \\
 # &= \int_0^{\infty} \frac{\lambda^r e^{-\lambda}}{r!}\cdot \frac{\lambda^{\alpha - 1}e^{-\frac{\lambda}{\theta}}}{\Gamma\left(\alpha \right)\theta^\alpha } d\lambda \\
 # &= \frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha}  \int_0^{\infty} \lambda^{r+\alpha-1}e^{-\lambda\left(1 +\frac{1}{\theta}  \right)} d\lambda 
 # \end{aligned}
@@ -413,9 +455,9 @@ plt.show()
 # $$
 # </div>
 # 
-# と変形できます。ここで、$\alpha = K$、$\theta = \frac{M}{K} $を代入すると、
+# と変形できます。ここで、$\alpha = K$,$\theta = \frac{MT}{K}, r=R $を代入すると、
 # 
-# $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left(K + r \right)}{\Gamma\left(r + 1 \right)\cdot \Gamma\left(K \right)} \cdot \left(\frac{M}{M+K} \right)^r $$
+# $$ P\left(R \right) = \frac{\left(1 + \frac{MT}{K} \right)^{-K} \cdot \Gamma\left(K + R \right)}{\Gamma\left(R + 1 \right)\cdot \Gamma\left(K \right)} \cdot \left(\frac{MT}{MT+K} \right)^R $$
 # 
 # となり、1-3の負の二項分布の章で示した以下の式と一致します。以上から、
 # 
@@ -426,14 +468,13 @@ plt.show()
 # という事が導けました。
 
 # ### パート2
-# #### 定義
-# 
-# test
+# #### (ウ) ガンマ分布からデリシュレー分布へ：
 # 
 # <div>
-# $
+# $$
 # \quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
-# $
+# \quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
+# $$
 # <div>
 # 
 # 関数$G$は$r$の関数なので、これを確率$p$の関数に変換します。
@@ -671,7 +712,7 @@ plt.show()
 # H_{g-1} = \int_0^\infty H_g dp_{g'}
 # $$
 # </div>
-# 
+
 # #### sample
 # sample
 # sample 
@@ -691,14 +732,44 @@ plt.show()
 # $$
 # </div>
 # 
+# #### (エ) 多項分布とデリシュレー分布を合体：
+# #### 多項分布
 # 
-# #### ブランドの購入回数が多項分布に従い、購入確率がデリシュレー分布に従うと考える場合
+# 1からgまでのブランドがあり、それぞれが選ばれる確率が$p_1,p_2,\cdots,p_g$とします。それぞれのブランドが選ばれる回数を$r_1, r_2, \cdots, r_g$とすると、$r$が従う確率分布は多項分布となります。多項分布は二項分布を多変数に拡張した確率分布になります。
+# 
 # 
 # <div>
 # $$
-# r_i \sim Multi\left(p_1,p_2, \cdots, p_g\right)
+# Multi\left(r_1,r_2, \cdots, r_g | p_1,p_2, \cdots, p_g, R\right) = \frac{R!}{\prod_{j=1}^gr_j!}\prod_{j=1}^{g}p_j^{r_j}
 # $$
 # </div>
+# 
+# ただし、
+# 
+# <div>
+# $$
+# \sum_{j=1}^g p_j = 1
+# $$
+# </div>
+# 
+# となります。これを変形すると$p_g =1-\sum_{j=1}^{g-1} p_j$となり、教科書では$\prod$の最後の$g$の項をこの値に置き換えています。
+# 
+# このような表式をする場合、変数が$r$で$p,R$はあくまでもパラメタであると理解することが重要です。
+# 
+# #### 多項分布とデリシュレー分布を合体
+# 
+# 
+# <div>
+# $$ 
+# Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1}
+# $$
+# </div>
+# 
+# この場合は、変数が$p$でパラメタが$\alpha$であると理解することが重要です。
+# 
+# 
+# #### ブランドの購入回数が多項分布に従い、購入確率がデリシュレー分布に従うと考える場合
+# 
 # 
 # 
 # <div>
@@ -806,40 +877,7 @@ plt.show()
 # 
 # $g=2$の場合は、デリシュレー分布はベータ分布となります。一般的にベータ分布の多変数化がデリシュレー分布（ディリクレ分布）となります。
 # 
-# #### test
-# ![png](1_nb_files_local/nbd_1.png)
-
-# In[58]:
-
-
-import numpy as np
-import math
-from scipy.special import gamma
-
-def get_nbd(M, T, K, R):
-  return ((1 + M * T / K)**(-1 * K)) *          (gamma(K + R) / math.factorial(R) / gamma(K)) *          ((M * T / (M * T + K)) ** R)
-
-def get_p_rj_0(r, a, S, R):
-   return (math.factorial(R)/ math.factorial(r) / math.factorial(R - r)) *           (gamma(S) / gamma(a) / gamma(S - a)) *           (gamma(a + r) * gamma(S - a + R - r) / gamma(S + R))
-
-def print01():
-  for R in range(0,11):
-    print(' | ', end='')
-    for r in range(R + 1):
-      print('{:.3f} | '.format(round(get_p_rj_0(r=r, a=1.2 * 0.25, S=1.2, R=R), 3)), end='')
-    print()
-    
-def print02():
-  for R in range(0,11):
-    print(' | ', end='')
-    for r in range(R + 1):
-      print('{:.1f} | '.format(round(100 * get_nbd(M=1.46, T=1, K=0.78,R=R) * get_p_rj_0(r=r, a=1.2 * 0.25, S=1.2, R=R), 3)), end='')
-    print()
-
-print01()
-print()
-print02()
-
+# 
 
 # ## まとめ
 # 1-6に関してはポアソン分布や負の二項分布などといった基本的な確率分布の他に、ガンマ分布やベータ分布、連続確率分布の変数変換、ヤコビアンの計算、行列式の性質、多項分布とデリシュレー分布（ディリクレ分布）、ガンマ関数の性質などといった一連の数学の知見がないと理解が厳しいかと思います。読者の方の理解の一助になれば幸いです。

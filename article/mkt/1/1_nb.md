@@ -391,17 +391,59 @@ $$
 $$R_i \sim Poisson\left(\mu_i \right)$$
 4. カテゴリーの長期平均購入回数$\left(\mu \right)$は消費者間で異なり、ガンマ分布している。
 $$\mu \sim Gamma\left(K,\frac{M}{K} \right)$$
-5. 期間$T$における各ブランドの購入回数$\left(r_j \right)$は、ガンマ分布$Gamma\left(\alpha_j,\beta \right)$に従う。$\alpha$はブランド間で異なるが、$\beta$はブランド間で同一。
+5. 期間$T$における各ブランドの購入回数$\left(r_j \right)$は、ガンマ分布$Gamma\left(\alpha_j,\beta \right)$に従う。$\alpha$はブランド間で異なるが、$\beta$はブランド間で同一。この購入回数に関する過程は結果としてブランドを選ぶ確率$p$がデリシュレー分布する。
+本来、(1)から(4)のカテゴリーに関する仮定をブランドに関する仮定に当てはめると、各ブランドの購入回数は負の二項分布になる。よって、この仮定はガンマ分布でNBDを近似している事に相当。
+※個人的には、このカテゴリーの理論をそのまま当てはめれば、ブランドもNBDになるが、ガンマ分布で仮定するという事は重要なポイントだと思っています。
 6. 各消費者は、各ブランドに対して一定の購買確率を持っており、ブランドの購入$\left(r \right)$ は多項分布に従う。各々のカテゴリーの購入時のブランドの購入確率$\left(p \right)$は、それぞれのブランドについて長期的に見ると決まっている。ただ、カテゴリー購入時にどれを選ぶかはランダムである。
 7. 異なる人々の各々のカテゴリー平均購入回数と、人々のそれぞれのブランドを選択する確率とは、互いに独立。すなわち、特定のカテゴリー購入回数の人が、特定のブランドを特定の確率で購入しているような事が起こらない。
 
+
+#### 式(17)の意味
+
+仮定1〜7をまとめたものが式(17)になっています。以下では教科書の式(17)を式(17')として、少し変えて表記しています。
+
+<div>
+$$
+\begin{aligned}
+&P(R,r_1,\cdots,r_g) = \\ \int &Multi(r|p,R) Dir(p|\alpha)dp \int Poisson(R|\mu T) Gamma(\mu|K,\frac{M}{K}) d\mu \cdots 式(17')
+\end{aligned}
+$$
+</div>
+
+<div>
+$$
+\int Poisson(R|\mu T)\cdot Gamma(\mu|K,\frac{M}{K}) d\mu
+$$
+</div>
+
+aaaa
+
+<div>
+$$
+\int Multi(r|p,R)\cdot Dir(p|\alpha)dp
+$$
+</div>
+
+
+
+式(17)が生成されるモデルを私が勝手に解釈したものが以下になります。
+![png](1_nb_files_local/nbd_1.png)
+
 ### パート1
+
+#### (ア)ガンマ分布と$S$の正体：
+
+
+
+
+
+#### (イ) ポアソン分布とガンマ分布から負の二項分布へ：
 ポアソン分布とガンマ分布の混合分布から負の二項分布を導きます。
 
 <div>
 $$
 \begin{aligned}
-P\left(r \right) &=\int_0^{\infty} Po\left(r|\lambda \right) Ga\left(\lambda | \alpha, \theta \right)  d\lambda    \\
+P\left(r \right) &=\int_0^{\infty} Poisson\left(r|\lambda \right) Gamma\left(\lambda | \alpha, \theta \right)  d\lambda    \\
 &= \int_0^{\infty} \frac{\lambda^r e^{-\lambda}}{r!}\cdot \frac{\lambda^{\alpha - 1}e^{-\frac{\lambda}{\theta}}}{\Gamma\left(\alpha \right)\theta^\alpha } d\lambda \\
 &= \frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha}  \int_0^{\infty} \lambda^{r+\alpha-1}e^{-\lambda\left(1 +\frac{1}{\theta}  \right)} d\lambda 
 \end{aligned}
@@ -443,9 +485,9 @@ P\left(r \right) &= \frac{\Gamma\left(r+\alpha \right)}{\Gamma\left(\alpha \righ
 $$
 </div>
 
-と変形できます。ここで、$\alpha = K$、$\theta = \frac{M}{K} $を代入すると、
+と変形できます。ここで、$\alpha = K$,$\theta = \frac{MT}{K}, r=R $を代入すると、
 
-$$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left(K + r \right)}{\Gamma\left(r + 1 \right)\cdot \Gamma\left(K \right)} \cdot \left(\frac{M}{M+K} \right)^r $$
+$$ P\left(R \right) = \frac{\left(1 + \frac{MT}{K} \right)^{-K} \cdot \Gamma\left(K + R \right)}{\Gamma\left(R + 1 \right)\cdot \Gamma\left(K \right)} \cdot \left(\frac{MT}{MT+K} \right)^R $$
 
 となり、1-3の負の二項分布の章で示した以下の式と一致します。以上から、
 
@@ -456,14 +498,13 @@ $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left
 という事が導けました。
 
 ### パート2
-#### 定義
-
-test
+#### (ウ) ガンマ分布からデリシュレー分布へ：
 
 <div>
-$
+$$
 \quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
-$
+\quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
+$$
 <div>
 
 関数$G$は$r$の関数なので、これを確率$p$の関数に変換します。
@@ -721,14 +762,44 @@ $$
 $$
 </div>
 
+#### (エ) 多項分布とデリシュレー分布を合体：
+#### 多項分布
 
-#### ブランドの購入回数が多項分布に従い、購入確率がデリシュレー分布に従うと考える場合
+1からgまでのブランドがあり、それぞれが選ばれる確率が$p_1,p_2,\cdots,p_g$とします。それぞれのブランドが選ばれる回数を$r_1, r_2, \cdots, r_g$とすると、$r$が従う確率分布は多項分布となります。多項分布は二項分布を多変数に拡張した確率分布になります。
+
 
 <div>
 $$
-r_i \sim Multi\left(p_1,p_2, \cdots, p_g\right)
+Multi\left(r_1,r_2, \cdots, r_g | p_1,p_2, \cdots, p_g, R\right) = \frac{R!}{\prod_{j=1}^gr_j!}\prod_{j=1}^{g}p_j^{r_j}
 $$
 </div>
+
+ただし、
+
+<div>
+$$
+\sum_{j=1}^g p_j = 1
+$$
+</div>
+
+となります。これを変形すると$p_g =1-\sum_{j=1}^{g-1} p_j$となり、教科書では$\prod$の最後の$g$の項をこの値に置き換えています。
+
+このような表式をする場合、変数が$r$で$p,R$はあくまでもパラメタであると理解することが重要です。
+
+#### 多項分布とデリシュレー分布を合体
+
+
+<div>
+$$ 
+Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1}
+$$
+</div>
+
+この場合は、変数が$p$でパラメタが$\alpha$であると理解することが重要です。
+
+
+#### ブランドの購入回数が多項分布に従い、購入確率がデリシュレー分布に従うと考える場合
+
 
 
 <div>
@@ -836,77 +907,6 @@ $$
 
 $g=2$の場合は、デリシュレー分布はベータ分布となります。一般的にベータ分布の多変数化がデリシュレー分布（ディリクレ分布）となります。
 
-#### test
-![png](1_nb_files_local/nbd_1.png)
-
-
-```python
-import numpy as np
-import math
-from scipy.special import gamma
-
-def get_nbd(M, T, K, R):
-  return ((1 + M * T / K)**(-1 * K)) * \
-         (gamma(K + R) / math.factorial(R) / gamma(K)) * \
-         ((M * T / (M * T + K)) ** R)
-
-def get_p_rj_0(r, a, S, R):
-   return (math.factorial(R)/ math.factorial(r) / math.factorial(R - r)) * \
-          (gamma(S) / gamma(a) / gamma(S - a)) * \
-          (gamma(a + r) * gamma(S - a + R - r) / gamma(S + R))
-
-def print01():
-  for R in range(0,11):
-    print(' | ', end='')
-    for r in range(R + 1):
-      print('{:.3f} | '.format(round(get_p_rj_0(r=r, a=1.2 * 0.25, S=1.2, R=R), 3)), end='')
-    print()
-    
-def print02():
-  for R in range(0,11):
-    print(' | ', end='')
-    for r in range(R + 1):
-      print('{:.1f} | '.format(round(100 * get_nbd(M=1.46, T=1, K=0.78,R=R) * get_p_rj_0(r=r, a=1.2 * 0.25, S=1.2, R=R), 3)), end='')
-    print()
-
-print01()
-print()
-print02()
-```
-
-    R = 0 :  0.4391777564701782
-    R = 1 :  0.2232748344054638
-    R = 2 :  0.1295193392082409
-    R = 3 :  0.07822813898488218
-    
-    0.9999999999999999
-    0.7499999999999996
-    0.6477272727272725
-    0.5870028409090906
-    
-     | 1.000 | 
-     | 0.750 | 0.250 | 
-     | 0.648 | 0.205 | 0.148 | 
-     | 0.587 | 0.182 | 0.125 | 0.106 | 
-     | 0.545 | 0.168 | 0.113 | 0.091 | 0.083 | 
-     | 0.514 | 0.157 | 0.105 | 0.083 | 0.072 | 0.069 | 
-     | 0.489 | 0.149 | 0.099 | 0.078 | 0.066 | 0.060 | 0.059 | 
-     | 0.468 | 0.143 | 0.094 | 0.074 | 0.062 | 0.055 | 0.052 | 0.052 | 
-     | 0.451 | 0.137 | 0.090 | 0.070 | 0.059 | 0.052 | 0.048 | 0.045 | 0.046 | 
-     | 0.437 | 0.132 | 0.087 | 0.068 | 0.057 | 0.050 | 0.045 | 0.042 | 0.040 | 0.041 | 
-     | 0.424 | 0.128 | 0.084 | 0.066 | 0.055 | 0.048 | 0.043 | 0.040 | 0.038 | 0.037 | 0.038 | 
-    
-     | 43.9 | 
-     | 16.7 | 5.6 | 
-     | 8.4 | 2.6 | 1.9 | 
-     | 4.6 | 1.4 | 1.0 | 0.8 | 
-     | 2.6 | 0.8 | 0.5 | 0.4 | 0.4 | 
-     | 1.5 | 0.5 | 0.3 | 0.2 | 0.2 | 0.2 | 
-     | 0.9 | 0.3 | 0.2 | 0.1 | 0.1 | 0.1 | 0.1 | 
-     | 0.6 | 0.2 | 0.1 | 0.1 | 0.1 | 0.1 | 0.1 | 0.1 | 
-     | 0.3 | 0.1 | 0.1 | 0.1 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 
-     | 0.2 | 0.1 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 
-     | 0.1 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 
 
 
 ## まとめ
