@@ -687,12 +687,20 @@ $$
 <div>
 $$
 \begin{aligned}
-H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{\left(1-\sum_{j=1}^{g-1}p_j\right)p_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right]\cdot |J| \\
+H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{\left(1-\sum_{j=1}^{g-1}p_j\right)p_{g'}}{\beta}}}{\Gamma(\alpha_g)\beta^{\alpha_g}} \right]\cdot |J| \\
 &=abc
 \end{aligned}
 $$
 </div>
 
+この$H_g$から$g'$の成分を積分消去します。
+
+
+<div>
+$$
+H_{g-1} = \int_0^\infty H_g dp_{g'}
+$$
+</div>
 
 #### sample
 sample
@@ -729,13 +737,13 @@ p_i \sim Dir\left(\alpha_1,\alpha_2, \cdots, \alpha_g\right)
 $$
 </div>
 
-正直言うと、このモデリングいいような気がしますが、どうでしょうか。おそらく、ガンマ分布を仮定してからの流れがマーケティングではよく利用されているのかもしれません。
+正直言うと、このモデリングでいいような気がしますが、どうでしょうか。おそらく、ガンマ分布を仮定してからの流れがマーケティングではよく利用されているのかもしれません。
 
 多項分布のパラメタである確率に対して、ディリクレ分布（あえてここではディリクレ分布と表記します）を仮定するのは、ベイズ統計における共益事前分布に慣れてる身からするとかなり自然な感じを受けます。
 
 <div>
 $$ 
-Multi\left(r_1,r_2, \cdots, r_g| p_1,p_2, \cdots, p_g\right) = \frac{\displaystyle \sum_{j=1}^{g}\Gamma\left(r_j\right)}{\Gamma\left(\displaystyle\sum_{j=1}^{g}r_j\right)} \prod_{j=1}^{g}p_j^{r_j}
+Multi\left(r_1,r_2, \cdots, r_g| p_1,p_2, \cdots, p_g\right) = \frac{R!}{\displaystyle \prod_{j=1}^{g}r_j!} \prod_{j=1}^{g}p_j^{r_j}
 $$
 </div>
 
@@ -743,11 +751,92 @@ $\alpha$はハイパーパラメタになります。
 
 <div>
 $$ 
-Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \frac{\displaystyle \sum_{j=1}^{g}\Gamma\left(p_j\right)}{\Gamma\left(\displaystyle\sum_{j=1}^{g}p_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1}
+Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1}
+$$
+    
+ただし、
+
+$$
+\sum_{j=1}^{g}p_j = 1
+$$
+$$
+\sum_{j=1}^{g}r_j = R
 $$
 </div>
 
+ブランドが選ばれる回数$(r_1,r_2, \cdots, r_j)$はそのブランドが選ばれる確率をパラメタに持つ多項分布に従い、その確率はデリシュレー分布に従うと考えて、
 
+<div>
+$$
+\begin{aligned}
+&P(R, r_1, \cdots, r_g) \\
+&= \int Multi(r_1, \cdots, r_g | p_1, \cdots, p_g) \cdot Dir(p_1, \cdots, p_g | \alpha_1 , \cdots \alpha_g) dp_1\cdots dp_g \quad \cdots (1)\\
+&=\displaystyle \int \frac{R!}{\displaystyle \prod_{j=1}^{g}r_j!} \prod_{j=1}^{g}p_j^{r_j} \cdot \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}p_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(p_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1} dp_1\cdots dp_g \quad  \cdots (2)\\
+&=\displaystyle \frac{R!}{\displaystyle \prod_{j=1}^{g}r_j!} \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \int \prod_{j=1}^{g}p_j^{r_j + \alpha_j-1} dp_1\cdots dp_g \quad  \cdots (3) \\
+&=\displaystyle \frac{R!}{\displaystyle \prod_{j=1}^{g}r_j!} \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \frac{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j + r_j\right)}{\Gamma\left(\displaystyle\sum_{j=1}^{g}(\alpha_j + r_j)\right)} \int \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}(\alpha_j + r_j)\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j + r_j\right)}    \prod_{j=1}^{g}p_j^{r_j + \alpha_j-1} dp_1\cdots dp_g \quad  \cdots (4) \\
+&=\displaystyle \frac{R!}{\displaystyle \prod_{j=1}^{g}r_j!} \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \frac{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j + r_j\right)}{\Gamma\left(\displaystyle\sum_{j=1}^{g}(\alpha_j + r_j)\right)} \quad \cdots (5) \\
+&=\displaystyle \frac{R!}{\displaystyle \prod_{j=1}^{g}r_j!} \frac{\Gamma(S)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \frac{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j + r_j\right)}{\Gamma\left(S+R\right)} \quad \cdots (6) 
+\end{aligned}
+$$
+</div>
+となり、教科書の式(25)の表記が得られます。
+
+#### (1)から(2)への変形
+多項分布とデリシュレー分布を代入しただけです。
+
+#### (2)から(3)への変形
+$p$に関する部分を積分記号の中に残し、それ以外のものを外に出しています。
+
+#### (3)から(4)への変形
+デリシュレー分布の積分
+
+<div>
+$$
+\int \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}(\alpha_j + r_j)\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j + r_j\right)}    \prod_{j=1}^{g}p_j^{r_j + \alpha_j-1} dp_1\cdots dp_g = 1
+$$
+</div>
+
+の式を適用するために、定数部分
+
+<div>
+$$
+\frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}(\alpha_j + r_j)\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j + r_j\right)}
+$$
+</div>
+
+を分子と分母に無理矢理作り出しています。
+
+#### (4)から(5)への変形
+デリシュレー分布の積分を実行して積分部分が消去されます。
+
+#### (5)から(6)への変形
+$S$と$R$を用いて式を簡素化します。
+
+<div>
+$$
+S =\sum_{j=1}^g \alpha_j 
+$$
+$$
+R =\sum_{j=1}^g r_j
+$$
+</div>
 
 ### パート3
-#### 準備中
+
+パート1の式(21)からカテゴリーの購入回数の分布がわかり、パート2の式(25)で各ブランドの購入回数の分布が定式化出来たので、これらの積を取ることにより、ブランド別の購入分布が導かれます。
+
+<div>
+$$
+\begin{aligned}
+&P(R, r_1, \cdots, r_g) \\
+&=\left[ \right]
+\end{aligned}
+$$
+</div>
+
+$g=2$の場合は、デリシュレー分布はベータ分布となります。一般的にベータ分布の多変数化がデリシュレー分布（ディリクレ分布）となります。
+
+## まとめ
+1-6に関してはポアソン分布や負の二項分布などといった基本的な確率分布の他に、ガンマ分布やベータ分布、連続確率分布の変数変換、ヤコビアンの計算、行列式の性質、多項分布とデリシュレー分布（ディリクレ分布）、ガンマ関数の性質などといった一連の数学の知見がないと理解が厳しいかと思います。読者の方の理解の一助になれば幸いです。
+
+※P267の中段部"$p_j\times p_{g'}$。"となっている丸印が合成写像を表す記号の丸だと思って数式を追うのにかなり時間がかかりました。実際は日本語の文末につける丸印でした。日本語の全角の丸はややこしいです･･･
