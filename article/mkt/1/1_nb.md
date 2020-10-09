@@ -398,54 +398,141 @@ $$\mu \sim Gamma\left(K,\frac{M}{K} \right)$$
 7. 異なる人々の各々のカテゴリー平均購入回数と、人々のそれぞれのブランドを選択する確率とは、互いに独立。すなわち、特定のカテゴリー購入回数の人が、特定のブランドを特定の確率で購入しているような事が起こらない。
 
 
-#### 式(17)の意味
+### 式(17)の意味
 
 仮定1〜7をまとめたものが式(17)になっています。以下では教科書の式(17)を式(17')として、少し変えて表記しています。
 
 <div>
 $$
 \begin{aligned}
-&P(R,r_1,\cdots,r_g) = \\ \int &Multi(r|p,R) Dir(p|\alpha)dp \int Poisson(R|\mu T) Gamma(\mu|K,\frac{M}{K}) d\mu \cdots 式(17')
+&P(R,r_1,\cdots,r_g) = \\ \int &Multi(r|p,R) Dir(p|\alpha)dp \int Poisson(R|\mu T) Gamma\left(\mu|K,\frac{M}{K}\right) d\mu \quad \cdots 式(17')
 \end{aligned}
 $$
 </div>
 
-<div>
-$$
-\int Poisson(R|\mu T)\cdot Gamma(\mu|K,\frac{M}{K}) d\mu
-$$
-</div>
-
-aaaa
+式(17')は二つの積分から構成されています。
 
 <div>
 $$
-\int Multi(r|p,R)\cdot Dir(p|\alpha)dp
+\int Poisson(R|\mu T)\cdot Gamma\left(\mu|K,\frac{M}{K}\right) d\mu \quad \cdots (パート1)
 $$
 </div>
 
+と
 
+<div>
+$$
+\int Multi(r|p,R)\cdot Dir(p|\alpha)dp \quad \cdots （パート2）
+$$
+</div>
 
-式(17)が生成されるモデルを私が勝手に解釈したものが以下になります。
+です。以下それぞれの式の意味について説明します。
+
+#### パート1について
+これは先ほど説明したとおり、カテゴリーを選択する時の確率分布、NBDになります。
+
+- 個人レベルでの購入回数は平均購入回数$\mu$をパラメタに持つポアソン分布に従う
+- ポアソン分布のパラメタ$\mu$は消費者全体で見た時$\displaystyle \left(K, \frac{M}{K}\right)$をパラメタに持つガンマ分布に従う
+
+ポアソン分布とガンマ分布の積を$\mu$に対して積分すると、カテゴリーの購入回数別の消費者全体の確率を得ることが出来ます。
+
+#### パート2について
+
+各ブランドが選ばれる確率を求める分布になります。
+
+- 各ブランドの購入回数$(r_j)$はそのブランドが選ばれる確率$(p_j)$をパラメタに持つ多項分布に従う
+- ブランドが選ばれる確率$(p_j)$はパラメタ$(\alpha)$を持つデリシュレー分布に従う
+
+パート1とパート2の詳細な計算は別途以下で行います。
+
+また、式(17)が生成されるモデルを私が勝手に解釈した図を以下に置いておきます。
+
 ![png](1_nb_files_local/nbd_1.png)
 
 ### パート1
 
 #### (ア)ガンマ分布と$S$の正体：
 
+#### ガンマ分布の定性的理解
 
+教科書によると、ガンマ分布は確率の発生が、さらにその確率を高めていくという分布という事です。正直私の今の知識ではさっと理解できませんが、おそらく、負の二項分布を導出したときの、赤玉と白玉の結果から理解することが出来ます。赤玉と白玉が入った袋から、赤が出たら、その玉を袋に戻しつつ、さらに赤玉を追加するという処理を数式化すると負の二項分布が導かれます。つまり、赤を引けば、次赤を引く確率は増えていることになります。
 
+次で示しますが、ポアソン分布とガンマ分布の混合分布からも負の二項分布が導かれます。これより、結果として、ガンマ分布が確率を高めていく分布である事が理解できます。(あくまでも定性的理解で、間違っているかもしれません。)
+
+#### ガンマ分布の基本的な性質
+
+ガンマ分布の表記と平均、分散が示されています。
+
+<div>
+$$
+Gamma\left(r | \alpha, \beta \right) = \frac{r^{\alpha - 1}e^{-\frac{r}{\beta}}}{\Gamma\left(\alpha \right)\beta^\alpha } 
+$$
+    
+$$
+E[r] = \alpha \beta
+$$
+
+$$
+Var[r] = \alpha \beta^2
+$$
+</div>
+
+#### ガンマ分布の加法性（再生性）
+
+ガンマ分布には加法性（本書では加法性と書かれているが、一般的には再生性と言われることが多い）という性質があります。$r_1$と$r_2$が
+$$
+r_i \sim Gmma(\alpha_i, \beta)
+$$
+$$
+r_j \sim Gmma(\alpha_j, \beta)
+$$
+というガンマ分布に従って生じるとき、$r_i$と$r_j$は、
+
+$$
+r_i + r_j \sim Gmma(\alpha_i + \alpha_j, \beta)
+$$
+に従って生じるという特性です。
+
+仮定（5）に従い、ブランドの購入回数$r_i$はガンマ分布に従います。よって、カテゴリーの購入回数$R$は$$R=\sum_{j=0}^gr_j$$なので、
+$$ R \sim Gamma\left(\sum_{j=0}^g \alpha_j, \beta\right) $$
+となります。
+
+また、
+$$S= \sum_{j=0}^g\alpha_j$$
+という新しいパラメタ$S$を設定すると、$R$の期待値はガンマ分布の特性から$S\beta$になります。一方、$R$はカテゴリーの購入回数であり、負の二項分布に従い、期待値は$MT$となります。
+よって、$$S\beta=MT$$となります。
+
+さらに、個々のブランドの購入回数の期待値についても同様に考えることが出来て、
+ $$\alpha_j\beta=m_jT$$となり、二つの式から$\beta$を削除すると$$\alpha_j=S\times \frac{m_j}{M}$$となります。これがガンマ分布のパラメタである$\alpha$の意味になります。
+ 
+#### Sの意味
+ガンマ分布の特性から$$R\sim Gamma(S,\beta)$$となります。また、$$R\sim NBD(K,MT)$$となります。以上から、私は、$S$を以下ように理解しています。
+
+<div class="box1">
+仮定（5）で述べられている、「カテゴリーの購入回数はNBDに従うが、ブランドの購入回数はガンマ分布に従う」と仮定した場合にその二つをつなぐパラメタ
+</div>
 
 
 #### (イ) ポアソン分布とガンマ分布から負の二項分布へ：
-ポアソン分布とガンマ分布の混合分布から負の二項分布を導きます。
+ポアソン分布とガンマ分布の混合分布から負の二項分布を導きます。個人のカテゴリーの購入回数はポアソン分布に従い、ポアソン分布の平均購入回数$\mu$はガンマ分布に従うという仮定をおきます。
+
+<div>
+$$
+Poisson(R|\mu T) = \frac{\left(\mu T \right)^R\cdot e^{-\mu T}}{R!}
+$$
+$$
+Gamma\left(\mu|K, \frac{M}{K}\right) = \frac{\mu^{K-1}}{\Gamma(K)\cdot\left(\frac{M}{K}\right)^K}e^{-\mu\frac{K}{M}}
+$$
+</div>
+
+この表記から、$\mu$に対して積分を行います。購入回数の期待値を計算します。
 
 <div>
 $$
 \begin{aligned}
-P\left(r \right) &=\int_0^{\infty} Poisson\left(r|\lambda \right) Gamma\left(\lambda | \alpha, \theta \right)  d\lambda    \\
-&= \int_0^{\infty} \frac{\lambda^r e^{-\lambda}}{r!}\cdot \frac{\lambda^{\alpha - 1}e^{-\frac{\lambda}{\theta}}}{\Gamma\left(\alpha \right)\theta^\alpha } d\lambda \\
-&= \frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha}  \int_0^{\infty} \lambda^{r+\alpha-1}e^{-\lambda\left(1 +\frac{1}{\theta}  \right)} d\lambda 
+P\left(R \right) &=\int_0^{\infty} Poisson\left(R|\mu T \right) Gamma\left(\mu | K, \frac{M}{K} \right)  d\mu \\
+&= \int_0^{\infty} \frac{\left(\mu T \right)^R\cdot e^{-\mu T}}{R!}\frac{\mu^{K-1}}{\Gamma(K)\cdot\left(\frac{M}{K}\right)^K}e^{-\mu\frac{K}{M}} d \mu \\
+&= \frac{K^KT^R}{R!\Gamma\left(K \right)M^K}  \int_0^{\infty} \mu^{R+K-1}e^{-\mu\left(T +\frac{K}{M}  \right)} d\mu 
 \end{aligned}
 $$
 </div>
@@ -457,7 +544,7 @@ $$
 
 と定義できる事を念頭に、
 $$
-\lambda \left(1 +\frac{1}{\theta}  \right)  = t \rightarrow \lambda =  \frac{\theta t}{1 + \theta } 
+\mu \left(T +\frac{K}{M}  \right)  = t \rightarrow \mu =  \frac{M}{MT + K } t
 $$
 
 と変数変換すると、
@@ -465,31 +552,20 @@ $$
 <div>
 $$
 \begin{aligned}
-P\left(r \right) &= \frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha}  \int_0^{\infty} \lambda^{r+\alpha-1}e^{-\lambda\left(1 +\frac{1}{\theta}  \right)} d\lambda \\
-&=\frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha}  \int_0^{\infty}\left(\frac{\theta t}{1 + \theta} \right)^{r+\alpha -1}e^{-t}\frac{\theta}{1 + \theta}dt \\ 
-&=\frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha} \left(\frac{\theta}{1 + \theta} \right)^{r+\alpha}\int_0^{\infty}t^{r+\alpha-1}e^{-t}dt \\
-&= \frac{1}{r!\Gamma\left(\alpha \right)\theta^\alpha} \left(\frac{\theta}{1 + \theta} \right)^{r+\alpha}\Gamma\left(r + \alpha \right) 
+P\left(R \right) &= \frac{K^KT^R}{R!\Gamma\left(K \right)M^K}  \int_0^{\infty} \mu^{R+K-1}e^{-\mu\left(T +\frac{K}{M}  \right)} d\mu \\
+&= \frac{K^KT^R}{R!\Gamma\left(K \right)M^K} \int_0^{\infty} \left(\frac{M}{MT+K}\right)^{R+K-1} t^{R+K-1}e^{-t  } \left(\frac{M}{MT+K}\right) dt \\
+&= \frac{K^KT^R}{R!\Gamma\left(K \right)M^K}\left(\frac{M}{MT+K}\right)^{R+K}  \int_0^{\infty} t^{R+K-1}e^{-t} dt \\
+&= \frac{K^KT^R}{R!\Gamma\left(K \right)M^K}\left(\frac{M}{MT+K}\right)^{R+K}\Gamma(R+K) \\
+&= \frac{\left(1 + \frac{MT}{K} \right)^{-K} \cdot \Gamma\left(K + R \right)}{R!\cdot \Gamma\left(K \right)} \cdot \left(\frac{MT}{MT+K} \right)^R 
 \end{aligned}
 $$
 </div>
 
-となります。また、$r! = \Gamma\left(r +1  \right) $に注意すると、
+以上から、
 
-<div>
-$$
-\begin{aligned}
-P\left(r \right) &= \frac{\Gamma\left(r+\alpha \right)}{\Gamma\left(\alpha \right)\Gamma\left(r + 1 \right)\theta^\alpha} \left(\frac{\theta}{1 + \theta} \right)^{r+\alpha} \\
-&= \frac{\Gamma\left(r+\alpha \right)}{\Gamma\left(\alpha \right)\Gamma\left(r + 1 \right)} \left(\frac{\theta}{1 + \theta} \right)^{r} \left(1 + \theta \right)^{-\alpha} \\
-&= \frac{\left(1 + \theta \right)^{-\alpha} \cdot \Gamma\left(r+\alpha \right)}{\Gamma\left(\alpha \right)\Gamma\left(r + 1 \right)} \left(\frac{\theta}{1 + \theta} \right)^{r} 
-\end{aligned}
-$$
-</div>
+$$ P\left(R \right) = \left(1 + \frac{MT}{K} \right)^{-K}\frac{\Gamma\left(K + R \right)}{R! \cdot \Gamma\left(K \right)} \cdot \left(\frac{MT}{MT+K} \right)^R $$
 
-と変形できます。ここで、$\alpha = K$,$\theta = \frac{MT}{K}, r=R $を代入すると、
-
-$$ P\left(R \right) = \frac{\left(1 + \frac{MT}{K} \right)^{-K} \cdot \Gamma\left(K + R \right)}{\Gamma\left(R + 1 \right)\cdot \Gamma\left(K \right)} \cdot \left(\frac{MT}{MT+K} \right)^R $$
-
-となり、1-3の負の二項分布の章で示した以下の式と一致します。以上から、
+となり、式(21)となります。また、1-3の負の二項分布の章で示した以下の式と一致します。以上から、
 
 <div class="box1">
 消費者個人の購買活動がポアソン分布しており、その長期平均購入回数がガンマ分布していることを仮定することによって、ある期間における消費者全体の購入回数は負の二項分布している
@@ -497,12 +573,38 @@ $$ P\left(R \right) = \frac{\left(1 + \frac{MT}{K} \right)^{-K} \cdot \Gamma\lef
 
 という事が導けました。
 
+
 ### パート2
 #### (ウ) ガンマ分布からデリシュレー分布へ：
+
+各ブランドの購入回数$r_1,\cdots,r_g$は独立であり、それぞれガンマ分布に従うという仮定から、各ブランドの購入確率の分布式を導きます。ブランドの購入回数の関数は仮定から以下の様になります。
+
+<div>
+$$
+G(r_1,r_2,\cdots ,r_g | \alpha_1,\alpha_2,\cdots,\alpha_g) = \prod_{j=1}^{g} \frac{r_j^{\alpha_{j-1}}e^{-\frac{r_j}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}}
+$$
+</div>
+
+
+<div>
+$$
+D=\{(r_1,r_2,\dots, r_j \cdots,  r_g): 0 \leqq r_j < \infty , j = 1,2,\cdots j \cdots g \}
+$$
+</div>
+
+<div>
+$$
+F=\{(p_1,p_2,\dots,p_j, \cdots,  p_g): 0 \leqq p_j < 1 , j = 1,2,\cdots j \cdots g \}
+$$
+</div>
+
+$0 < p_g < \infty$となっていますが、おそらく誤植だと思います。
 
 <div>
 $$
 \quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
+$$
+$$
 \quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
 $$
 <div>
@@ -574,42 +676,7 @@ $$
 
 #### test
 
-<div>
-$$
-G(r_1,r_2,\cdots ,r_g) = \prod_{j=1}^{g} \frac{r_j^{\alpha_{j-1}}e^{-\frac{r_j}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}}
-$$
-</div>
 
-
-<div>
-$$
-D=\{(r_1,r_2,\dots, r_j \cdots,  r_g): 0 \leqq r_j < \infty , j = 1,2,\cdots j \cdots g \}
-$$
-</div>
-
-<div>
-$$
-F=\{(p_1,p_2,\dots,p_j, \cdots,  p_g): 0 \leqq p_j < 1 , j = 1,2,\cdots j \cdots g \}
-$$
-</div>
-
-$0 < p_g < \infty$となっていますが、おそらく誤植だと思います。
-
-
-<div>
-$$
-$$
-</div>
-
-<div>
-$$
-$$
-</div>
-
-<div>
-$$
-$$
-</div>
 
 <div>
 $$
@@ -707,7 +774,7 @@ P267の下から2行目の「行を足しても変わらない」といってい
 - $\cdots$
 - g-1行目をg行目に加える <br>
 
-というように、g行目にそれ以外の行の値をすべて加えることを示しています。
+というように、g行目にそれ以外の行の値をすべて加えることを示しています。1行目にg行目を加えると、1列目の$p_{g'}$と$-p_{g'}$が0となります。この0によりかなり楽に行列式を計算することが出来ます。
 
 <div>
 $$
