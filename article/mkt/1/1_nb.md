@@ -356,13 +356,6 @@ $$
 #### デリシュレーについて
 著者は「Dirichlet」をデリシュレーと表記していますが、おそらく一般的にはディリクレと表記される場合が多いかと思います。統計の分野でもディリクレ分布、数値計算の分野でも境界値問題でディリクレ問題などと言いますので、混同しないように気をつけた方が良いかと思います。私も普段はディリクレと言いますが、以下ではデリシュレーに統一します。
 
-#### ガンマ分布からデリシュレー分布の導出について
-ヤコビアンの計算などが重なり、計算が複雑になっているように思えます。最初から、ブランドが選択される
-
-もしかしたらマーケティング系の論文では教科書のような導出が定石となっていたりした場合は私の知識不足となります。
-
-以下では、本書に従い、ブランドの購入回数が、ガンマ分布よりサンプリングされ、それを変数変換によりデリシュレー分布を導出する部分の数式の説明もしようと思います。
-
 ### 概要
 
 まず結論からです。デリシュレーNBDは以下の様な数式で表せると結論づけています。
@@ -585,43 +578,84 @@ G(r_1,r_2,\cdots ,r_g | \alpha_1,\alpha_2,\cdots,\alpha_g) = \prod_{j=1}^{g} \fr
 $$
 </div>
 
+この式の$r_j$をブランド$j$が選ばれる確率$p_j$に変数変換を行います。変換を行うための条件を以下の通りです。教科書ではDからFに射影変換すると説明されています。
 
 <div>
 $$
 D=\{(r_1,r_2,\dots, r_j \cdots,  r_g): 0 \leqq r_j < \infty , j = 1,2,\cdots j \cdots g \}
 $$
+$$
+F=\{(p_1,p_2,\dots,p_j, \cdots,  p_{g-1}): 0 \leqq p_j < 1 , j = 1,2,\cdots j \cdots g-1 \}
+$$
+$$
+p_j=\frac{r_j}{r_1+r_2+ \cdots +r_g} \quad (j=1,2,\cdots,g-1)
+$$
 </div>
 
+教科書では$0 < p_g < \infty$となっていますが、おそらく誤植だと思います。結果として、式(22)が導かれます。
+
+$$ 
+Dirichlet\left(p|\alpha \right) = \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \left( \prod_{j=1}^{g-1}p_j^{\alpha_j-1}\right)\left(1-\sum_{j=1}^{g-1}p_j \right)^{\alpha_g-1}
+$$
+
+
+この確率分布は一般的にディリクレ分布と言われることが多いと思います。この式は拘束条件を別の式として、
+
+<div>
+$$ 
+Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \frac{\Gamma\left(\displaystyle\sum_{j=1}^{g}\alpha_j\right)}{\displaystyle \prod_{j=1}^{g}\Gamma\left(\alpha_j\right)} \prod_{j=1}^{g}p_j^{\alpha_j-1}
+$$
+    
+ただし、
+
+$$
+\sum_{j=1}^{g}p_j = 1
+$$
+
+と書く方が一般的な気がします。
+
+
+少しややこしいですが、注意深く式を追えば導けると思います。以下に式（22）を導く際の注意点を挙げます。
+
+#### 注意点1：変数変換の際の拘束条件
+
+$r_1, \cdots, r_j$は独立試行によりガンマ分布からサンプリングされますが、これを確率$p_1, \cdots, p_g$に変数変換する際、$p_j$には$\sum_j p_j=1$という拘束条件があります。式(22)の導出途中で$1-\sum_{j=1}^{g-1}$となっているのは、この拘束条件を式の中に反映させるためです。
+
+#### 注意点2：ヤコビアンの計算
+
+P267の一番下の式に
+
 <div>
 $$
-F=\{(p_1,p_2,\dots,p_j, \cdots,  p_g): 0 \leqq p_j < 1 , j = 1,2,\cdots j \cdots g \}
+\begin{aligned}
+H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{\left(1-\sum_{j=1}^{g-1}p_j\right)p_{g'}}{\beta}}}{\Gamma(\alpha_g)\beta^{\alpha_g}} \right]\cdot |J|
+\end{aligned}
 $$
 </div>
 
-$0 < p_g < \infty$となっていますが、おそらく誤植だと思います。
+という$|J|$という式が出てきます。これをヤコビアンと言います。確率分布の変数変換は、単純に変数を入れ替える以外にこの量を考慮する必要があります。変数が一つしかない場合は簡単ですが、変換する変数の量が複数ある場合は、以下の様な計算をする必要があります。
 
 <div>
 $$
-\quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
+|J| = \left|
+  \begin{array}{cccc}
+    \displaystyle \frac{\partial r_1}{\partial p_1} & \displaystyle \frac{\partial r_1}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_1}{\partial p_{g'}} \\
+    \displaystyle \frac{\partial r_2}{\partial p_1} & \displaystyle \frac{\partial r_2}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_2}{\partial p_{g'}} \\
+    \vdots & \vdots    & \ddots & \vdots \\
+  \displaystyle \frac{\partial r_g}{\partial p_1} & \displaystyle \frac{\partial r_g}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_g}{\partial p_{g'}} 
+  \end{array}
+\right|
 $$
-$$
-\quad j(ブランド) : \{j \in N: 1 \leqq j \leqq g\} 
-$$
-<div>
+</div>
 
-関数$G$は$r$の関数なので、これを確率$p$の関数に変換します。
 
 ここで気をつけるのは、確率分布に関する変数変換は、単純に変数を入れ替える以外に、ヤコビアンという量が必要になります。それが教科書にある$|J|$です。
 
-例えば、$p(x,y)$を変数$x,y$を確率変数とする連続確率分布を表すとします。普段はあまり意識することはないですが、連続確率分布はその値だけでは実は意味をなしません。例えば、$\displaystyle p(2,3)=\frac{1}{3}$という結果は、
+ヤコビアンの意味を簡単に説明します。例えば、$p(x,y)$を変数$x,y$を確率変数とする連続確率分布を表すとします。普段はあまり意識することはないですが、連続確率分布はその値だけでは実は意味をなしません。例えば、$\displaystyle p(2,3)=\frac{1}{3}$という結果は、暗黙的に$\displaystyle p(2,3)dxdy=\frac{1}{3}$という事を意味していて、$x,y$が$x=2 + dx, y=3+dy$の範囲に存在する確率を意味します。よって、この$dxdy$というが確率分布の解釈には必要で、ヤコビアンは$dxdy$を変数変換する時に必要になります。正確な数学的な表現はルベーグ積分や測度論の知識が必要となりますが、マーケティングの世界では不要かと思います。ただ、このように数式をしっかり追うときに知識として必要になります。
 
+これは私の経験から来る感想ですが、実務レベルになるとこの辺の理解の重要性を実感します。コンピュータに積分を計算させようとするとき、この$dxdy$を考慮しないと訳のわからない数値になり、モデルが意味をなさず、何をしているのか分からなくなります。
 
-正確な数学的な表現はルベーグ積分や知識が必要となりますが、マーケティングの世界では不要かと思います。ただ、このように数式をしっかり追うときに知識として必要になります。
-
-ただし、離散型の確率分布の場合は異なるので注意が必要です。
-
-これは実務レベルになると実感します。現実的なレベルでコンピュータに積分を計算施用とするとき、この$dxdy$を考慮しないと訳のわからない数値になり、モデルが意味をなさなくなるというのは、数値計算をしていれば誰も経験する事だと思います。
-
+#### ヤコビアンの計算の例
 
 よく利用されるガウス積分を例にヤコビアンの計算をしてみます。$x=r\cos \theta, y=r\sin \theta$という極座標への変数変換を例に取ります。
 
@@ -674,34 +708,13 @@ $$
 
 となり、ガウス積分の有名な公式が導けます。この辺の説明がないので、数学や確率・統計の知識があまりないと完全に理解するのは厳しいかもしれません。
 
-#### test
+#### 行列式の計算
 
-
-
-<div>
-$$
-$$
-</div>
-
+ヤコビアンは$\displaystyle \frac{\partial r_1}{\partial p_1} $を計算する必要がありますが、$\displaystyle p_j=\frac{r_j}{r_1+r_2 + \cdots + r_g}$から計算することが可能です。簡単な計算により、以下の様になります。
 
 <div>
 $$
 |J| = \left|
-  \begin{array}{cccc}
-    \displaystyle \frac{\partial r_1}{\partial p_1} & \displaystyle \frac{\partial r_1}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_1}{\partial p_{g'}} \\
-    \displaystyle \frac{\partial r_2}{\partial p_1} & \displaystyle \frac{\partial r_2}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_2}{\partial p_{g'}} \\
-    \vdots & \vdots    & \ddots & \vdots \\
-  \displaystyle \frac{\partial r_g}{\partial p_1} & \displaystyle \frac{\partial r_g}{\partial p_2} & \cdots & \displaystyle \frac{\partial r_g}{\partial p_{g'}} 
-  \end{array}
-\right|
-$$
-</div>
-
-=======
-
-<div>
-$$
-\left|
   \begin{array}{cccc}
     p_{g'} & 0 & \cdots & p_1 \\
     0 & p_{g'} & \cdots & p_2 \\
@@ -711,6 +724,9 @@ $$
 \right|
 $$
 </div>
+
+
+#### 行列式の計算の性質
 
 
 行列式の特徴として、ある行にある行を足しても変わらないという特性があります。
@@ -778,7 +794,7 @@ P267の下から2行目の「行を足しても変わらない」といってい
 
 <div>
 $$
-\left|
+|J| = \left|
   \begin{array}{cccc}
     p_{g'} & 0 & \cdots & p_1 \\
     0 & p_{g'} & \cdots & p_2 \\
@@ -792,47 +808,12 @@ $$
 となります。この辺の行列の式の変形もある程度知識がないときついかもしれません。
 
 
-<div>
-$$
-\begin{aligned}
-H_{g} \left(p_1, p_2, \cdots , p_{g'} \right) &= \left[\prod_{j=1}^{g-1}\frac{(p_jp_{g'})^{\alpha_j-1}e^{-\frac{p_jp_{g'}}{\beta}}}{\Gamma(\alpha_j)\beta^{\alpha_j}} \right] \cdot \left[ \frac{((1-\sum_{j=1}^{g-1}p_j)p_{g'})^{\alpha_j-1}e^{-\frac{\left(1-\sum_{j=1}^{g-1}p_j\right)p_{g'}}{\beta}}}{\Gamma(\alpha_g)\beta^{\alpha_g}} \right]\cdot |J| \\
-&=abc
-\end{aligned}
-$$
-</div>
 
-この$H_g$から$g'$の成分を積分消去します。
-
-
-<div>
-$$
-H_{g-1} = \int_0^\infty H_g dp_{g'}
-$$
-</div>
-
-#### sample
-sample
-sample 
-sample 
-
-<div>
-$$
-\mathrm{det}A = |A| = \left|
-  \begin{array}{ccccc}
-    \displaystyle \frac{\partial r_1}{\partial p_1} & \cdots & a_{1i} & \cdots & a_{1n} \\
-    \vdots & \ddots &        &        & \vdots \\
-    a_{i1} &        & a_{ii} &        & a_{in} \\
-    \vdots &        &        & \ddots & \vdots \\
-    a_{n1} & \cdots & a_{ni} & \cdots & a_{nn}
-  \end{array}
-\right|
-$$
-</div>
 
 #### (エ) 多項分布とデリシュレー分布を合体：
 #### 多項分布
 
-1からgまでのブランドがあり、それぞれが選ばれる確率が$p_1,p_2,\cdots,p_g$とします。それぞれのブランドが選ばれる回数を$r_1, r_2, \cdots, r_g$とすると、$r$が従う確率分布は多項分布となります。多項分布は二項分布を多変数に拡張した確率分布になります。
+1から$g$までのブランドがあり、それぞれが選ばれる確率が$p_1,p_2,\cdots,p_g$とします。それぞれのブランドが選ばれる回数を$r_1, r_2, \cdots, r_g$とすると、$r$が従う確率分布は多項分布となります。多項分布は二項分布を多変数に拡張した確率分布になります。
 
 
 <div>
@@ -855,6 +836,9 @@ $$
 
 #### 多項分布とデリシュレー分布を合体
 
+ブランドが選ばれる回数$(r_1,r_2, \cdots, r_j)$はそのブランドが選ばれる確率をパラメタに持つ多項分布に従い、その確率はデリシュレー分布に従うと考えて、二つを掛け合わせ$p$に対して積分する事により$r_1, \cdots ,r_g$となる確率分布を得ることが出来ます。
+
+繰り返しになりますが、デリシュレー分布は以下の通りです。
 
 <div>
 $$ 
@@ -862,12 +846,16 @@ Dir\left(p_1,p_2, \cdots, p_g| \alpha_1,\alpha_2, \cdots, \alpha_g\right) = \fra
 $$
 </div>
 
+<div>
+$$
+\sum_{j=1}^g p_j = 1
+$$
+</div>
+
 この場合は、変数が$p$でパラメタが$\alpha$であると理解することが重要です。
 
-
+<!--
 #### ブランドの購入回数が多項分布に従い、購入確率がデリシュレー分布に従うと考える場合
-
-
 
 <div>
 $$
@@ -902,7 +890,7 @@ $$
 $$
 </div>
 
-ブランドが選ばれる回数$(r_1,r_2, \cdots, r_j)$はそのブランドが選ばれる確率をパラメタに持つ多項分布に従い、その確率はデリシュレー分布に従うと考えて、
+-->
 
 <div>
 $$
@@ -961,19 +949,20 @@ $$
 
 ### パート3
 
+#### デリシュレーNBDモデル：
+
 パート1の式(21)からカテゴリーの購入回数の分布がわかり、パート2の式(25)で各ブランドの購入回数の分布が定式化出来たので、これらの積を取ることにより、ブランド別の購入分布が導かれます。
 
 <div>
 $$
 \begin{aligned}
-&P(R, r_1, \cdots, r_g) \\
-&=\left[ \right]
+&P(R, r_1, \cdots, r_g) \\ &=\frac{\Gamma\left(S \right)}{\displaystyle \prod_{i=1}^{N} \Gamma\left(\alpha_j \right)} \cdot \frac{\displaystyle \prod_{i=1}^{N} \Gamma\left(r_j + \alpha_j \right)}{\Gamma\left(S+R \right)} \cdot \frac{1}{\displaystyle \prod_{j=1}^{g} r_j!} \frac{\Gamma\left(R + K \right)}{\displaystyle \Gamma\left(K \right)} \cdot \left(1 + \frac{K}{MT} \right)^{-R} \cdot\left(1 + \frac{MT}{K} \right)^{-K}
 \end{aligned}
 $$
 </div>
 
 $g=2$の場合は、デリシュレー分布はベータ分布となります。一般的にベータ分布の多変数化がデリシュレー分布（ディリクレ分布）となります。
-
+この式を用いた具体的な計算は[巻末解説2](/article/mkt/2/#python)を参照してください。
 
 
 ## まとめ
