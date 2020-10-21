@@ -7,22 +7,22 @@
 get_ipython().system('pip install blueqat')
 
 
-# In[3]:
+# In[2]:
 
 
 from blueqat import Circuit
 
 
-# In[5]:
+# In[3]:
 
 
-Circuit().x[0].m[:].run(shots=100)
+Circuit().h[0].m[:].run(shots=200)
 
 
-# In[ ]:
+# In[4]:
 
 
-
+Circuit().h[0].m[:].run(shots=100)
 
 
 # In[ ]:
