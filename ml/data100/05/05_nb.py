@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第5章 顧客の退会を予測する10本ノック
@@ -7,7 +7,7 @@
 # 
 # 本演習で利用しているデータは本サイトからは利用できません。ぜひとも「Python実践データ分析１００本ノック」を購入し、本に沿ってダウンロードして自分の手でコーディングしてみてください。（私は決して回し者ではないので安心してください笑）
 # 
-# 前章（4章）では、クラスタリングと線形回帰をして見ました。今回は決定木のようです。データ分析や予測において最初に使われるのがほとんど決定木を基本とする、XGBoostやLightGBM、ランダムフォレストの元となっています。
+# 前章（4章）では、クラスタリングと線形回帰を実行してみました。今回は決定木のようです。データ分析や予測において最初に使われるのがXGBoostやLightGBM、ランダムフォレストであり、それらの手法の基礎となっているのが決定木です。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -178,51 +178,15 @@ for i in range(5):
 
 # ### ノック : 45 欠損値を除去しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 46 文字列型の変数を処理できるように整形しよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック : 47 決定木を用いて大会予測モデルを作成してみよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 48 予測モデルの評価を行い、モデルのチューニングをしてみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック : 49 モデルに寄与している変数を確認しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック : 50 顧客の退会を予測しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
