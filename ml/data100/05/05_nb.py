@@ -166,8 +166,11 @@ conti_uselog.head()
 
 # ### ノック : 44 予測する月の在籍期間を作成しよう
 
-# In[18]:
+# In[19]:
 
+
+predict_data['period'] = 0
+predict_data['now_date'] = pd.to_datetime(predict_data['年月'], format="%Y%m")
 
 for i in range(5):
   print(i, ' : ABC')
