@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第6章 物流の最適ルートをコンサルティングする10本ノック
@@ -32,8 +32,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -376,12 +376,6 @@ for i in range(len(df_pos.columns)):
 
 
 # ### ノック 58 : 輸送コスト関数を作成しよう 
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 59 : 制約条件を作って見よう 
 
