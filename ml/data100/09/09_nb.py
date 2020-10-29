@@ -29,7 +29,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[ ]:
+# In[3]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -51,34 +51,88 @@ print('pandas version :', pd.__version__)
 
 # ### ノック 81 : 画像データを読み込んでみよう 
 
-# In[ ]:
+# In[4]:
 
 
+import cv2
+import os
 
+img = cv2.imread('img/img01.jpg')
+
+if os.path.isfile('img/img01.jpg'):
+  height, width = img.shape[:2]
+
+print('画像幅 : ', width)
+print('画像の高さ : ', height)
+
+#画像の表示
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.show()
 
 
 # ### ノック 82 : 映像データを読み込んでみよう
+# 
+# 映像の取得のため、VideoCapture関数を利用します。取得した映像情報をcapに格納し、getにより情報を取得します。フレーム毎の情報をreadメソッドで読み出します。これにより動画情報を画像情報と同様に操作し、imshowメソッドで表示可能です。
 
 # In[ ]:
 
 
+cap = cv2.VideoCapture('mov/mov01.avi')
+width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+fps = cap.get(cv2.CAP_PROP_FPS)
 
+while(cap.isOpened()):
+  ret, frame = cap.read()
+  if ret:
+    cv2.imshow('frame', frame)
+  if cv2.waitKey(1) & 0xFF == ord('q'):
+    break
+
+cap.release()
+cv2.destroyAllWindows()
 
 
 # ### ノック 83 : 映像を画像に分割し、保存してみよう
+# 
+# スナップショットとして画像として保存します。
 
 # In[ ]:
 
 
+cap = cv2.VideoCapture('mov/mov01.avi')
 
+num = 0
+while(cap.isOpened()):
+  ret, frame = cap.read()
+  if ret:
+    filepath = 'snapshot/snapshot_' + str(num) + '.jpg'
+    cv2.imwrite(filepath, frame) 
+    num += 1
+  if cv2.waitKey(1) & 0xFF == ord('q'):
+    break
+  
+cap.release()
+cv2.destroyAllWindows()
+
+
+# In[10]:
+
+
+get_ipython().system('ls snapshot/')
 
 
 # ### ノック 84 : 画像内のどこに人がいるのか検出しよう
+# 
+# HOG抽出量により人の顔を検出します。
 
 # In[ ]:
 
 
+hog = cv2.HOGDescriptor()
 
+hos.setSVCMdetector(cv2.)
 
 
 # ### ノック 85 : 画像内の人の顔を検出してみよう
