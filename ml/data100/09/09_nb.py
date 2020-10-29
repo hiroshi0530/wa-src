@@ -127,12 +127,17 @@ get_ipython().system('ls snapshot/')
 # 
 # HOG抽出量により人の顔を検出します。
 
-# In[ ]:
+# In[12]:
 
+
+import cv2
 
 hog = cv2.HOGDescriptor()
 
-hos.setSVCMdetector(cv2.)
+hog.setSVCMdetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+hogParams = {
+  'winStride'
+}
 
 
 # ### ノック 85 : 画像内の人の顔を検出してみよう
