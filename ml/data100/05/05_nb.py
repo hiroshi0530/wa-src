@@ -31,7 +31,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[3]:
+# In[1]:
 
 
 get_ipython().magic('matplotlib inline')
@@ -53,35 +53,35 @@ print('pandas version :', pd.__version__)
 
 # ### ノック : 41 データを読み込んで利用で他を整形しよう
 
-# In[4]:
+# In[97]:
 
 
 customer = pd.read_csv('customer_join.csv')
 uselog_months = pd.read_csv('use_log_months.csv')
 
 
-# In[5]:
+# In[3]:
 
 
 customer.head()
 
 
-# In[6]:
+# In[4]:
 
 
 uselog_months.head()
 
 
-# In[7]:
+# In[18]:
 
 
 year_months = list(uselog_months['年月'].unique())
 uselog = pd.DataFrame()
 
 for i in range(1, len(year_months)):
-  tmp = uselog_months.loc[uselog_months['年月'] == year_months[i]]
+  tmp = uselog_months.loc[uselog_months['年月'] == year_months[i]].copy()
   tmp.rename(columns={'count': 'count_0'}, inplace=True)
-  tmp_before = uselog_months.loc[uselog_months['年月'] == year_months[i-1]]
+  tmp_before = uselog_months.loc[uselog_months['年月'] == year_months[i - 1]].copy()
   del tmp_before['年月']
   tmp_before.rename(columns={'count': 'count_1'}, inplace=True)
   tmp = pd.merge(tmp, tmp_before, on='customer_id', how='left')
@@ -94,46 +94,85 @@ for i in range(1, len(year_months)):
 uselog.head()
 
 
-# In[9]:
-
-
-uselog.shape
-
-
 # ### ノック : 42 大会前日の大会顧客データを作成しよう
 
-# In[10]:
+# In[135]:
 
 
 from dateutil.relativedelta import relativedelta
-exit_customer = customer.loc[customer['is_deleted'] == 1]
-
-exit_customer.head()
-
-
-# In[11]:
-
+exit_customer = customer.loc[customer['is_deleted'] == 1].copy()
 
 exit_customer['exit_date'] = None
-exit_customer['end_date'] = pd.to_datetime(exit_customer['end_date'])
+exit_customer['end_date'] = pd.to_datetime(exit_customer['end_date'].copy())
 
 for i in range(len(exit_customer)):
-  exit_customer['exit_date'].iloc[i] = exit_customer['end_date'].iloc[i] - relativedelta(months=1)
+  col_id_exit_date = exit_customer.columns.get_loc('exit_date')
+  col_id_end_date = exit_customer.columns.get_loc('end_date')
+  # print(col_idx)
+  # print(exit_customer.iloc[[i], [col_id_end_date]])
+  # print(type(exit_customer.iloc[[i], [col_id_end_date]]))
+  # print(exit_customer.iloc[i, col_id_end_date])
+  # exit_customer.iloc[[i], [col_id_exit_date]] = exit_customer.iloc[[i], [col_id_end_date]] - relativedelta(months=1)
+  exit_customer.iloc[i, col_id_exit_date] = exit_customer.iloc[i, col_id_end_date] - relativedelta(months=1)
+  # print(type(exit_customer.iloc[[i], [col_id_end_date]]))
+  # print(type(exit_customer.iloc[i, col_id_end_date]))
+  
+# for i in range(len(exit_customer)):
+# print(exit_customer['exit_date'])
+# print(relativedelta(months=1) + exit_customer['end_date'].iloc[0])
+# print(exit_customer['exit_date'])
+# print(type(exit_customer['exit_date']))
+# exit_customer['exit_date'].loc[0] = 2
+# # print(exit_customer['exit_date'].loc[0])
+# print(exit_customer['exit_date'].iloc[0])
+# print(exit_customer['end_date'].iloc[0])
+# # exit_customer['end_date'].iloc[0] = 100
+# print(exit_customer.columns)
+# print(type(exit_customer))
+# print()
+# print()
+# print()
+# # exit_customer.iloc[[1, 2], ['exit_date']] = 40
+# print(exit_customer.iloc[[1, 2], [0]])
+# 
+# 
+# col_idx = exit_customer.columns.get_loc('exit_date')
+# 
+# print(col_idx)
+# print(col_idx)
+# print(col_idx)
+# 
+# exit_customer.iloc[[1, 2], [col_idx]] = 100
+
+# exit_customer['exit_date'][0] = 1
+# exit_customer['exit_date'].iloc[0] = exit_customer['end_date'].iloc[0] - relativedelta(months=1)
+
+# exit_customer[0,'exit_date'] = 1
+
 
 exit_customer['年月'] = exit_customer['exit_date'].dt.strftime('%Y%m')
-uselog['年月'] = uselog['年月'] .astype(str)
+uselog['年月'] = uselog['年月'].astype(str)
 exit_uselog = pd.merge(uselog, exit_customer, on=['customer_id', '年月'], how='left')
 
 
-# In[12]:
+# In[136]:
 
 
 len(uselog)
 
 
-# In[13]:
+# In[137]:
 
 
+exit_uselog.head()
+
+
+# In[141]:
+
+
+exit_uselog = exit_uselog.dropna(subset=['name'])
+print(len(exit_uselog))
+print(len(exit_uselog['customer_id'].unique()))
 exit_uselog.head()
 
 

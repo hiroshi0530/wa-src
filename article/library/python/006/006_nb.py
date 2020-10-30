@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## Pythonからワードプレスのブログに投稿する
@@ -115,6 +115,7 @@ def upload_image(in_image_file_name, out_image_file_name):
     return
   else:
     print(in_image_file_name.split('/')[-1], 'NO IMAGE!!')
+
 
 
 # ### サムネイルの指定
