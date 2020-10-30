@@ -1,11 +1,11 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
-# ## pandasのSettingWithCopyWarningのワーニングについて
+# ## pandasのSettingWithCopyWarningについて
 # 
-# Python Tips
+# pandasを利用していると、SettingWithCopyWarningが出ることがあります。基本的には、参照渡しに起因する部分が原因で、DataFrameをcopy()メソッドによって、別のメモリに独立して作成すれば問題ないのですが、今回copy()を利用してもワーニングが解決出来ませんでした。
 # 
-# pythonを利用する上で、便利な表記などの個人的なメモです。基本的な部分は触れていません。対象も自分が便利だなと思ったものに限定されます。
+# なぜこうなるかのは不明で、おそらくcopy()を利用した場合のワーニングは無視しても問題ないと思いますが、一応解決案をメモしておきます。
 # 
 # ### github
 # - githubのjupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/python/07/07_nb.ipynb)
@@ -27,85 +27,63 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# In[ ]:
+# In[3]:
 
 
-SettingWithCopyWarning
+import pandas as pd
+import numpy as np
 
-columnsのget_locを利用してアクセすると良い
+# 6 x 2のDataFrameを作成します
+df = pd.DataFrame(np.arange(12).reshape(6, 2), columns=['c0', 'c1'])
 
-col_id_exit_date = exit_customer.columns.get_loc('exit_date')
-col_id_end_date = exit_customer.columns.get_loc('end_date')
+df
 
 
-# SettingWithCopyWarningが出てしまう
-# SettingWithCopyWarningが出てしまう
+# locで条件に合う部分だけを抽出する形でオブジェクトを作成し、カラムを指定してから、ilocを用いて上書きしようとするとSettingWithCopyWarningが出現します。
 # 
-# #### エラーが出ない
-# ilocからのアクセスの方法で依存性がある
+# これはよく見られるワーニングです。
+
+# In[4]:
+
+
+df_1 = df[['c0']].loc[df['c0'] % 3 == 0]
+
+df_1['c1'] = None 
+df_1['c1'].iloc[0] = 12
+df_1.head()
+
+
+# 通常であれば、copy()メソッドを利用し、参照渡しではなく、別途メモリ上にオブジェクトを作成すればワーニングは消えます。しかし、この場合は消えません。
+
+# In[5]:
+
+
+df_2 = df[['c0']].loc[df['c0'] % 3 == 0].copy()
+
+df_2['c1'] = None 
+df_2['c1'].iloc[0] = 12
+df_2.head()
+
+
+# ### 解決案
 # 
-# ```python
-# print(type(exit_customer))
-# exit_customer.iloc[i, col_id_exit_date] = exit_customer.iloc[i, col_id_end_date] - relativedelta(months=1)
-# ```
+# ilocで直接、行番号と列番号をしてすれば良いようです。
+# そのために、わざわざ columns.get_locメソッドを利用して、カラムのインデックス番号を取得する必要があります。
 
-# #### エラーが出る
+# In[6]:
+
+
+df_3 = df[['c0']].loc[df['c0'] % 3 == 0]
+
+df_3['c1'] = None 
+idx = df_3.columns.get_loc('c1')
+
+df_3.iloc[0, idx] = 12
+df_3.head()
+
+
+# ### まとめ
 # 
-# ```python
-# print(type(exit_customer['exit_date']))
-# exit_customer['exit_date'].iloc[0] = exit_customer['end_date'].iloc[0] - relativedelta(months=1)
-# ```
-
-# In[ ]:
-
-
-from dateutil.relativedelta import relativedelta
-
-exit_customer = customer.loc[customer['is_deleted'] == 1].copy()
-
-exit_customer['exit_date'] = None
-exit_customer['end_date'] = pd.to_datetime(exit_customer['end_date'].copy())
-
-for i in range(len(exit_customer)):
-  col_id_exit_date = exit_customer.columns.get_loc('exit_date')
-  col_id_end_date = exit_customer.columns.get_loc('end_date')
-  # print(col_idx)
-  # print(exit_customer.iloc[[i], [col_id_end_date]])
-  # print(type(exit_customer.iloc[[i], [col_id_end_date]]))
-  # print(exit_customer.iloc[i, col_id_end_date])
-  # exit_customer.iloc[[i], [col_id_exit_date]] = exit_customer.iloc[[i], [col_id_end_date]] - relativedelta(months=1)
-  exit_customer.iloc[i, col_id_exit_date] = exit_customer.iloc[i, col_id_end_date] - relativedelta(months=1)
-  # print(type(exit_customer.iloc[[i], [col_id_end_date]]))
-  # print(type(exit_customer.iloc[i, col_id_end_date]))
-  
-# for i in range(len(exit_customer)):
-# print(exit_customer['exit_date'])
-# print(relativedelta(months=1) + exit_customer['end_date'].iloc[0])
-# print(exit_customer['exit_date'])
-# print(type(exit_customer['exit_date']))
-# exit_customer['exit_date'].loc[0] = 2
-# # print(exit_customer['exit_date'].loc[0])
-# print(exit_customer['exit_date'].iloc[0])
-# print(exit_customer['end_date'].iloc[0])
-# # exit_customer['end_date'].iloc[0] = 100
-# print(exit_customer.columns)
-# print(type(exit_customer))
-# print()
-# print()
-# print()
-# # exit_customer.iloc[[1, 2], ['exit_date']] = 40
-# print(exit_customer.iloc[[1, 2], [0]])
+# 以上SettingWithCopyWarningの特殊な回避方法の紹介でした。ただ、私の感覚ですが、copy()メソッドを利用していれば問題ないでしょうし、pythonやpandasのバージョンによって挙動は変わると思います。
 # 
-# 
-# col_idx = exit_customer.columns.get_loc('exit_date')
-# 
-# print(col_idx)
-# print(col_idx)
-# print(col_idx)
-# 
-# exit_customer.iloc[[1, 2], [col_idx]] = 100
-
-# exit_customer['exit_date'][0] = 1
-
-
-# ## 参考記事
+# 何かしらの参考になれば幸いです。
