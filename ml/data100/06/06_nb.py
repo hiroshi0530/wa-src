@@ -321,19 +321,19 @@ get_ipython().run_cell_magic('bash', '', 'cat trans_cost.csv')
 # In[30]:
 
 
-get_ipython().run_cell_magic('bash', '', 'head demand.csv')
+get_ipython().run_cell_magic('bash', '', 'cat demand.csv')
 
 
 # In[31]:
 
 
-get_ipython().run_cell_magic('bash', '', 'head supply.csv')
+get_ipython().run_cell_magic('bash', '', 'cat supply.csv')
 
 
 # In[32]:
 
 
-get_ipython().run_cell_magic('bash', '', 'head trans_route_new.csv')
+get_ipython().run_cell_magic('bash', '', 'cat trans_route_new.csv')
 
 
 # どの倉庫からどの工場へ、どれだけの量の輸送が行われているのかを記録したtrans_route.csv を読み込んでみる
@@ -347,7 +347,7 @@ df_tr.head()
 
 # ### ノック 57 : 輸送ルート情報からネットワークを可視化してみよう
 
-# In[41]:
+# In[34]:
 
 
 df_pos = pd.read_csv('trans_route_pos.csv')
@@ -369,41 +369,148 @@ for i in range(len(df_pos.columns)):
       # 辺の追加
       G.add_edge(df_pos.columns[i], df_pos.columns[j])
       
-      if num_pre < len(G.edge):
+      if num_pre < len(G.edges):
         num_pre = len(G.edges)
         weight = 0
         
         if(df_pos.columns[i] in df_tr.columns) and (df_pos.columns[j] in df_tr.index):
-          if df_tr[df_pos.columns[i]][df_pos.columns[j]] 
-          
-          * size
-          
-        elif:
-              
+          if df_tr[df_pos.columns[i]][df_pos.columns[j]]:
+            weight = df_tr[df_pos.columns[i]][df_pos.columns[j]] * size
+        elif (df_pos.columns[j] in df_tr.columns) and (df_pos.columns[i] in df_tr.index):
+          if df_tr[df_pos.columns[j]][df_pos.columns[i]]:
+            weight = df_tr[df_pos.columns[j]][df_pos.columns[i]] * size
+        
+        edge_weights.append(weight)    
+
+pos = {}
+for i in range(len(df_pos.columns)):
+  node = df_pos.columns[i]
+  pos[node] = (df_pos[node][0], df_pos[node][1])
+
+nx.draw(G, pos, with_labels = True, font_size=16, node_size=1000, node_color='k', font_color='w', width=edge_weights)
+
+plt.show()
 
 
 # ### ノック 58 : 輸送コスト関数を作成しよう 
-
-# In[ ]:
-
-
-
-
-
-# ### ノック 59 : 制約条件を作って見よう 
-
-# In[39]:
-
-
-
-
-
-# ### ノック 60 : 輸送ルートを変更して、輸送コスト関数の変化を確認しよう
+# 
+# 可視化することで、改善の余地が見込めるかもしれないという感覚的な仮説を立てることが出来ました。
+# 
+# 輸送コストを計算する関数を定義し、目的関数とします。目的は総輸送コストを最小化することです。
 
 # In[35]:
 
 
-get_ipython().run_cell_magic('bash', '', 'cat trans_cost.csv')
+# データの読み込み
+df_tr = pd.read_csv('trans_route.csv', index_col='工場')
+df_tc = pd.read_csv('trans_cost.csv', index_col='工場')
+
+def trans_cost(df_tr, df_tc):
+  cost = 0
+  for i in range(len(df_tc.index)):
+    for j in range(len(df_tr.columns)):
+      cost += df_tr.iloc[i][j] * df_tc.iloc[i][j]
+  return cost
+
+print('総輸送コスト : ', trans_cost(df_tr, df_tc))
+
+
+# ### ノック 59 : 制約条件を作って見よう 
+# 
+# 制約条件は以下の通りです。
+# 
+# - 各倉庫には供給可能な部品巣の上限がある : supply.csv
+# - 各工場には満たすべき最低限の製品製造量がある : demand.csv
+
+# In[36]:
+
+
+df_tr = pd.read_csv('trans_route.csv', index_col='工場')
+df_demand = pd.read_csv('demand.csv')
+df_demand
+
+
+# In[37]:
+
+
+df_supply = pd.read_csv('supply.csv')
+df_supply
+
+
+# In[38]:
+
+
+# 需要側の制約条件
+for i in range(len(df_demand.columns)):
+  temp_sum = sum(df_tr[df_demand.columns[i]])
+  
+  if temp_sum >= df_demand.iloc[0][i]:
+    print('需要量を満たしています')
+  else:
+    print('需要量を満たしていません。再計算してください。')
+
+# 供給側の制約条件
+for i in range(len(df_supply.columns)):
+  temp_sum = sum(df_tr.loc[df_supply.columns[i]])
+  if temp_sum <= df_supply.iloc[0][i]:
+    print('供給限界の範囲内です')
+  else:
+    print('供給限界を超過しています。再計算してください。')
+
+
+# ### ノック 60 : 輸送ルートを変更して、輸送コスト関数の変化を確認しよう
+
+# In[39]:
+
+
+df_tr_new = pd.read_csv('trans_route_new.csv', index_col='工場')
+df_tr_new
+
+
+# In[40]:
+
+
+# 総輸送コストの再計算
+print('変更後の総輸送コスト : ', trans_cost(df_tr_new, df_tc))
+
+
+# In[41]:
+
+
+# 制約条件計算関数
+# 需要側
+def condition_demand(df_tr, df_demand):
+  flag = np.zeros(len(df_demand.columns))
+  for i in range(len(df_demand.columns)):
+    temp_sum = sum(df_tr[df_demand.columns[i]])
+    if temp_sum >= df_demand.iloc[0][i]:
+      flag[i] = 1
+  return flag
+
+
+# In[42]:
+
+
+# 供給側
+def condition_supply(df_tr, df_supply):
+  flag = np.zeros(len(df_supply.columns))
+  for i in range(len(df_supply.columns)):
+    temp_sum = sum(df_tr.loc[df_supply.columns[i]])
+    if temp_sum <= df_supply.iloc[0][i]:
+      flag[i] = 1
+  return flag
+
+
+# In[43]:
+
+
+print('需要条件計算結果 : ', condition_demand(df_tr_new, df_demand))
+
+
+# In[44]:
+
+
+print('供給条件計算結果 : ', condition_supply(df_tr_new, df_supply))
 
 
 # ## 関連記事
