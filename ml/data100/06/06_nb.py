@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 第6章 物流の最適ルートをコンサルティングする10本ノック
@@ -32,8 +32,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -51,7 +51,14 @@ print('pandas version :', pd.__version__)
 
 # ### ノック 51 : 物流に関するデータを読み込んでみよう
 # 
-# 最初にデータを読み込みます。tbl_factory:生産工場のデータ、tbl_warehouse:倉庫のデータ、rel_cost:倉庫と工場の輸送コスト、tbl_transaction:2019年の工場への部品輸送実績となっています。
+# 最初にデータを読み込みます。
+# 
+# - tbl_factory : 生産工場のデータ
+# - tbl_warehouse : 倉庫のデータ
+# - rel_cost : 倉庫と工場の輸送コスト
+# - tbl_transaction : 2019年の工場への部品輸送実績
+# 
+# となっています。
 
 # In[4]:
 
@@ -376,6 +383,12 @@ for i in range(len(df_pos.columns)):
 
 
 # ### ノック 58 : 輸送コスト関数を作成しよう 
+
+# In[ ]:
+
+
+
+
 
 # ### ノック 59 : 制約条件を作って見よう 
 
