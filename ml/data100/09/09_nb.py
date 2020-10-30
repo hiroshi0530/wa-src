@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第9章 潜在顧客を把握するための画像処理10本ノック
@@ -32,8 +32,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -142,51 +142,15 @@ hogParams = {
 
 # ### ノック 85 : 画像内の人の顔を検出してみよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 86 : 画像内の人がどこに顔を向けているのかを検出してみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 87 : 検出した情報を統合し、タイムラプスを作ってみよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 88 : 全体像をグラフにして可視化してみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 89 : 人通りの変化をグラフで確認しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 90 : 移動平均を計算することでノイズの影響を除去しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
