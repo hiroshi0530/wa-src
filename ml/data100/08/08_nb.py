@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第8章 数値シミュレーションで消費者行動を予測する10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -68,7 +68,7 @@ df_links.head()
 
 # links.csvにはnode間の関係が行列形式で定義されています。0が無関係、1が関係がありという関係性になっています。
 
-# In[17]:
+# In[6]:
 
 
 import networkx as nx
@@ -99,7 +99,7 @@ plt.show()
 # 
 # 口コミが広がっていく様子をシミュレーションしてみます。
 
-# In[30]:
+# In[7]:
 
 
 def determine_link(percent):
@@ -109,7 +109,7 @@ def determine_link(percent):
   return 0
 
 
-# In[33]:
+# In[8]:
 
 
 def simulate_percolation(num, list_active, percent_percolation):
@@ -122,7 +122,7 @@ def simulate_percolation(num, list_active, percent_percolation):
   return list_active
 
 
-# In[34]:
+# In[9]:
 
 
 percent_percolation = 0.1
@@ -137,7 +137,7 @@ for t in range(T_NUM):
   list_timeSeries.append(list_active.copy())
 
 
-# In[36]:
+# In[10]:
 
 
 def active_node_coloring(list_active):
@@ -150,7 +150,7 @@ def active_node_coloring(list_active):
   return list_color
 
 
-# In[38]:
+# In[11]:
 
 
 t = 0
@@ -158,7 +158,7 @@ nx.draw_networkx(G, font_color='w', node_color=active_node_coloring(list_timeSer
 plt.show()
 
 
-# In[39]:
+# In[12]:
 
 
 t = 10
@@ -166,7 +166,7 @@ nx.draw_networkx(G, font_color='w', node_color=active_node_coloring(list_timeSer
 plt.show()
 
 
-# In[40]:
+# In[13]:
 
 
 t = 99
@@ -178,7 +178,7 @@ plt.show()
 # 
 # 口コミが伝播する様子を可視化します。
 
-# In[45]:
+# In[14]:
 
 
 list_timeSeries_num =[]
@@ -194,7 +194,7 @@ plt.show()
 # 
 # 口コミによってスポーツジムの利用状況がどのように変化していくかシミュレートします。
 
-# In[58]:
+# In[15]:
 
 
 def simulate_population(num, list_active, percent_percolation, percent_disapparence, df_links):
@@ -213,7 +213,7 @@ def simulate_population(num, list_active, percent_percolation, percent_disappare
   return list_active
 
 
-# In[59]:
+# In[16]:
 
 
 percent_percolationpercolation = 0.1
@@ -231,7 +231,7 @@ for t in range(T_NUM):
   list_timeSeries.append(list_active.copy())
 
 
-# In[60]:
+# In[17]:
 
 
 list_timeSeries_num = []
@@ -245,7 +245,7 @@ plt.show()
 
 # 退会の割合を増やすと利用者が0になる様子をシミュレーション可能。
 
-# In[62]:
+# In[18]:
 
 
 percent_disapparence = 0.2
@@ -260,7 +260,7 @@ for t in range(T_NUM):
   list_timeSeries.append(list_active.copy())
 
 
-# In[63]:
+# In[19]:
 
 
 list_timeSeries_num = []
@@ -272,16 +272,17 @@ plt.grid()
 plt.show()
 
 
-# 退会率を20％にすると、20ヶ月以内には利用者が0になることがわかる。
+# 退会率を20％にすると、20ヶ月以内には利用者が0になることがわかります。
 
 # ### ノック 75 : パラメタの全体像を、相図を見ながら把握しよう 
 # 
-# 拡散と消滅の章巣を可視化する
+# 拡散と消滅の様子を可視化してみます。
 
-# In[64]:
+# In[20]:
 
 
-T_NUM = 100
+# T_NUM = 100
+T_NUM = 1
 NUM_PhaseDiagram = 20
 phaseDiagram = np.zeros((NUM_PhaseDiagram, NUM_PhaseDiagram))
 
@@ -297,8 +298,10 @@ for i_p in range(NUM_PhaseDiagram):
     
     phaseDiagram[i_p][i_d] = sum(list_active)
 
+print('END')
 
-# In[ ]:
+
+# In[21]:
 
 
 plt.matshow(phaseDiagram)
@@ -316,18 +319,30 @@ plt.show()
 # 
 # スポーツジムの実際の状況を読み込みます。
 
-# In[ ]:
+# In[22]:
 
 
 df_mem_links = pd.read_csv('links_members.csv')
 df_mem_info = pd.read_csv('info_members.csv')
 
 
+# In[27]:
+
+
+df_mem_links.head()
+
+
+# In[28]:
+
+
+df_mem_info.head()
+
+
 # ### ノック 77 : リンク数の分布を可視化しよう
 # 
 # リンク数の分布を見るためにヒストグラム表示して見ます。
 
-# In[ ]:
+# In[23]:
 
 
 NUM = len(df_mem_links.index)
@@ -336,16 +351,17 @@ for i in range(NUM):
   array_linkNum[i]  = sum(df_mem_links['Node' + str(i)])
 
 
-# In[ ]:
+# In[26]:
 
 
 plt.hist(array_linkNum, bins=10, range=(0,250))
+plt.grid()
 plt.show()
 
 
 # ### ノック 78 : シミュレーションのために実データからパラメタを推定しよう
 
-# In[ ]:
+# In[25]:
 
 
 print('etst')
@@ -353,19 +369,7 @@ print('etst')
 
 # ### ノック 79 : 実データとシミュレーションを比較しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 80 : シミュレーションによる将来予測を実施しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
