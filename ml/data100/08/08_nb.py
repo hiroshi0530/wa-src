@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 第8章 数値シミュレーションで消費者行動を予測する10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -361,7 +361,7 @@ plt.show()
 
 # ### ノック 78 : シミュレーションのために実データからパラメタを推定しよう
 
-# In[31]:
+# In[27]:
 
 
 NUM = len(df_mem_info.index)
@@ -380,7 +380,7 @@ for t in range(1, T_NUM):
 estimated_percent_disapprence = count_active / count_active_to_inactive
 
 
-# In[ ]:
+# In[28]:
 
 
 count_link = 0
@@ -407,7 +407,19 @@ estimated_percent_percolation = count_link_to_active / count_link
 
 # ### ノック 79 : 実データとシミュレーションを比較しよう
 
+# In[ ]:
+
+
+
+
+
 # ### ノック 80 : シミュレーションによる将来予測を実施しよう
+
+# In[ ]:
+
+
+
+
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)

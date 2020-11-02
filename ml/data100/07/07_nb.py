@@ -65,21 +65,21 @@ df_tc = pd.read_csv('trans_cost.csv', index_col='工場')
 df_tc
 
 
-# In[7]:
+# In[5]:
 
 
 df_demand = pd.read_csv('demand.csv')
 df_demand
 
 
-# In[8]:
+# In[6]:
 
 
 df_supply = pd.read_csv('supply.csv')
 df_supply
 
 
-# In[12]:
+# In[7]:
 
 
 # 初期設定
@@ -95,7 +95,7 @@ print(nf)
 print(pr)
 
 
-# In[13]:
+# In[8]:
 
 
 # 数理モデルの作成
