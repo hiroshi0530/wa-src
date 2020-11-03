@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第8章 数値シミュレーションで消費者行動を予測する10本ノック
@@ -34,8 +34,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -410,7 +410,47 @@ estimated_percent_percolation = count_link_to_active / count_link
 # In[ ]:
 
 
+percent_percolation = 0.02518
+percent_disapparence = 0.10147
 
+T_NUM = 24
+NUM = len(df_mem_links.index)
+list_active = np.zeros(NUM)
+
+list_active[0] = 1
+list_timeSeries = []
+
+for t in range(T_NUM):
+  list_active = simulate_population(NUM, list_active, percent_percolation, percent_disapparence, df_mem_links)
+  list_timeSeries.append(list_active.copy())
+
+
+# In[ ]:
+
+
+list_timeSeries_num = []
+for i in range(len(list_timeSeries)):
+  list_timeSeries_num.append(sum(list_timeSeries[i]))
+
+
+# In[ ]:
+
+
+T_NUM = len(df_mem_info.columns) - 1
+list_timeSeries_num_real = []
+for t in range(0, T_NUM):
+  list_timeSeries_num_real.append(len(df_mem_info[df_mem_info[str(t)] == 1].index))
+
+
+# In[ ]:
+
+
+plt.plot(list_timeSeries_num, label = 'simulated')
+plt.plot(list_timeSeries_num_read, label = 'real')
+plt.xlabel('month')
+plt.ylabel('population')
+plt.legend(loc='lower right')
+plt.show()
 
 
 # ### ノック 80 : シミュレーションによる将来予測を実施しよう
@@ -418,7 +458,7 @@ estimated_percent_percolation = count_link_to_active / count_link
 # In[ ]:
 
 
-
+T_NUM = 36
 
 
 # ## 関連記事
