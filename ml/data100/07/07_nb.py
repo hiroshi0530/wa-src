@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第7章 ロジスティクスネットワークの最適設計を行う10本ノック
@@ -33,8 +33,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -103,7 +103,7 @@ m1 = model_min()
 v1 = {(i,j): LpVariable('v%d_%d'%(i,j), lowBound=0) for i,j in pr}
 
 
-# In[13]:
+# In[9]:
 
 
 m1 += lpSum(df_tc.iloc[i][j] * v1[i,j] for i,j in pr)
@@ -118,75 +118,69 @@ m1.solve()
 
 # ### ノック 62 : 最適輸送ルートをネットワークで確認しよう
 
-# In[ ]:
+# In[20]:
 
 
+import networkx as nx
 
+df_tr = pd.read_csv('trans_route.csv', index_col='工場')
+df_pos =pd.read_csv('trans_route_pos.csv')
+
+df_tr
+
+
+# In[21]:
+
+
+df_pos
+
+
+# In[22]:
+
+
+# グラフオブジェクトの作成
+G = nx.Graph()
+
+for i in range(len(df_pos.columns)):
+  G.add_node(df_pos.columns[i])
+
+
+# In[23]:
+
+
+# 変の設定とエッジの重みのリスト化
+num_pre = 0
+edge_weights = []
+
+size = 0.1
+
+for i in range(len(df_pos.columns)):
+  for j in range(len(df_pos.columns)):
+    if not (i == j):
+      # 変の追加
+      G.add_edge(df_pos.columns[i], df_pos.columns[j])
+      
+      # エッジの重みの追加
+      if num_pre < len(G.edges):
+        num_pre = len(G.edges)
+        weight = 0
 
 
 # ### ノック 63 : 最適輸送ルートが制約条件内に収まっているか確認してみよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 64 : 生産計画に関するデータを読み込んでみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 65 : 利益を計算する関数を作って見よう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 66 : 生産最適化問題を問いてみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 67 : 最適生産計画が制約条件内に長待て散るどうかを確認しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 68 : ロジスティックネットワーク設計問題を解いてみよう
-
-# In[ ]:
-
-
-
-
 
 # ### ノック 69 : 最適ネットワークにおける輸送コストとその内訳を計算しよう
 
-# In[ ]:
-
-
-
-
-
 # ### ノック 70 : 最適ネットワークにおける生産コストとその内訳を計算しよう
-
-# In[ ]:
-
-
-
-
 
 # ## 関連記事
 # - [第1章 ウェブからの注文数を分析する10本ノック](/ml/data100/01/)
