@@ -117,7 +117,7 @@ cap.release()
 cv2.destroyAllWindows()
 
 
-# In[10]:
+# In[ ]:
 
 
 get_ipython().system('ls snapshot/')
@@ -127,7 +127,7 @@ get_ipython().system('ls snapshot/')
 # 
 # HOG抽出量により人の顔を検出します。
 
-# In[12]:
+# In[ ]:
 
 
 import cv2
