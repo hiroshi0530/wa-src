@@ -406,8 +406,10 @@ estimated_percent_percolation = count_link_to_active / count_link
 
 
 # ### ノック 79 : 実データとシミュレーションを比較しよう
+# 
+# 非力なマシンだとかなり時間がかかります。
 
-# In[ ]:
+# In[29]:
 
 
 percent_percolation = 0.02518
@@ -425,7 +427,7 @@ for t in range(T_NUM):
   list_timeSeries.append(list_active.copy())
 
 
-# In[ ]:
+# In[30]:
 
 
 list_timeSeries_num = []
@@ -433,7 +435,7 @@ for i in range(len(list_timeSeries)):
   list_timeSeries_num.append(sum(list_timeSeries[i]))
 
 
-# In[ ]:
+# In[31]:
 
 
 T_NUM = len(df_mem_info.columns) - 1
@@ -442,14 +444,15 @@ for t in range(0, T_NUM):
   list_timeSeries_num_real.append(len(df_mem_info[df_mem_info[str(t)] == 1].index))
 
 
-# In[ ]:
+# In[34]:
 
 
 plt.plot(list_timeSeries_num, label = 'simulated')
-plt.plot(list_timeSeries_num_read, label = 'real')
+plt.plot(list_timeSeries_num_real, label = 'real')
 plt.xlabel('month')
 plt.ylabel('population')
 plt.legend(loc='lower right')
+plt.grid()
 plt.show()
 
 
