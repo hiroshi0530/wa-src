@@ -228,6 +228,13 @@ $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left
 
 ※実際に個人レベルのポアソン分布と消費者全体でのガンマ分布を仮定することによって負の二項分布が導かれることは1.6で証明します。
 
+### アプリでの動作確認
+
+負の二項分布の挙動の確認は以下のアプリで確認することが出来ます。
+<div class="container">
+<a href="https://app.wayama.io/article/mkt/nbd" class="btn-border">負の二項分布</a>
+</div>
+
 ## 1-4. ポアソン分布と二項分布のまとめ
 
 1.4 では「ポアソン分布と二項分布のまとめ」と主題でまとめていますが、重要な点は繰り返しになりますが以下の通りです。
@@ -322,7 +329,15 @@ plt.show()
 
 
 
-![svg](1_nb_files/1_nb_15_1.svg)
+![svg](1_nb_files/1_nb_16_1.svg)
+
+
+### アプリでの動作確認
+
+ガンマ分布の挙動の確認は以下のアプリで確認することが出来ます。
+<div class="container">
+<a href="https://app.wayama.io/article/mkt/gamma" class="btn-border">ガンマ分布</a>
+</div>
 
 
 ## 1-5. 売り上げを支配する重要な式
