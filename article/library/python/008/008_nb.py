@@ -40,9 +40,9 @@ get_ipython().system('python -V')
 # 
 # #### 制約条件
 # $$
-# 2x + y \leq 2 \\
-# x + 2y \leq 2 \\
-# x \geq 0 \\
+# 2x + y \leq 2 \\\\
+# x + 2y \leq 2 \\\\
+# x \geq 0 \\\\
 # y \geq 0 
 # $$
 # 
@@ -105,8 +105,8 @@ print("*" * 8)
 # 
 # #### 制約条件
 # $$
-# \sum_{j\in J}x_{ij} \leq 1 \\
-# \sum_{i\in I}x_{ij} = 1 \\
+# \sum_{j\in J}x_{ij} \leq 1 \\\\
+# \sum_{i\in I}x_{ij} = 1 \\\\
 # x_{ij} \in {0,1}
 # $$
 
@@ -222,10 +222,6 @@ solver = pulp.PULP_CBC_CMD()
 # pulp.PULP_CBC_CMD() : PuLP付属のCoin-CBC
 # pulp.GUROBI_CMD()   : Gurobiをコマンドラインから起動 (.lpファイルを一時生成)
 # pulp.GUROBI()   : Gurobiをライブラリーから起動 (ライブラリーの場所指定が必要)
-# ほかにもいくつかのソルバーに対応
-# (使用例)
-# if pulp.GUROBI_CMD().available():
-#   solver = pulp.GUROBI_CMD()
 
 # 時間計測開始
 time_start = time.perf_counter()
