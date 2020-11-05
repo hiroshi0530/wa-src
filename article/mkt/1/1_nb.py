@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 準備
@@ -35,8 +35,8 @@ import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -206,6 +206,13 @@ plt.show()
 # 
 # ※実際に個人レベルのポアソン分布と消費者全体でのガンマ分布を仮定することによって負の二項分布が導かれることは1.6で証明します。
 
+# ### アプリでの動作確認
+# 
+# 負の二項分布の挙動の確認は以下のアプリで確認することが出来ます。
+# <div class="container">
+# <a href="https://app.wayama.io/article/mkt/nbd" class="btn-border">負の二項分布</a>
+# </div>
+
 # ## 1-4. ポアソン分布と二項分布のまとめ
 # 
 # 1.4 では「ポアソン分布と二項分布のまとめ」と主題でまとめていますが、重要な点は繰り返しになりますが以下の通りです。
@@ -294,6 +301,14 @@ plt.plot(x, y1, x, y2, x, y3)
 
 plt.show()
 
+
+# ### アプリでの動作確認
+# 
+# ガンマ分布の挙動の確認は以下のアプリで確認することが出来ます。
+# <div class="container">
+# <a href="https://app.wayama.io/article/mkt/gamma" class="btn-border">ガンマ分布</a>
+# </div>
+# 
 
 # ## 1-5. 売り上げを支配する重要な式
 # 
