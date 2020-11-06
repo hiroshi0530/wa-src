@@ -231,8 +231,9 @@ $$ P\left(r \right) = \frac{\left(1 + \frac{M}{K} \right)^{-K} \cdot \Gamma\left
 ### アプリでの動作確認
 
 負の二項分布の挙動の確認は以下のアプリで確認することが出来ます。
-<div class="container">
-<a href="https://app.wayama.io/article/mkt/nbd" class="btn-border">負の二項分布</a>
+
+<div>
+<a href="https://app.wayama.io/article/mkt/nbd" class="simple_square_btn2">確認</a>
 </div>
 
 ## 1-4. ポアソン分布と二項分布のまとめ
@@ -334,11 +335,10 @@ plt.show()
 
 ### アプリでの動作確認
 
-ガンマ分布の挙動の確認は以下のアプリで確認することが出来ます。
-<div class="container">
-<a href="https://app.wayama.io/article/mkt/gamma" class="btn-border">ガンマ分布</a>
+ガンマ分布の挙動の確認は以下のサイトで確認することが出来ます。
+<div>
+<a href="https://app.wayama.io/article/mkt/gamma" class="simple_square_btn2">確認</a>
 </div>
-
 
 ## 1-5. 売り上げを支配する重要な式
 

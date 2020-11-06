@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## 準備
@@ -35,8 +35,8 @@ import numpy as np
 import scipy
 from scipy.stats import binom
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -209,8 +209,9 @@ plt.show()
 # ### アプリでの動作確認
 # 
 # 負の二項分布の挙動の確認は以下のアプリで確認することが出来ます。
-# <div class="container">
-# <a href="https://app.wayama.io/article/mkt/nbd" class="btn-border">負の二項分布</a>
+# 
+# <div>
+# <a href="https://app.wayama.io/article/mkt/nbd" class="simple_square_btn2">確認</a>
 # </div>
 
 # ## 1-4. ポアソン分布と二項分布のまとめ
@@ -304,11 +305,10 @@ plt.show()
 
 # ### アプリでの動作確認
 # 
-# ガンマ分布の挙動の確認は以下のアプリで確認することが出来ます。
-# <div class="container">
-# <a href="https://app.wayama.io/article/mkt/gamma" class="btn-border">ガンマ分布</a>
+# ガンマ分布の挙動の確認は以下のサイトで確認することが出来ます。
+# <div>
+# <a href="https://app.wayama.io/article/mkt/gamma" class="simple_square_btn2">確認</a>
 # </div>
-# 
 
 # ## 1-5. 売り上げを支配する重要な式
 # 
