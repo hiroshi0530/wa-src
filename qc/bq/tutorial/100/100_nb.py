@@ -58,9 +58,81 @@ print('pandas version :', pd.__version__)
 from blueqat import Circuit
 
 
+# 
+
+# ### 古典ベートと量子ゲートの比較
+# 
+# #### NOTゲート VS Xゲート
+# 
+# #### Xゲート
+# 
+# #### Yゲート
+# 
+# #### Zゲート
+# 
+# #### アダマールゲート
+# 
+# #### 位相ゲート
+# 
+# #### CNOTゲート
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# ### 量子もつれ
+
+# ### 1量子ビットの計算
+
 # In[6]:
 
 
 for i in range(5):
   print(Circuit().h[0].m[:].run(shots=100))
+
+
+# ### 2量子ビットの計算
+
+# In[9]:
+
+
+Circuit().cx[0,1].m[:].run(shots=100)
+
+
+# In[10]:
+
+
+Circuit().x[0].cx[0,1].m[:].run(shots=100)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
