@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## blueqat tutorial 100番代
@@ -37,8 +37,8 @@ print('blueqat version : ', __version__)
 # In[4]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -58,6 +58,8 @@ print('pandas version :', pd.__version__)
 from blueqat import Circuit
 
 
+# 
+
 # ### 古典ベートと量子ゲートの比較
 # 
 # #### NOTゲート VS Xゲート
@@ -73,6 +75,24 @@ from blueqat import Circuit
 # #### 位相ゲート
 # 
 # #### CNOTゲート
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
 
 # ### 量子もつれ
 
@@ -97,4 +117,22 @@ Circuit().cx[0,1].m[:].run(shots=100)
 
 
 Circuit().x[0].cx[0,1].m[:].run(shots=100)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
