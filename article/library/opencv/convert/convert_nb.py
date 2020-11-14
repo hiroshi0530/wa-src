@@ -304,11 +304,12 @@ show_canny_image(gray_img, 150, 300, 3)
 show_canny_image(gray_img, 250, 300, 3)
 
 
-# In[104]:
+# In[111]:
 
 
-for i in range(0, 300, 30):
-  for j in range(0, 300, 30):
+for i in range(0, 300, 60):
+  for j in range(0, 300, 60):
     if i < j:
+      print('th1 = {}, th2 = {}'.format(i, j))
       show_canny_image(gray_img, i, j, 3)
 

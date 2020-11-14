@@ -377,188 +377,79 @@ show_canny_image(gray_img, 250, 300, 3)
 
 
 ```python
-for i in range(0, 300, 30):
-  for j in range(0, 300, 30):
+for i in range(0, 300, 60):
+  for j in range(0, 300, 60):
     if i < j:
+      print('th1 = {}, th2 = {}'.format(i, j))
       show_canny_image(gray_img, i, j, 3)
 ```
 
-
-![svg](convert_nb_files/convert_nb_40_0.svg)
+    th1 = 0, th2 = 60
 
 
 
 ![svg](convert_nb_files/convert_nb_40_1.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_2.svg)
+    th1 = 0, th2 = 120
 
 
 
 ![svg](convert_nb_files/convert_nb_40_3.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_4.svg)
+    th1 = 0, th2 = 180
 
 
 
 ![svg](convert_nb_files/convert_nb_40_5.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_6.svg)
+    th1 = 0, th2 = 240
 
 
 
 ![svg](convert_nb_files/convert_nb_40_7.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_8.svg)
+    th1 = 60, th2 = 120
 
 
 
 ![svg](convert_nb_files/convert_nb_40_9.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_10.svg)
+    th1 = 60, th2 = 180
 
 
 
 ![svg](convert_nb_files/convert_nb_40_11.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_12.svg)
+    th1 = 60, th2 = 240
 
 
 
 ![svg](convert_nb_files/convert_nb_40_13.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_14.svg)
+    th1 = 120, th2 = 180
 
 
 
 ![svg](convert_nb_files/convert_nb_40_15.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_16.svg)
+    th1 = 120, th2 = 240
 
 
 
 ![svg](convert_nb_files/convert_nb_40_17.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_40_18.svg)
+    th1 = 180, th2 = 240
 
 
 
 ![svg](convert_nb_files/convert_nb_40_19.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_20.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_21.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_22.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_23.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_24.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_25.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_26.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_27.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_28.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_29.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_30.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_31.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_32.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_33.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_34.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_35.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_36.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_37.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_38.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_39.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_40.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_41.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_42.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_43.svg)
-
-
-
-![svg](convert_nb_files/convert_nb_40_44.svg)
 
