@@ -113,7 +113,7 @@ cv2.imwrite(out_filename, img)
 # 
 # 任意のサイズのスケールで回転させる関数を実装します。
 
-# In[31]:
+# In[10]:
 
 
 def rotate_image(img, scale, angle):
@@ -140,7 +140,7 @@ def rotate_image(img, scale, angle):
 
 # 画像の真ん中を中心にか30度回転してみます。
 
-# In[32]:
+# In[11]:
 
 
 rotate_image(img=img, scale=1, angle=30)
@@ -148,7 +148,7 @@ rotate_image(img=img, scale=1, angle=30)
 
 # サイズを2倍にして、画像の真ん中を中心にか30度回転してみます。
 
-# In[33]:
+# In[12]:
 
 
 rotate_image(img=img, scale=2, angle=30)
@@ -156,7 +156,7 @@ rotate_image(img=img, scale=2, angle=30)
 
 # 画像の真ん中を中心にか-30度回転してみます。
 
-# In[27]:
+# In[13]:
 
 
 rotate_image(img=img, scale=1, angle=-30)
@@ -164,7 +164,7 @@ rotate_image(img=img, scale=1, angle=-30)
 
 # ## 余白部の削除  領域の抽出
 
-# In[84]:
+# In[14]:
 
 
 temp_img = cv2.imread(filename='../10.png')
@@ -175,7 +175,7 @@ plt.gray()
 plt.show()
 
 
-# In[85]:
+# In[ ]:
 
 
 def get_contours(img, off_set=1):
@@ -216,7 +216,7 @@ get_contours(img=gray_img)
 # ## ガウシアンフィルター
 # ガウス関数を重みとして、周りの画像の平均値を取ります。平均化する範囲を指定するカーネルとガウシアンの標準偏差$\sigma$を指定します。
 
-# In[80]:
+# In[ ]:
 
 
 def show_gaussian_filter(img, average_size, sigma):
@@ -228,19 +228,19 @@ def show_gaussian_filter(img, average_size, sigma):
   plt.show()
 
 
-# In[81]:
+# In[ ]:
 
 
 show_gaussian_filter(img, average_size=11, sigma=10)
 
 
-# In[82]:
+# In[ ]:
 
 
 show_gaussian_filter(img, average_size=21, sigma=10)
 
 
-# In[83]:
+# In[ ]:
 
 
 show_gaussian_filter(img, average_size=3, sigma=10)
@@ -248,7 +248,7 @@ show_gaussian_filter(img, average_size=3, sigma=10)
 
 # ## canny方によるエッジ検出
 
-# In[93]:
+# In[ ]:
 
 
 def show_canny_image(img, th1, th2, aperture):
@@ -261,50 +261,7 @@ def show_canny_image(img, th1, th2, aperture):
   plt.show()
 
 
-# In[95]:
-
-
-gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-show_canny_image(gray_img, 100, 200, 3)
-
-
-# In[94]:
-
-
-show_canny_image(gray_img, 50, 220, 3)
-
-
-# In[96]:
-
-
-show_canny_image(gray_img, 10, 250, 3)
-
-
-# In[103]:
-
-
-show_canny_image(gray_img, 60, 75, 3)
-
-
-# In[107]:
-
-
-show_canny_image(gray_img, 60, 300, 3)
-
-
-# In[108]:
-
-
-show_canny_image(gray_img, 150, 300, 3)
-
-
-# In[109]:
-
-
-show_canny_image(gray_img, 250, 300, 3)
-
-
-# In[111]:
+# In[ ]:
 
 
 for i in range(0, 300, 60):
