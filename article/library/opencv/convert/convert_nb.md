@@ -66,7 +66,12 @@ ls -al ../ | grep jpg
     -rw-r--r--   1 hiroshi  staff  15414 11 14 22:04 bitwise_out.jpg
     -rw-r--r--   1 hiroshi  staff  15368 11 14 22:04 gray_out.jpg
     -rw-r--r--@  1 hiroshi  staff   8211 11 14 22:01 lena.jpg
-    -rw-r--r--   1 hiroshi  staff  18046 11 14 22:04 lena_out.jpg
+    -rw-r--r--   1 hiroshi  staff  18046 11 14 22:28 lena_out.jpg
+    -rw-r--r--   1 hiroshi  staff  23685 11 14 22:34 rotation.jpg
+    -rw-r--r--   1 hiroshi  staff  23884 11 14 22:37 rotation_scale_1_angle_-30.jpg
+    -rw-r--r--   1 hiroshi  staff  23685 11 14 22:41 rotation_scale_1_angle_30.jpg
+    -rw-r--r--   1 hiroshi  staff  20082 11 14 22:37 rotation_scale_2_angle_-30.jpg
+    -rw-r--r--   1 hiroshi  staff  20531 11 14 22:42 rotation_scale_2_angle_30.jpg
 
 
 
@@ -208,7 +213,19 @@ plt.show()
 ```
 
 
-![svg](convert_nb_files/convert_nb_24_0.svg)
+    ---------------------------------------------------------------------------
+
+    NameError                                 Traceback (most recent call last)
+
+    <ipython-input-14-15d1a64b6b5d> in <module>()
+          2 contours_gray_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2GRAY)
+          3 
+    ----> 4 plt.imshow(gray_img)
+          5 plt.gray()
+          6 plt.show()
+
+
+    NameError: name 'gray_img' is not defined
 
 
 
@@ -248,10 +265,6 @@ def get_contours(img, off_set=1):
 get_contours(img=gray_img)
 ```
 
-
-![svg](convert_nb_files/convert_nb_25_0.svg)
-
-
 ## ガウシアンフィルター
 ガウス関数を重みとして、周りの画像の平均値を取ります。平均化する範囲を指定するカーネルとガウシアンの標準偏差$\sigma$を指定します。
 
@@ -272,26 +285,14 @@ show_gaussian_filter(img, average_size=11, sigma=10)
 ```
 
 
-![svg](convert_nb_files/convert_nb_28_0.svg)
-
-
-
 ```python
 show_gaussian_filter(img, average_size=21, sigma=10)
 ```
 
 
-![svg](convert_nb_files/convert_nb_29_0.svg)
-
-
-
 ```python
 show_gaussian_filter(img, average_size=3, sigma=10)
 ```
-
-
-![svg](convert_nb_files/convert_nb_30_0.svg)
-
 
 ## canny方によるエッジ検出
 
@@ -308,74 +309,6 @@ def show_canny_image(img, th1, th2, aperture):
 ```
 
 
-![svg](convert_nb_files/convert_nb_32_0.svg)
-
-
-
-```python
-gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-show_canny_image(gray_img, 100, 200, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_33_0.svg)
-
-
-
-```python
-show_canny_image(gray_img, 50, 220, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_34_0.svg)
-
-
-
-```python
-show_canny_image(gray_img, 10, 250, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_35_0.svg)
-
-
-
-```python
-show_canny_image(gray_img, 60, 75, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_36_0.svg)
-
-
-
-```python
-show_canny_image(gray_img, 60, 300, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_37_0.svg)
-
-
-
-```python
-show_canny_image(gray_img, 150, 300, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_38_0.svg)
-
-
-
-```python
-show_canny_image(gray_img, 250, 300, 3)
-```
-
-
-![svg](convert_nb_files/convert_nb_39_0.svg)
-
-
-
 ```python
 for i in range(0, 300, 60):
   for j in range(0, 300, 60):
@@ -383,73 +316,3 @@ for i in range(0, 300, 60):
       print('th1 = {}, th2 = {}'.format(i, j))
       show_canny_image(gray_img, i, j, 3)
 ```
-
-    th1 = 0, th2 = 60
-
-
-
-![svg](convert_nb_files/convert_nb_40_1.svg)
-
-
-    th1 = 0, th2 = 120
-
-
-
-![svg](convert_nb_files/convert_nb_40_3.svg)
-
-
-    th1 = 0, th2 = 180
-
-
-
-![svg](convert_nb_files/convert_nb_40_5.svg)
-
-
-    th1 = 0, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_40_7.svg)
-
-
-    th1 = 60, th2 = 120
-
-
-
-![svg](convert_nb_files/convert_nb_40_9.svg)
-
-
-    th1 = 60, th2 = 180
-
-
-
-![svg](convert_nb_files/convert_nb_40_11.svg)
-
-
-    th1 = 60, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_40_13.svg)
-
-
-    th1 = 120, th2 = 180
-
-
-
-![svg](convert_nb_files/convert_nb_40_15.svg)
-
-
-    th1 = 120, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_40_17.svg)
-
-
-    th1 = 180, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_40_19.svg)
-
