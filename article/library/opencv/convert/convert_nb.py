@@ -78,11 +78,18 @@ plt.imshow(rgb_img)
 plt.show()
 
 
+# In[8]:
+
+
+# 後のためにグレースケールの画像を作っておきます
+gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
 # ### 画像情報の取得
 # 
 # 画像の高さ、幅、カラーの場合の色の数（通常RGBの3）を確認します。
 
-# In[8]:
+# In[9]:
 
 
 def get_image_info(img):
@@ -102,7 +109,7 @@ get_image_info(img=img)
 # 
 # imwriteメソッドを利用します。
 
-# In[9]:
+# In[10]:
 
 
 out_filename = '../lena_out.jpg'
@@ -113,7 +120,7 @@ cv2.imwrite(out_filename, img)
 # 
 # 任意のサイズのスケールで回転させる関数を実装します。
 
-# In[10]:
+# In[11]:
 
 
 def rotate_image(img, scale, angle):
@@ -140,7 +147,7 @@ def rotate_image(img, scale, angle):
 
 # 画像の真ん中を中心にか30度回転してみます。
 
-# In[11]:
+# In[12]:
 
 
 rotate_image(img=img, scale=1, angle=30)
@@ -148,7 +155,7 @@ rotate_image(img=img, scale=1, angle=30)
 
 # サイズを2倍にして、画像の真ん中を中心にか30度回転してみます。
 
-# In[12]:
+# In[13]:
 
 
 rotate_image(img=img, scale=2, angle=30)
@@ -156,7 +163,7 @@ rotate_image(img=img, scale=2, angle=30)
 
 # 画像の真ん中を中心にか-30度回転してみます。
 
-# In[13]:
+# In[14]:
 
 
 rotate_image(img=img, scale=1, angle=-30)
@@ -164,18 +171,18 @@ rotate_image(img=img, scale=1, angle=-30)
 
 # ## 余白部の削除  領域の抽出
 
-# In[14]:
+# In[15]:
 
 
 temp_img = cv2.imread(filename='../10.png')
 contours_gray_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2GRAY)
 
-plt.imshow(gray_img)
+plt.imshow(contours_gray_img)
 plt.gray()
 plt.show()
 
 
-# In[ ]:
+# In[16]:
 
 
 def get_contours(img, off_set=1):
@@ -210,13 +217,13 @@ def get_contours(img, off_set=1):
   plt.gray()
   plt.show()
 
-get_contours(img=gray_img)
+get_contours(img=contours_gray_img)
 
 
 # ## ガウシアンフィルター
 # ガウス関数を重みとして、周りの画像の平均値を取ります。平均化する範囲を指定するカーネルとガウシアンの標準偏差$\sigma$を指定します。
 
-# In[ ]:
+# In[17]:
 
 
 def show_gaussian_filter(img, average_size, sigma):
@@ -228,19 +235,19 @@ def show_gaussian_filter(img, average_size, sigma):
   plt.show()
 
 
-# In[ ]:
+# In[18]:
 
 
 show_gaussian_filter(img, average_size=11, sigma=10)
 
 
-# In[ ]:
+# In[19]:
 
 
 show_gaussian_filter(img, average_size=21, sigma=10)
 
 
-# In[ ]:
+# In[20]:
 
 
 show_gaussian_filter(img, average_size=3, sigma=10)
@@ -248,7 +255,7 @@ show_gaussian_filter(img, average_size=3, sigma=10)
 
 # ## canny方によるエッジ検出
 
-# In[ ]:
+# In[21]:
 
 
 def show_canny_image(img, th1, th2, aperture):
@@ -261,7 +268,7 @@ def show_canny_image(img, th1, th2, aperture):
   plt.show()
 
 
-# In[ ]:
+# In[22]:
 
 
 for i in range(0, 300, 60):

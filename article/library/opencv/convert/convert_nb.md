@@ -66,12 +66,12 @@ ls -al ../ | grep jpg
     -rw-r--r--   1 hiroshi  staff  15414 11 14 22:04 bitwise_out.jpg
     -rw-r--r--   1 hiroshi  staff  15368 11 14 22:04 gray_out.jpg
     -rw-r--r--@  1 hiroshi  staff   8211 11 14 22:01 lena.jpg
-    -rw-r--r--   1 hiroshi  staff  18046 11 14 22:28 lena_out.jpg
+    -rw-r--r--   1 hiroshi  staff  18046 11 17 21:47 lena_out.jpg
     -rw-r--r--   1 hiroshi  staff  23685 11 14 22:34 rotation.jpg
-    -rw-r--r--   1 hiroshi  staff  23884 11 14 22:37 rotation_scale_1_angle_-30.jpg
-    -rw-r--r--   1 hiroshi  staff  23685 11 14 22:41 rotation_scale_1_angle_30.jpg
+    -rw-r--r--   1 hiroshi  staff  23884 11 17 21:47 rotation_scale_1_angle_-30.jpg
+    -rw-r--r--   1 hiroshi  staff  23685 11 17 21:47 rotation_scale_1_angle_30.jpg
     -rw-r--r--   1 hiroshi  staff  20082 11 14 22:37 rotation_scale_2_angle_-30.jpg
-    -rw-r--r--   1 hiroshi  staff  20531 11 14 22:42 rotation_scale_2_angle_30.jpg
+    -rw-r--r--   1 hiroshi  staff  20531 11 17 21:47 rotation_scale_2_angle_30.jpg
 
 
 
@@ -97,6 +97,12 @@ plt.show()
 
 ![svg](convert_nb_files/convert_nb_10_0.svg)
 
+
+
+```python
+# 後のためにグレースケールの画像を作っておきます
+gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+```
 
 ### 画像情報の取得
 
@@ -175,7 +181,7 @@ rotate_image(img=img, scale=1, angle=30)
 ```
 
 
-![svg](convert_nb_files/convert_nb_18_0.svg)
+![svg](convert_nb_files/convert_nb_19_0.svg)
 
 
 サイズを2倍にして、画像の真ん中を中心にか30度回転してみます。
@@ -186,7 +192,7 @@ rotate_image(img=img, scale=2, angle=30)
 ```
 
 
-![svg](convert_nb_files/convert_nb_20_0.svg)
+![svg](convert_nb_files/convert_nb_21_0.svg)
 
 
 画像の真ん中を中心にか-30度回転してみます。
@@ -197,7 +203,7 @@ rotate_image(img=img, scale=1, angle=-30)
 ```
 
 
-![svg](convert_nb_files/convert_nb_22_0.svg)
+![svg](convert_nb_files/convert_nb_23_0.svg)
 
 
 ## 余白部の削除  領域の抽出
@@ -207,25 +213,13 @@ rotate_image(img=img, scale=1, angle=-30)
 temp_img = cv2.imread(filename='../10.png')
 contours_gray_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2GRAY)
 
-plt.imshow(gray_img)
+plt.imshow(contours_gray_img)
 plt.gray()
 plt.show()
 ```
 
 
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    <ipython-input-14-15d1a64b6b5d> in <module>()
-          2 contours_gray_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2GRAY)
-          3 
-    ----> 4 plt.imshow(gray_img)
-          5 plt.gray()
-          6 plt.show()
-
-
-    NameError: name 'gray_img' is not defined
+![svg](convert_nb_files/convert_nb_25_0.svg)
 
 
 
@@ -262,8 +256,12 @@ def get_contours(img, off_set=1):
   plt.gray()
   plt.show()
 
-get_contours(img=gray_img)
+get_contours(img=contours_gray_img)
 ```
+
+
+![svg](convert_nb_files/convert_nb_26_0.svg)
+
 
 ## ガウシアンフィルター
 ガウス関数を重みとして、周りの画像の平均値を取ります。平均化する範囲を指定するカーネルとガウシアンの標準偏差$\sigma$を指定します。
@@ -285,14 +283,26 @@ show_gaussian_filter(img, average_size=11, sigma=10)
 ```
 
 
+![svg](convert_nb_files/convert_nb_29_0.svg)
+
+
+
 ```python
 show_gaussian_filter(img, average_size=21, sigma=10)
 ```
 
 
+![svg](convert_nb_files/convert_nb_30_0.svg)
+
+
+
 ```python
 show_gaussian_filter(img, average_size=3, sigma=10)
 ```
+
+
+![svg](convert_nb_files/convert_nb_31_0.svg)
+
 
 ## canny方によるエッジ検出
 
@@ -316,3 +326,73 @@ for i in range(0, 300, 60):
       print('th1 = {}, th2 = {}'.format(i, j))
       show_canny_image(gray_img, i, j, 3)
 ```
+
+    th1 = 0, th2 = 60
+
+
+
+![svg](convert_nb_files/convert_nb_34_1.svg)
+
+
+    th1 = 0, th2 = 120
+
+
+
+![svg](convert_nb_files/convert_nb_34_3.svg)
+
+
+    th1 = 0, th2 = 180
+
+
+
+![svg](convert_nb_files/convert_nb_34_5.svg)
+
+
+    th1 = 0, th2 = 240
+
+
+
+![svg](convert_nb_files/convert_nb_34_7.svg)
+
+
+    th1 = 60, th2 = 120
+
+
+
+![svg](convert_nb_files/convert_nb_34_9.svg)
+
+
+    th1 = 60, th2 = 180
+
+
+
+![svg](convert_nb_files/convert_nb_34_11.svg)
+
+
+    th1 = 60, th2 = 240
+
+
+
+![svg](convert_nb_files/convert_nb_34_13.svg)
+
+
+    th1 = 120, th2 = 180
+
+
+
+![svg](convert_nb_files/convert_nb_34_15.svg)
+
+
+    th1 = 120, th2 = 240
+
+
+
+![svg](convert_nb_files/convert_nb_34_17.svg)
+
+
+    th1 = 180, th2 = 240
+
+
+
+![svg](convert_nb_files/convert_nb_34_19.svg)
+
