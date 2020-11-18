@@ -305,8 +305,8 @@ Circuit().h[0,1].m[:].run(shots=100)
 # $$
 # </div>
 
-# In[ ]:
+# In[1]:
 
 
-
+pi ** 2
 
