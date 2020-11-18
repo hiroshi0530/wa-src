@@ -1,16 +1,16 @@
 
 # coding: utf-8
 
-# ## opencvの使い方
+# ## OpenCVによる画像処理の基本
 # OpenCVは画像解析や機械学習によく利用される、コンピュータービジョンライブラリの一つです。基本的な画像変換だけでなく、画像のフィルター処理、顔認識、物体認識、オブジェクトトラッキングなど、実務でよく利用される機能が一通りそろっている非常に使いやすいライブラリになっています。実務で画像認識系の仕事をする際は必ず利用するライブラリになっています。
 # 
-# まずは基本的な使い方からです。
+# こちらの記事では回転や領域の検出、ぼかしなどの基本的な画処理の例を備忘録として残しておきます。
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/cv2/base/base_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/cv2/convert/convert_nb.ipynb)
 # 
 # ### google colaboratory
-# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/cv2/base/base_nb.ipynb)
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/cv2/convert/convert_nb.ipynb)
 # 
 # ### 環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -53,7 +53,7 @@ import matplotlib.pyplot as plt
 # In[5]:
 
 
-get_ipython().run_cell_magic('bash', '', '\nls -al ../ | grep jpg')
+get_ipython().run_cell_magic('bash', '', '\nls -a ../ | grep jpg')
 
 
 # In[6]:
@@ -170,6 +170,10 @@ rotate_image(img=img, scale=1, angle=-30)
 
 
 # ## 余白部の削除  領域の抽出
+# 
+# OpenCVでは画像上の領域を抽出することが出来ます。
+# findContoursメソッドを利用して、領域を抽出し、余計な部分を削除してみます。
+# 今回は例としてlenaさんではなく、とある開発で使った画像を利用します。
 
 # In[15]:
 
@@ -253,7 +257,9 @@ show_gaussian_filter(img, average_size=21, sigma=10)
 show_gaussian_filter(img, average_size=3, sigma=10)
 
 
-# ## canny方によるエッジ検出
+# ## canny法によるエッジ検出
+# 
+# 物体の境界（エッジ）を検出するためにcanny法というものがあります。単純に画素の出力値の勾配を取って判定しますが、閾値が二つあり最適化した状態で利用するには少し経験が必要です。threshold2が境界かどうかを決める割合の大きい閾値であり、私の経験的にはthreshold2を決めてからthreshold1を決めていくというようにすると良いかと思います。
 
 # In[21]:
 
@@ -268,12 +274,30 @@ def show_canny_image(img, th1, th2, aperture):
   plt.show()
 
 
+# 二つの閾値、threshold1とthreshold2によってどのように画像が変化するか見てみます。
+
 # In[22]:
 
 
-for i in range(0, 300, 60):
-  for j in range(0, 300, 60):
-    if i < j:
-      print('th1 = {}, th2 = {}'.format(i, j))
-      show_canny_image(gray_img, i, j, 3)
+# fig, axes = plt.subplots(nrows=5, ncols=5, sharex=False)
 
+fig = plt.figure(figsize=(10.0, 10.0))
+
+cnt = 0
+for th1 in range(0, 500, 100):
+  for th2 in range(0, 500, 100):
+    cnt += 1
+    if th1 <= th2:
+    
+      temp = cv2.Canny(gray_img, threshold1=th1, threshold2=th2, apertureSize=3)
+ 
+      fig.add_subplot(5, 5, cnt)
+      plt.gray()
+      plt.axis('off')
+      plt.imshow(temp)
+
+plt.show()
+    
+
+
+# 上の図は横軸がthreshold2で縦軸がthreshold1です。右に行けば行くほど、下に行けば行くほど閾値が大きくなります。右下に行く方が閾値が大きくなるので、境界値として認識される部分は少なくなり、黒が目立つようになります。とはいえ、これでは正直threshold1とthreshold2の違いがいまいち分かりませんね笑
