@@ -128,6 +128,10 @@ get_image_info(img=img)
     img_width : 225
 
 
+## 顔認識
+
+OpenCVで人の顔を検出するには"haarcascade_frontalface_alt.xml"という顔認識用のモデルファイルを読み込みます。OpenCVには顔以外にも鼻や口などを認識するためのモデルもあります。
+
 
 ```python
 cascade_file = "haarcascade_frontalface_alt.xml"
@@ -147,15 +151,20 @@ plt.show()
 ```
 
 
-![svg](face_nb_files/face_nb_14_0.svg)
+![svg](face_nb_files/face_nb_15_0.svg)
 
+
+## 顔の特徴抽出（dlib）
+
+dlibという顔の特徴量抽出を行うライブラリを利用して、表情の特徴を捉えることも出来ます。dlibのshape_predictorによって、68点の顔のモデルを読み込みます。これはOpenCVはありません。
+
+以下のコードは、[「Python実践データ分析100本ノック」](https://www.amazon.co.jp/dp/B07ZSGSN9S/ref=dp-kindle-redirect?_encoding=UTF8&btkr=1)の第9章 潜在顧客を把握するための画像処理10本ノックを参考にしています。この本はデータ分析に必要なスキルを広い範囲で解説してくれているのでとても重宝しています。
 
 
 ```python
 import dlib
 import math
 
-# 準備 #
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 detector = dlib.get_frontal_face_detector()
 ```
@@ -178,16 +187,16 @@ for k, d in enumerate(dets):
   cv2.rectangle(img, (d.left(), d.top()), (d.right(), d.bottom()), color_f, line_w)
   cv2.putText(img, str(k), (d.left(), d.top()), fontType, fontSize, color_f, line_w)
 
-  # 重心を導出する箱を用意
   num_of_points_out = 17
   num_of_points_in = shape.num_parts - num_of_points_out
   gx_out = 0
   gy_out = 0
   gx_in = 0
   gy_in = 0
+  
   for shape_point_count in range(shape.num_parts):
     shape_point = shape.part(shape_point_count)
-    #print("顔器官No.{} 座標位置: ({},{})".format(shape_point_count, shape_point.x, shape_point.y))
+    
     #器官ごとに描画
     if shape_point_count<num_of_points_out:
       cv2.circle(img,(shape_point.x, shape_point.y),circle_r,color_l_out, line_w)
@@ -219,6 +228,8 @@ for k, d in enumerate(dets):
     顔方位:0.30929631910812816 (角度:17.72137370382726度)
 
 
+lenaさんが右の方向を向いていることが分かりました。また、その角度も計算されています。
+
 
 ```python
 plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
@@ -226,5 +237,10 @@ plt.show()
 ```
 
 
-![svg](face_nb_files/face_nb_17_0.svg)
+![svg](face_nb_files/face_nb_20_0.svg)
 
+
+## 結論
+OpenCVは非常に使い勝手がよい画像解析ライブラリです。最近はディープラーニングによる認識が流行っていますが、コストとの対比を考えると、OpenCVで十分な場合も多々あります。私は画像解析でディープラーニングを用いて精度を高められませんかという依頼をもらったときは、果たしてディープラーニングを利用する必要があるのかどうか、もっと低コストに顧客が満足する方法があるのではないかと考えながら提案をしています。
+
+もしOpenCVの様々なモジュールを使って十分な精度が得られれば、比較的高コストのディープラーニングは不要な場合もよく見られます。
