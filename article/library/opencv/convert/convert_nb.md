@@ -1,14 +1,14 @@
 
-## opencvの使い方
+## OpenCVによる画像処理の基本
 OpenCVは画像解析や機械学習によく利用される、コンピュータービジョンライブラリの一つです。基本的な画像変換だけでなく、画像のフィルター処理、顔認識、物体認識、オブジェクトトラッキングなど、実務でよく利用される機能が一通りそろっている非常に使いやすいライブラリになっています。実務で画像認識系の仕事をする際は必ず利用するライブラリになっています。
 
-まずは基本的な使い方からです。
+こちらの記事では回転や領域の検出、ぼかしなどの基本的な画処理の例を備忘録として残しておきます。
 
 ### github
-- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/cv2/base/base_nb.ipynb)
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/cv2/convert/convert_nb.ipynb)
 
 ### google colaboratory
-- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/cv2/base/base_nb.ipynb)
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/cv2/convert/convert_nb.ipynb)
 
 ### 環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -59,19 +59,19 @@ import matplotlib.pyplot as plt
 ```bash
 %%bash
 
-ls -al ../ | grep jpg
+ls -a ../ | grep jpg
 ```
 
-    -rw-r--r--   1 hiroshi  staff  23796 11 14 22:04 binary_out.jpg
-    -rw-r--r--   1 hiroshi  staff  15414 11 14 22:04 bitwise_out.jpg
-    -rw-r--r--   1 hiroshi  staff  15368 11 14 22:04 gray_out.jpg
-    -rw-r--r--@  1 hiroshi  staff   8211 11 14 22:01 lena.jpg
-    -rw-r--r--   1 hiroshi  staff  18046 11 17 21:47 lena_out.jpg
-    -rw-r--r--   1 hiroshi  staff  23685 11 14 22:34 rotation.jpg
-    -rw-r--r--   1 hiroshi  staff  23884 11 17 21:47 rotation_scale_1_angle_-30.jpg
-    -rw-r--r--   1 hiroshi  staff  23685 11 17 21:47 rotation_scale_1_angle_30.jpg
-    -rw-r--r--   1 hiroshi  staff  20082 11 14 22:37 rotation_scale_2_angle_-30.jpg
-    -rw-r--r--   1 hiroshi  staff  20531 11 17 21:47 rotation_scale_2_angle_30.jpg
+    binary_out.jpg
+    bitwise_out.jpg
+    gray_out.jpg
+    lena.jpg
+    lena_out.jpg
+    rotation.jpg
+    rotation_scale_1_angle_-30.jpg
+    rotation_scale_1_angle_30.jpg
+    rotation_scale_2_angle_-30.jpg
+    rotation_scale_2_angle_30.jpg
 
 
 
@@ -208,6 +208,10 @@ rotate_image(img=img, scale=1, angle=-30)
 
 ## 余白部の削除  領域の抽出
 
+OpenCVでは画像上の領域を抽出することが出来ます。
+findContoursメソッドを利用して、領域を抽出し、余計な部分を削除してみます。
+今回は例としてlenaさんではなく、とある開発で使った画像を利用します。
+
 
 ```python
 temp_img = cv2.imread(filename='../10.png')
@@ -304,7 +308,9 @@ show_gaussian_filter(img, average_size=3, sigma=10)
 ![svg](convert_nb_files/convert_nb_31_0.svg)
 
 
-## canny方によるエッジ検出
+## canny法によるエッジ検出
+
+物体の境界（エッジ）を検出するためにcanny法というものがあります。単純に画素の出力値の勾配を取って判定しますが、閾値が二つあり最適化した状態で利用するには少し経験が必要です。threshold2が境界かどうかを決める割合の大きい閾値であり、私の経験的にはthreshold2を決めてからthreshold1を決めていくというようにすると良いかと思います。
 
 
 ```python
@@ -318,81 +324,33 @@ def show_canny_image(img, th1, th2, aperture):
   plt.show()
 ```
 
+二つの閾値、threshold1とthreshold2によってどのように画像が変化するか見てみます。
+
 
 ```python
-for i in range(0, 300, 60):
-  for j in range(0, 300, 60):
-    if i < j:
-      print('th1 = {}, th2 = {}'.format(i, j))
-      show_canny_image(gray_img, i, j, 3)
+# fig, axes = plt.subplots(nrows=5, ncols=5, sharex=False)
+
+fig = plt.figure(figsize=(10.0, 10.0))
+
+cnt = 0
+for th1 in range(0, 500, 100):
+  for th2 in range(0, 500, 100):
+    cnt += 1
+    if th1 <= th2:
+    
+      temp = cv2.Canny(gray_img, threshold1=th1, threshold2=th2, apertureSize=3)
+ 
+      fig.add_subplot(5, 5, cnt)
+      plt.gray()
+      plt.axis('off')
+      plt.imshow(temp)
+
+plt.show()
+    
 ```
 
-    th1 = 0, th2 = 60
+
+![svg](convert_nb_files/convert_nb_35_0.svg)
 
 
-
-![svg](convert_nb_files/convert_nb_34_1.svg)
-
-
-    th1 = 0, th2 = 120
-
-
-
-![svg](convert_nb_files/convert_nb_34_3.svg)
-
-
-    th1 = 0, th2 = 180
-
-
-
-![svg](convert_nb_files/convert_nb_34_5.svg)
-
-
-    th1 = 0, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_34_7.svg)
-
-
-    th1 = 60, th2 = 120
-
-
-
-![svg](convert_nb_files/convert_nb_34_9.svg)
-
-
-    th1 = 60, th2 = 180
-
-
-
-![svg](convert_nb_files/convert_nb_34_11.svg)
-
-
-    th1 = 60, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_34_13.svg)
-
-
-    th1 = 120, th2 = 180
-
-
-
-![svg](convert_nb_files/convert_nb_34_15.svg)
-
-
-    th1 = 120, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_34_17.svg)
-
-
-    th1 = 180, th2 = 240
-
-
-
-![svg](convert_nb_files/convert_nb_34_19.svg)
-
+上の図は横軸がthreshold2で縦軸がthreshold1です。右に行けば行くほど、下に行けば行くほど閾値が大きくなります。右下に行く方が閾値が大きくなるので、境界値として認識される部分は少なくなり、黒が目立つようになります。とはいえ、これでは正直threshold1とthreshold2の違いがいまいち分かりませんね笑

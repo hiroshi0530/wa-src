@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## 第9章 潜在顧客を把握するための画像処理10本ノック
@@ -32,8 +32,8 @@ get_ipython().system('python -V')
 # In[3]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -74,7 +74,7 @@ plt.show()
 # 
 # 映像の取得のため、VideoCapture関数を利用します。取得した映像情報をcapに格納し、getにより情報を取得します。フレーム毎の情報をreadメソッドで読み出します。これにより動画情報を画像情報と同様に操作し、imshowメソッドで表示可能です。
 
-# In[ ]:
+# In[5]:
 
 
 cap = cv2.VideoCapture('mov/mov01.avi')
@@ -98,7 +98,7 @@ cv2.destroyAllWindows()
 # 
 # スナップショットとして画像として保存します。
 
-# In[ ]:
+# In[6]:
 
 
 cap = cv2.VideoCapture('mov/mov01.avi')
@@ -117,7 +117,7 @@ cap.release()
 cv2.destroyAllWindows()
 
 
-# In[ ]:
+# In[7]:
 
 
 get_ipython().system('ls snapshot/')
@@ -127,7 +127,7 @@ get_ipython().system('ls snapshot/')
 # 
 # HOG抽出量により人の認識を行います。HOG特徴量というのは「Histogram of Oriented Gradients」の略で、輝度勾配と言います。
 
-# In[7]:
+# In[8]:
 
 
 # 準備 #
@@ -164,7 +164,7 @@ plt.show()
 # 
 # OpenCVで人の顔を検出するには"haarcascade_frontalface_alt.xml"という顔認識用のモデルファイルを読み込みます。OpenCVには顔以外にも鼻や口などを認識するためのモデルもあります。
 
-# In[11]:
+# In[10]:
 
 
 # 準備
@@ -191,7 +191,7 @@ plt.show()
 # 
 # dlibというライブラリを利用して、表情の特徴を捉えることも出来ます。dlibのshape_predictorによって、68点の顔のモデルを読み込みます。そこからget_frontal_face_detectorによって
 
-# In[12]:
+# In[11]:
 
 
 import dlib
@@ -202,7 +202,7 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 detector = dlib.get_frontal_face_detector()
 
 
-# In[ ]:
+# In[12]:
 
 
 # 検出 #
@@ -261,7 +261,7 @@ for k, d in enumerate(dets):
   cv2.putText(img, textShow, (d.left(), d.top()), fontType, fontSize, color_f, line_w)
 
 
-# In[ ]:
+# In[13]:
 
 
 cv2.imwrite("temp.jpg",img)
@@ -273,7 +273,7 @@ plt.show()
 # 
 # 数フレームから1フレームを抽出したタイムラプスを作ります。
 
-# In[ ]:
+# In[14]:
 
 
 print("タイムラプス生成を開始します")
@@ -284,7 +284,7 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 
-# In[ ]:
+# In[15]:
 
 
 # hog宣言 #
@@ -293,7 +293,7 @@ hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 hogParams = {'winStride': (8, 8), 'padding': (32, 32), 'scale': 1.05, 'hitThreshold':0, 'finalThreshold':5}
 
 
-# In[ ]:
+# In[17]:
 
 
 # タイムラプス作成 #
@@ -324,7 +324,7 @@ print("タイムラプス生成を終了しました")
 
 # ### ノック 88 : 全体像をグラフにして可視化してみよう
 
-# In[ ]:
+# In[18]:
 
 
 import pandas as pd
@@ -335,7 +335,7 @@ cap = cv2.VideoCapture("mov/mov01.avi")
 fps = cap.get(cv2.CAP_PROP_FPS)
 
 
-# In[ ]:
+# In[19]:
 
 
 # hog宣言 #
@@ -344,7 +344,7 @@ hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 hogParams = {'winStride': (8, 8), 'padding': (32, 32), 'scale': 1.05, 'hitThreshold':0, 'finalThreshold':5}
 
 
-# In[ ]:
+# In[21]:
 
 
 num = 0
@@ -360,20 +360,20 @@ while(cap.isOpened()):
           cv2.rectangle(frame, (x, y), (x + w, y + h), (255,255,255), 3)
       tmp_se = pd.Series( [num/fps,len(human) ], index=list_df.columns )
       list_df = list_df.append( tmp_se, ignore_index=True )     
-      if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+      # if cv2.waitKey(1) & 0xFF == ord('q'):
+      #   break
   else:
     break
   num = num + 1
   
-cap.release()
-cv2.destroyAllWindows()
+# cap.release()
+# cv2.destroyAllWindows()
 print("分析を終了しました")
 
 
 # グラフにして可視化します。
 
-# In[ ]:
+# In[22]:
 
 
 import matplotlib.pyplot as plt
