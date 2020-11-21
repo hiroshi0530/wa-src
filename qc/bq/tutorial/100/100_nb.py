@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # ## blueqat tutorial 100番代
@@ -39,8 +39,8 @@ print('blueqat version : ', __version__)
 # In[4]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+get_ipython().magic('matplotlib inline')
+get_ipython().magic("config InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -60,8 +60,6 @@ print('pandas version :', pd.__version__)
 from blueqat import Circuit
 
 
-# 
-
 # ### 古典ベートと量子ゲートの比較
 # 
 # #### NOTゲート VS Xゲート
@@ -77,24 +75,6 @@ from blueqat import Circuit
 # #### 位相ゲート
 # 
 # #### CNOTゲート
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
 
 # ### 量子もつれ
 
@@ -168,12 +148,6 @@ a = [i for i in range(5)]
 a[0:2]
 
 
-# In[ ]:
-
-
-
-
-
 # In[22]:
 
 
@@ -184,18 +158,6 @@ Circuit(2).cx[0,1].m[:].run(shots=100)
 
 
 Circuit(3).cx[0,1].m[:].run(shots=100)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
 
 # ### 2量子ビット
@@ -433,43 +395,13 @@ Circuit().h[0,1].m[:].run(100)
 # 
 # $x,y,z$のそれぞれの軸に対して180°の固定角度の回転を行います。
 
-# In[ ]:
-
-
-
-
-
 # #### 任意回転ゲート
 # 任意の角度の回転をそれぞれの軸に対して実行することが出来ます。
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
 
 # In[10]:
 
 
 Circuit().cz[0,1].m[:].run(shots=100)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
 
 # ## swap ゲート
@@ -519,13 +451,9 @@ Circuit().x[0].swap[0,1].m[:].run(100)
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
 https://qiita.com/YuichiroMinato/items/531cb67492783a1b19b9
+https://dojo.qulacs.org/ja/latest/notebooks/2.2_Hadamard_test.html
+  
 
 
 # In[ ]:
