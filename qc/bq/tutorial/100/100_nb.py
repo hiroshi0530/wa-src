@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## blueqat tutorial 100番代
@@ -14,6 +14,22 @@
 # - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
 # 
 # ### 筆者の環境
+
+# <div>
+# $$
+# \text{SWAP}=
+# \begin{pmatrix}
+# 1 & 0 & 0 & 0 \\
+# 0 & 0 & 1 & 0 \\
+# 0 & 1 & 0 & 0 \\
+# 0 & 0 & 0 & 1 \\
+# \end{pmatrix}
+# $$
+# </div>
+# 
+# $$
+# X_{abc}
+# $$
 
 # In[1]:
 
@@ -39,8 +55,8 @@ print('blueqat version : ', __version__)
 # In[4]:
 
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -60,6 +76,8 @@ print('pandas version :', pd.__version__)
 from blueqat import Circuit
 
 
+# 
+
 # ### 古典ベートと量子ゲートの比較
 # 
 # #### NOTゲート VS Xゲート
@@ -75,6 +93,24 @@ from blueqat import Circuit
 # #### 位相ゲート
 # 
 # #### CNOTゲート
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
 
 # ### 量子もつれ
 
@@ -101,25 +137,25 @@ Circuit().cx[0,1].m[:].run(shots=100)
 Circuit().x[0].cx[0,1].m[:].run(shots=100)
 
 
-# In[17]:
+# In[9]:
 
 
 Circuit(1).x[0].m[:].run(shots=100)
 
 
-# In[18]:
+# In[10]:
 
 
 Circuit(1).m[:].run(shots=100)
 
 
-# In[19]:
+# In[11]:
 
 
 Circuit().m[:].run(shots=100)
 
 
-# In[20]:
+# In[12]:
 
 
 Circuit().x[0].m[:].run(shots=100)
@@ -129,42 +165,60 @@ Circuit().x[0].m[:].run(shots=100)
 
 # 0に初期化されています。
 
-# In[24]:
+# In[13]:
 
 
 Circuit(2).m[:].run(shots=100)
 
 
-# In[35]:
+# In[14]:
 
 
 Circuit(2).m[0:2].run()
 
 
-# In[36]:
+# In[15]:
 
 
 a = [i for i in range(5)]
 a[0:2]
 
 
-# In[22]:
+# In[ ]:
+
+
+
+
+
+# In[16]:
 
 
 Circuit(2).cx[0,1].m[:].run(shots=100)
 
 
-# In[23]:
+# In[17]:
 
 
 Circuit(3).cx[0,1].m[:].run(shots=100)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # ### 2量子ビット
 
 # 二つの量子ビットを用意して、初期状態を確認します。
 
-# In[37]:
+# In[18]:
 
 
 Circuit(2).m[:].run(shots=100)
@@ -172,7 +226,7 @@ Circuit(2).m[:].run(shots=100)
 
 # 00の状態に、CXゲートをかけて、結果が変わらないことを確認します。
 
-# In[38]:
+# In[19]:
 
 
 Circuit(2).cx[0,1].m[:].run(shots=100)
@@ -180,7 +234,7 @@ Circuit(2).cx[0,1].m[:].run(shots=100)
 
 # 0番目のビットにXゲートを作用させてからCXゲートをかけてみます。
 
-# In[39]:
+# In[20]:
 
 
 Circuit(2).x[0].cx[0,1].m[:].run(shots=100)
@@ -189,13 +243,13 @@ Circuit(2).x[0].cx[0,1].m[:].run(shots=100)
 # ### 重ね合わせ
 # アダマールゲートを用いて重ね合わせの状態を作り出します。
 
-# In[41]:
+# In[21]:
 
 
 Circuit(1).m[:].run(shots=100)
 
 
-# In[42]:
+# In[22]:
 
 
 Circuit(1).h[0].m[:].run(shots=100)
@@ -203,13 +257,13 @@ Circuit(1).h[0].m[:].run(shots=100)
 
 # ### 波動関数の取得
 
-# In[47]:
+# In[23]:
 
 
 Circuit().h[0].run()
 
 
-# In[48]:
+# In[24]:
 
 
 Circuit().x[0].h[0].run()
@@ -221,13 +275,13 @@ Circuit().x[0].h[0].run()
 # 
 # 因数分解できない⇒量子もつれ
 
-# In[50]:
+# In[25]:
 
 
 Circuit().h[0].cx[0,1].m[:].run(shots=100)
 
 
-# In[49]:
+# In[26]:
 
 
 Circuit().h[0,1].m[:].run(shots=100)
@@ -252,7 +306,7 @@ Circuit().h[0,1].m[:].run(shots=100)
 # $$
 # </div>
 
-# In[1]:
+# In[27]:
 
 
 1 + 1
@@ -260,13 +314,13 @@ Circuit().h[0,1].m[:].run(shots=100)
 
 # ### 003 量子重ね合わせ
 
-# In[2]:
+# In[28]:
 
 
 from blueqat import Circuit
 
 
-# In[3]:
+# In[29]:
 
 
 # アダマールゲートによる重ね合わせの作成
@@ -275,7 +329,7 @@ Circuit().h[0].m[:].run(100)
 
 # アダマールゲートを設定し場合、+状態と言う状態になる。-状態はZゲートをかける。
 
-# In[4]:
+# In[30]:
 
 
 Circuit().h[0].z[0].m[:].run(100)
@@ -283,7 +337,7 @@ Circuit().h[0].z[0].m[:].run(100)
 
 # +状態
 
-# In[5]:
+# In[31]:
 
 
 Circuit().h[0].run()
@@ -291,7 +345,7 @@ Circuit().h[0].run()
 
 # -状態
 
-# In[6]:
+# In[32]:
 
 
 Circuit().h[0].z[0].run()
@@ -312,7 +366,7 @@ Circuit().h[0].z[0].run()
 # 
 # アダマールゲート＋ＣＸゲートで作成します。
 
-# In[7]:
+# In[33]:
 
 
 Circuit().h[0].cx[0,1].m[:].run(100)
@@ -324,7 +378,7 @@ Circuit().h[0].cx[0,1].m[:].run(100)
 # 
 # コントロールゲートを作用させないと、以下の様に4通りのビットの状態が測定され、同期がされていません。
 
-# In[9]:
+# In[34]:
 
 
 Circuit().h[0,1].m[:].run(100)
@@ -395,19 +449,49 @@ Circuit().h[0,1].m[:].run(100)
 # 
 # $x,y,z$のそれぞれの軸に対して180°の固定角度の回転を行います。
 
+# In[ ]:
+
+
+
+
+
 # #### 任意回転ゲート
 # 任意の角度の回転をそれぞれの軸に対して実行することが出来ます。
 
-# In[10]:
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[35]:
 
 
 Circuit().cz[0,1].m[:].run(shots=100)
 
 
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
 # ## swap ゲート
 # 二つの量子ビットを入れ替えるゲートです。コントロールゲートを3つ使うと実装可能のようです。
 
-# In[12]:
+# In[36]:
 
 
 Circuit(2).x[0].m[:].run(shots=100)
@@ -415,7 +499,7 @@ Circuit(2).x[0].m[:].run(shots=100)
 
 # コントールゲートを三回作用させます。
 
-# In[13]:
+# In[37]:
 
 
 Circuit().x[0].cx[0,1].cx[1,0].cx[0,1].m[:].run(shots=100)
@@ -423,7 +507,7 @@ Circuit().x[0].cx[0,1].cx[1,0].cx[0,1].m[:].run(shots=100)
 
 # blueqatではswapゲートはswapメソッドが用意されているようです。
 
-# In[14]:
+# In[38]:
 
 
 Circuit().x[0].swap[0,1].m[:].run(100)
@@ -431,7 +515,7 @@ Circuit().x[0].swap[0,1].m[:].run(100)
 
 # スワップゲート
 # 
-# 
+# <div>
 # $$
 # \text{SWAP}=
 # \begin{pmatrix}
@@ -441,6 +525,7 @@ Circuit().x[0].swap[0,1].m[:].run(100)
 # 0 & 0 & 0 & 1 \\
 # \end{pmatrix}
 # $$
+# </div>
 
 # ### トフォリゲート
 # 三つの量子ビットを利用するゲートで、二つのコントールビットの一つのターゲットビットを持つ。
@@ -451,9 +536,15 @@ Circuit().x[0].swap[0,1].m[:].run(100)
 # In[ ]:
 
 
-https://qiita.com/YuichiroMinato/items/531cb67492783a1b19b9
-https://dojo.qulacs.org/ja/latest/notebooks/2.2_Hadamard_test.html
-  
+
+
+
+# https://qiita.com/YuichiroMinato/items/531cb67492783a1b19b9
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
@@ -462,13 +553,7 @@ https://dojo.qulacs.org/ja/latest/notebooks/2.2_Hadamard_test.html
 
 
 
-# In[ ]:
-
-
-
-
-
-# In[15]:
+# In[39]:
 
 
 from sympy import *
@@ -477,20 +562,20 @@ from sympy.physics.quantum.qubit import Qubit,QubitBra
 init_printing() # ベクトルや行列を綺麗に表示するため
 
 
-# In[16]:
+# In[40]:
 
 
 psi = Qubit('0')
 psi
 
 
-# In[17]:
+# In[41]:
 
 
 represent(psi)
 
 
-# In[18]:
+# In[42]:
 
 
 a, b = symbols('alpha, beta')  #a, bをシンボルとして、alpha, betaとして表示
@@ -500,68 +585,72 @@ psi = a * ket0 + b* ket1
 psi # 状態をそのまま書くとケットで表示してくれる
 
 
-# In[19]:
+# In[43]:
 
 
 from sympy.physics.quantum.gate import X,Y,Z,H,S,T,CNOT,SWAP, CPHASE
 
 
-# In[20]:
+# In[44]:
 
 
 X(0)
 
 
-# In[25]:
+# <div>
+
+# In[45]:
 
 
 represent(X(0), nqubits=1)
 
 
-# In[27]:
+# </div>
+
+# In[46]:
 
 
 represent(X(0), nqubits=2)
 
 
-# In[28]:
+# In[47]:
 
 
 represent(H(0),nqubits=1)
 
 
-# In[29]:
+# In[48]:
 
 
 represent(S(0),nqubits=1)
 
 
-# In[30]:
+# In[49]:
 
 
 represent(T(0),nqubits=1)
 
 
-# In[31]:
+# In[50]:
 
 
 ket0 = Qubit('0')
 S(0)*Y(0)*X(0)*H(0)*ket0
 
 
-# In[32]:
+# In[51]:
 
 
 qapply(S(0)*Y(0)*X(0)*H(0)*ket0)
 
 
-# In[33]:
+# In[52]:
 
 
 represent(qapply(S(0)*Y(0)*X(0)*H(0)*ket0))
 
 
-# In[34]:
+# In[53]:
 
 
 a,b,c,d = symbols('alpha,beta,gamma,delta')
@@ -569,14 +658,67 @@ psi = a*Qubit('0')+b*Qubit('1')
 phi = c*Qubit('0')+d*Qubit('1')
 
 
-# In[35]:
+# In[54]:
 
 
 TensorProduct(psi, phi) #テンソル積
 
 
-# In[36]:
+# In[55]:
 
 
 represent(TensorProduct(psi, phi))
+
+
+# In[56]:
+
+
+get_ipython().system('ls -al')
+
+
+# In[57]:
+
+
+get_ipython().system('ls -al')
+
+
+# In[58]:
+
+
+import tensorflow as tf
+tf.__version__
+
+
+# In[59]:
+
+
+import tensorflow as tf
+import tensorflow_quantum as tfq
+
+import cirq
+import sympy
+import numpy as np
+
+# 表示用
+get_ipython().run_line_magic('matplotlib', 'inline')
+import matplotlib.pyplot as plt
+from cirq.contrib.svg import SVGCircuit
+
+
+# In[60]:
+
+
+a, b = sympy.symbols('a b')
+
+
+# In[61]:
+
+
+a
+
+
+# In[ ]:
+
+
+
 
