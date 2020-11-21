@@ -1,4 +1,3 @@
-
 ## OpenCVを用いた顔認識
 OpenCVは画像解析や機械学習によく利用される、コンピュータービジョンライブラリの一つです。基本的な画像変換だけでなく、画像のフィルター処理、顔認識、物体認識、オブジェクトトラッキングなど、実務でよく利用される機能が一通りそろっている非常に使いやすいライブラリになっています。実務で画像認識系の仕事をする際は必ず利用するライブラリになっています。
 
@@ -30,7 +29,7 @@ OpenCVは画像解析や機械学習によく利用される、コンピュー�
 !python -V
 ```
 
-    Python 3.5.5 :: Anaconda, Inc.
+    Python 3.8.5
 
 
 
@@ -40,7 +39,7 @@ import cv2
 print('opencv version :', cv2.__version__)
 ```
 
-    opencv version : 3.4.1
+    opencv version : 4.4.0
 
 
 画像表示用にmatplotlibもimportします。画像はwebでの見栄えを考慮して、svgで保存する事とします。
@@ -52,6 +51,9 @@ print('opencv version :', cv2.__version__)
 
 import matplotlib.pyplot as plt
 ```
+
+    Matplotlib is building the font cache; this may take a moment.
+
 
 上の階層に lena.jpg というファイルがあるとします。
 
@@ -95,7 +97,9 @@ plt.show()
 ```
 
 
+    
 ![svg](face_nb_files/face_nb_10_0.svg)
+    
 
 
 
@@ -151,7 +155,9 @@ plt.show()
 ```
 
 
+    
 ![svg](face_nb_files/face_nb_15_0.svg)
+    
 
 
 ## 顔の特徴抽出（dlib）
@@ -225,7 +231,7 @@ for k, d in enumerate(dets):
   cv2.putText(img, textShow, (d.left(), d.top()), fontType, fontSize, color_f, line_w)
 ```
 
-    顔方位:0.30929631910812816 (角度:17.72137370382726度)
+    顔方位:0.30603061652114893 (角度:17.534262728448397度)
 
 
 lenaさんが右の方向を向いていることが分かりました。また、その角度も計算されています。
@@ -237,7 +243,9 @@ plt.show()
 ```
 
 
+    
 ![svg](face_nb_files/face_nb_20_0.svg)
+    
 
 
 ## 結論
