@@ -527,3 +527,128 @@ Circuit().x[0].swap[0,1].m[:].run(100)
 
 https://qiita.com/YuichiroMinato/items/531cb67492783a1b19b9
 
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[15]:
+
+
+from sympy import *
+from sympy.physics.quantum import *
+from sympy.physics.quantum.qubit import Qubit,QubitBra
+init_printing() # ベクトルや行列を綺麗に表示するため
+
+
+# In[16]:
+
+
+psi = Qubit('0')
+psi
+
+
+# In[17]:
+
+
+represent(psi)
+
+
+# In[18]:
+
+
+a, b = symbols('alpha, beta')  #a, bをシンボルとして、alpha, betaとして表示
+ket0 = Qubit('0')
+ket1 = Qubit('1')
+psi = a * ket0 + b* ket1
+psi # 状態をそのまま書くとケットで表示してくれる
+
+
+# In[19]:
+
+
+from sympy.physics.quantum.gate import X,Y,Z,H,S,T,CNOT,SWAP, CPHASE
+
+
+# In[20]:
+
+
+X(0)
+
+
+# In[25]:
+
+
+represent(X(0), nqubits=1)
+
+
+# In[27]:
+
+
+represent(X(0), nqubits=2)
+
+
+# In[28]:
+
+
+represent(H(0),nqubits=1)
+
+
+# In[29]:
+
+
+represent(S(0),nqubits=1)
+
+
+# In[30]:
+
+
+represent(T(0),nqubits=1)
+
+
+# In[31]:
+
+
+ket0 = Qubit('0')
+S(0)*Y(0)*X(0)*H(0)*ket0
+
+
+# In[32]:
+
+
+qapply(S(0)*Y(0)*X(0)*H(0)*ket0)
+
+
+# In[33]:
+
+
+represent(qapply(S(0)*Y(0)*X(0)*H(0)*ket0))
+
+
+# In[34]:
+
+
+a,b,c,d = symbols('alpha,beta,gamma,delta')
+psi = a*Qubit('0')+b*Qubit('1')
+phi = c*Qubit('0')+d*Qubit('1')
+
+
+# In[35]:
+
+
+TensorProduct(psi, phi) #テンソル積
+
+
+# In[36]:
+
+
+represent(TensorProduct(psi, phi))
+
