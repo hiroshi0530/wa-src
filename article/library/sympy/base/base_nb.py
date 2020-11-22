@@ -50,9 +50,9 @@ print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 
 
-# ## 基本的な確率分布
+# ## sympyの3つの数値型
 # 
-# sympyは3つの数値型
+# sympyは
 # 
 # - Real
 # - Rational

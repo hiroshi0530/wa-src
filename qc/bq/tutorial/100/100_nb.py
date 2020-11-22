@@ -560,6 +560,9 @@ from sympy import *
 from sympy.physics.quantum import *
 from sympy.physics.quantum.qubit import Qubit,QubitBra
 init_printing() # ベクトルや行列を綺麗に表示するため
+psi = Qubit('0')
+psi
+represent(psi)
 
 
 # In[40]:

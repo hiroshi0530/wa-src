@@ -1,4 +1,3 @@
-
 ## cirq 入門
 
 ### github
@@ -103,6 +102,46 @@ qc = qc.from_ops(
 
     AttributeError: 'Circuit' object has no attribute 'from_ops'
 
+
+$$
+\text{SWAP}=
+\begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{pmatrix}
+$$
+
+
+```python
+from sympy import *
+from sympy.physics.quantum import *
+from sympy.physics.quantum.qubit import Qubit,QubitBra
+init_printing() # ベクトルや行列を綺麗に表示するため
+psi = Qubit('0')
+psi
+represent(psi)
+```
+
+
+
+
+$\displaystyle \left[\begin{matrix}1\\0\end{matrix}\right]$
+
+
+
+<div>
+$$
+\text{SWAP}=
+\begin{pmatrix}
+1 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{pmatrix}
+$$
+</div>
 
 
 ```python

@@ -1,4 +1,3 @@
-
 ## sympy
 
 これまで数値計算はすべてmathematicaを用いてやってきましたが、webシステム開発者としてpythonに移行しようと思います。
@@ -58,9 +57,9 @@ print('numpy version :', np.__version__)
     numpy version : 1.16.2
 
 
-## 基本的な確率分布
+## sympyの3つの数値型
 
-sympyは3つの数値型
+sympyは
 
 - Real
 - Rational
