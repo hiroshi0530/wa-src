@@ -1,4 +1,3 @@
-
 ## sympy で量子演算のシミュレーション
 
 量子計算のシミュレータツールとしてはIBM社のqiskitやGoogleのCirqなどありますが、代表的な数値計算ライブラリであるsympyでも出来るようなので、簡単ですがやってみます。
@@ -25,7 +24,7 @@
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6020
+    BuildVersion:	18G95
 
 
 
@@ -33,7 +32,7 @@
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.8.5
 
 
 基本的なライブラリをインポートしそのバージョンを確認しておきます。
@@ -53,9 +52,9 @@ print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 ```
 
-    matplotlib version : 3.0.3
-    scipy version : 1.4.1
-    numpy version : 1.19.4
+    matplotlib version : 3.3.2
+    scipy version : 1.5.2
+    numpy version : 1.18.5
 
 
 ## 量子ビットの表記
@@ -77,7 +76,7 @@ sympy.init_printing()
 print('sympy version : ', sympy.__version__)
 ```
 
-    sympy version :  1.3
+    sympy version :  1.5
 
 
 1量子ビットをブラケット記号を用いて指定します。
@@ -99,7 +98,7 @@ q0
 
 
 
-$${\left|0\right\rangle }$$
+$\displaystyle {\left|0\right\rangle }$
 
 
 
@@ -111,7 +110,7 @@ q1
 
 
 
-$${\left|1\right\rangle }$$
+$\displaystyle {\left|1\right\rangle }$
 
 
 
@@ -123,7 +122,7 @@ p0
 
 
 
-$${\left\langle 1\right|}$$
+$\displaystyle {\left\langle 1\right|}$
 
 
 
@@ -135,7 +134,7 @@ p1
 
 
 
-$${\left\langle 1\right|}$$
+$\displaystyle {\left\langle 1\right|}$
 
 
 
@@ -149,7 +148,7 @@ represent(q0)
 
 
 
-$$\left[\begin{matrix}1\\0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1\\0\end{matrix}\right]$
 
 
 
@@ -161,7 +160,7 @@ represent(q0)
 
 
 
-$$\left[\begin{matrix}1\\0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1\\0\end{matrix}\right]$
 
 
 
@@ -173,7 +172,7 @@ represent(p0)
 
 
 
-$$\left[\begin{matrix}0 & 1\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0 & 1\end{matrix}\right]$
 
 
 
@@ -185,7 +184,7 @@ represent(p0)
 
 
 
-$$\left[\begin{matrix}0 & 1\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0 & 1\end{matrix}\right]$
 
 
 
@@ -208,7 +207,7 @@ represent(q00)
 
 
 
-$$\left[\begin{matrix}1\\0\\0\\0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1\\0\\0\\0\end{matrix}\right]$
 
 
 
@@ -220,7 +219,7 @@ represent(q01)
 
 
 
-$$\left[\begin{matrix}0\\1\\0\\0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0\\1\\0\\0\end{matrix}\right]$
 
 
 
@@ -232,7 +231,7 @@ represent(q10)
 
 
 
-$$\left[\begin{matrix}0\\0\\1\\0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0\\0\\1\\0\end{matrix}\right]$
 
 
 
@@ -244,7 +243,7 @@ represent(q11)
 
 
 
-$$\left[\begin{matrix}0\\0\\0\\1\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0\\0\\0\\1\end{matrix}\right]$
 
 
 
@@ -260,9 +259,11 @@ psi
 
 
 
-$$\alpha {\left|0\right\rangle } + \beta {\left|1\right\rangle }$$
+$\displaystyle \alpha {\left|0\right\rangle } + \beta {\left|1\right\rangle }$
 
 
+
+エルミート共役を取って内積を計算してみます。
 
 
 ```python
@@ -273,7 +274,7 @@ qapply(Dagger(psi) * psi)
 
 
 
-$$\alpha \alpha^{\dagger} + \beta \beta^{\dagger}$$
+$\displaystyle \alpha \alpha^{\dagger} + \beta \beta^{\dagger}$
 
 
 
@@ -314,7 +315,7 @@ represent(X(0), nqubits=1)
 
 
 
-$$\left[\begin{matrix}0 & 1\\1 & 0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0 & 1\\1 & 0\end{matrix}\right]$
 
 
 
@@ -326,7 +327,7 @@ represent(X(1), nqubits=2)
 
 
 
-$$\left[\begin{matrix}0 & 0 & 1 & 0\\0 & 0 & 0 & 1\\1 & 0 & 0 & 0\\0 & 1 & 0 & 0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0 & 0 & 1 & 0\\0 & 0 & 0 & 1\\1 & 0 & 0 & 0\\0 & 1 & 0 & 0\end{matrix}\right]$
 
 
 
@@ -338,7 +339,7 @@ represent(Y(0), nqubits=1)
 
 
 
-$$\left[\begin{matrix}0 & - i\\i & 0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}0 & - i\\i & 0\end{matrix}\right]$
 
 
 
@@ -350,7 +351,7 @@ represent(Z(0), nqubits=1)
 
 
 
-$$\left[\begin{matrix}1 & 0\\0 & -1\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1 & 0\\0 & -1\end{matrix}\right]$
 
 
 
@@ -362,7 +363,7 @@ represent(H(0),nqubits=1)
 
 
 
-$$\left[\begin{matrix}\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\\frac{1}{\sqrt{2}} & - \frac{\sqrt{2}}{2}\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}\frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}}\\\frac{1}{\sqrt{2}} & - \frac{\sqrt{2}}{2}\end{matrix}\right]$
 
 
 
@@ -374,7 +375,7 @@ represent(S(0),nqubits=1)
 
 
 
-$$\left[\begin{matrix}1 & 0\\0 & i\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1 & 0\\0 & i\end{matrix}\right]$
 
 
 
@@ -386,7 +387,7 @@ represent(T(0),nqubits=1)
 
 
 
-$$\left[\begin{matrix}1 & 0\\0 & e^{\frac{i \pi}{4}}\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1 & 0\\0 & e^{\frac{i \pi}{4}}\end{matrix}\right]$
 
 
 
@@ -407,7 +408,7 @@ X(0) * q0
 
 
 
-$$X_{0} {\left|0\right\rangle }$$
+$\displaystyle X_{0} {\left|0\right\rangle }$
 
 
 
@@ -419,7 +420,7 @@ qapply(X(0) * q0)
 
 
 
-$${\left|1\right\rangle }$$
+$\displaystyle {\left|1\right\rangle }$
 
 
 
@@ -433,7 +434,7 @@ qapply(H(0)*q0)
 
 
 
-$$\frac{\sqrt{2} {\left|0\right\rangle }}{2} + \frac{\sqrt{2} {\left|1\right\rangle }}{2}$$
+$\displaystyle \frac{\sqrt{2} {\left|0\right\rangle }}{2} + \frac{\sqrt{2} {\left|1\right\rangle }}{2}$
 
 
 
@@ -445,7 +446,7 @@ qapply(Z(0)*H(0)*q0)
 
 
 
-$$\frac{\sqrt{2} {\left|0\right\rangle }}{2} - \frac{\sqrt{2} {\left|1\right\rangle }}{2}$$
+$\displaystyle \frac{\sqrt{2} {\left|0\right\rangle }}{2} - \frac{\sqrt{2} {\left|1\right\rangle }}{2}$
 
 
 
@@ -467,7 +468,7 @@ represent(_)
 
 
 
-$$\left[\begin{matrix}\frac{\sqrt{2}}{2}\\- \frac{\sqrt{2}}{2}\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}\frac{\sqrt{2}}{2}\\- \frac{\sqrt{2}}{2}\end{matrix}\right]$
 
 
 
@@ -479,7 +480,7 @@ measure_all(_)
 
 
 
-$$\left [ \left ( {\left|01\right\rangle }, \quad \frac{1}{2}\right ), \quad \left ( {\left|11\right\rangle }, \quad \frac{1}{2}\right )\right ]$$
+$\displaystyle \left[ \left( {\left|0\right\rangle }, \  \frac{1}{2}\right), \  \left( {\left|1\right\rangle }, \  \frac{1}{2}\right)\right]$
 
 
 
@@ -491,9 +492,11 @@ measure_all(q0)
 
 
 
-$$\left [ \left ( {\left|01\right\rangle }, \quad 1\right )\right ]$$
+$\displaystyle \left[ \left( {\left|0\right\rangle }, \  1\right)\right]$
 
 
+
+1量子ビットにmeasure_allすると、２量子ビットが出てきますね。（これは現在不明です）
 
 
 ```python
@@ -503,7 +506,7 @@ measure_all(q00)
 
 
 
-$$\left [ \left ( {\left|00\right\rangle }, \quad 1\right )\right ]$$
+$\displaystyle \left[ \left( {\left|00\right\rangle }, \  1\right)\right]$
 
 
 
@@ -515,21 +518,23 @@ measure_partial(q00, (0,))
 
 
 
-$$\left [ \left ( {\left|00\right\rangle }, \quad 1\right )\right ]$$
+$\displaystyle \left[ \left( {\left|00\right\rangle }, \  1\right)\right]$
 
 
 
 
 ```python
-measure_partial(q00, (1))
+measure_partial(q11, (1))
 ```
 
 
 
 
-$$\left [ \left ( {\left|00\right\rangle }, \quad 1\right )\right ]$$
+$\displaystyle \left[ \left( {\left|11\right\rangle }, \  1\right)\right]$
 
 
+
+sympyのdescriptionにある例題を実行して、measure_partialがどうなるか見てみます。おそらく２量子系で意味のある測定が出来るという事でしょうか･･･１量子だとpartialは一つだけですし･･･
 
 
 ```python
@@ -539,7 +544,7 @@ qapply(H(0)*H(1)*Qubit('00'))
 
 
 
-$$\frac{{\left|00\right\rangle }}{2} + \frac{{\left|01\right\rangle }}{2} + \frac{{\left|10\right\rangle }}{2} + \frac{{\left|11\right\rangle }}{2}$$
+$\displaystyle \frac{{\left|00\right\rangle }}{2} + \frac{{\left|01\right\rangle }}{2} + \frac{{\left|10\right\rangle }}{2} + \frac{{\left|11\right\rangle }}{2}$
 
 
 
@@ -551,7 +556,7 @@ measure_partial(qapply(H(0)*H(1)*Qubit('00')), (0,))
 
 
 
-$$\left [ \left ( \frac{\sqrt{2} {\left|00\right\rangle }}{2} + \frac{\sqrt{2} {\left|10\right\rangle }}{2}, \quad \frac{1}{2}\right ), \quad \left ( \frac{\sqrt{2} {\left|01\right\rangle }}{2} + \frac{\sqrt{2} {\left|11\right\rangle }}{2}, \quad \frac{1}{2}\right )\right ]$$
+$\displaystyle \left[ \left( \frac{\sqrt{2} {\left|00\right\rangle }}{2} + \frac{\sqrt{2} {\left|10\right\rangle }}{2}, \  \frac{1}{2}\right), \  \left( \frac{\sqrt{2} {\left|01\right\rangle }}{2} + \frac{\sqrt{2} {\left|11\right\rangle }}{2}, \  \frac{1}{2}\right)\right]$
 
 
 
@@ -563,59 +568,9 @@ measure_partial(qapply(H(0)*H(1)*Qubit('00')), (1,))
 
 
 
-$$\left [ \left ( \frac{\sqrt{2} {\left|00\right\rangle }}{2} + \frac{\sqrt{2} {\left|01\right\rangle }}{2}, \quad \frac{1}{2}\right ), \quad \left ( \frac{\sqrt{2} {\left|10\right\rangle }}{2} + \frac{\sqrt{2} {\left|11\right\rangle }}{2}, \quad \frac{1}{2}\right )\right ]$$
+$\displaystyle \left[ \left( \frac{\sqrt{2} {\left|00\right\rangle }}{2} + \frac{\sqrt{2} {\left|01\right\rangle }}{2}, \  \frac{1}{2}\right), \  \left( \frac{\sqrt{2} {\left|10\right\rangle }}{2} + \frac{\sqrt{2} {\left|11\right\rangle }}{2}, \  \frac{1}{2}\right)\right]$
 
 
-
-
-```python
-measure_partial(qapply(H(0)*H(1)*Qubit('00')), (2,))
-```
-
-
-
-
-$$\left [ \left ( \frac{{\left|00\right\rangle }}{2} + \frac{{\left|01\right\rangle }}{2} + \frac{{\left|10\right\rangle }}{2} + \frac{{\left|11\right\rangle }}{2}, \quad 1\right )\right ]$$
-
-
-
-
-```python
-
-```
-
-
-```python
-aaa = 1 / sympy.sqrt(2) * q00 + 1 / sympy.sqrt(2) * q11
-```
-
-
-```python
-measure_all(aaa)
-```
-
-
-
-
-$$\left [ \left ( {\left|00\right\rangle }, \quad \frac{1}{2}\right ), \quad \left ( {\left|11\right\rangle }, \quad \frac{1}{2}\right )\right ]$$
-
-
-
-
-```python
-measure_partial(aaa, (1, ))
-```
-
-
-
-
-$$\left [ \left ( {\left|00\right\rangle }, \quad \frac{1}{2}\right ), \quad \left ( {\left|11\right\rangle }, \quad \frac{1}{2}\right )\right ]$$
-
-
-
-この結果をSymPyでも計算してみよう。SymPyには測定用の関数が数種類用意されていて、一部の量子ビットを測定した場合の確率と測定後の状態を計算するには、measure_partialを用いればよい。測定する状態と、測定を行う量子ビットのインデックスを引数として渡すと、測定後の状態と測定の確率の組がリストとして出力される。1つめの量子ビットが0だった場合の量子状態と確率は[0]要素を参照すればよい。
-
-https://dojo.qulacs.org/ja/latest/notebooks/1.3_multiqubit_representation_and_operations.html
 
 ## 2量子系の演算
 
@@ -634,6 +589,8 @@ label : tuple
 
 ```
 
+CNOTとSWAPを読み込みます。
+
 
 ```python
 from sympy.physics.quantum.gate import CNOT, SWAP
@@ -641,15 +598,17 @@ from sympy.physics.quantum.gate import CNOT, SWAP
 
 
 ```python
-represent(CNOT(1,0),nqubits=2
+represent(CNOT(1,0),nqubits=2)
 ```
 
 
 
 
-$$\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & 0 & 1\\0 & 0 & 1 & 0\end{matrix}\right]$
 
 
+
+CNOTをそれぞれの2量子ビットに作用させてみます。
 
 
 ```python
@@ -659,7 +618,7 @@ qapply(CNOT(1,0) * q00)
 
 
 
-$${\left|00\right\rangle }$$
+$\displaystyle {\left|00\right\rangle }$
 
 
 
@@ -671,7 +630,7 @@ qapply(CNOT(1,0) * q01)
 
 
 
-$${\left|01\right\rangle }$$
+$\displaystyle {\left|01\right\rangle }$
 
 
 
@@ -683,7 +642,7 @@ qapply(CNOT(1,0) * q10)
 
 
 
-$${\left|11\right\rangle }$$
+$\displaystyle {\left|11\right\rangle }$
 
 
 
@@ -695,9 +654,11 @@ qapply(CNOT(1,0) * q11)
 
 
 
-$${\left|10\right\rangle }$$
+$\displaystyle {\left|10\right\rangle }$
 
 
+
+SWAPゲートは以下の通りです。引数に交換した量子ビットを指定します。
 
 
 ```python
@@ -707,9 +668,11 @@ represent(SWAP(0,1),nqubits=2)
 
 
 
-$$\left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}1 & 0 & 0 & 0\\0 & 0 & 1 & 0\\0 & 1 & 0 & 0\\0 & 0 & 0 & 1\end{matrix}\right]$
 
 
+
+SWAPゲートをそれぞれの2量子ビットに作用させてみます。
 
 
 ```python
@@ -719,7 +682,7 @@ qapply(SWAP(0,1) * q00)
 
 
 
-$${\left|00\right\rangle }$$
+$\displaystyle {\left|00\right\rangle }$
 
 
 
@@ -731,7 +694,7 @@ qapply(SWAP(0,1) * q01)
 
 
 
-$${\left|10\right\rangle }$$
+$\displaystyle {\left|10\right\rangle }$
 
 
 
@@ -743,7 +706,7 @@ qapply(SWAP(0,1) * q10)
 
 
 
-$${\left|01\right\rangle }$$
+$\displaystyle {\left|01\right\rangle }$
 
 
 
@@ -755,7 +718,7 @@ qapply(SWAP(0,1) * q11)
 
 
 
-$${\left|11\right\rangle }$$
+$\displaystyle {\left|11\right\rangle }$
 
 
 
@@ -776,7 +739,7 @@ psi
 
 
 
-$$\alpha {\left|0\right\rangle } + \beta {\left|1\right\rangle }$$
+$\displaystyle \alpha {\left|0\right\rangle } + \beta {\left|1\right\rangle }$
 
 
 
@@ -788,7 +751,7 @@ phi
 
 
 
-$$\delta {\left|1\right\rangle } + \gamma {\left|0\right\rangle }$$
+$\displaystyle \delta {\left|1\right\rangle } + \gamma {\left|0\right\rangle }$
 
 
 
@@ -803,7 +766,7 @@ TensorProduct(psi, phi)
 
 
 
-$$\left({\alpha {\left|0\right\rangle } + \beta {\left|1\right\rangle }}\right)\otimes \left({\delta {\left|1\right\rangle } + \gamma {\left|0\right\rangle }}\right)$$
+$\displaystyle \left({\alpha {\left|0\right\rangle } + \beta {\left|1\right\rangle }}\right)\otimes \left({\delta {\left|1\right\rangle } + \gamma {\left|0\right\rangle }}\right)$
 
 
 
@@ -815,7 +778,7 @@ represent(TensorProduct(psi, phi))
 
 
 
-$$\left[\begin{matrix}\alpha \gamma\\\alpha \delta\\\beta \gamma\\\beta \delta\end{matrix}\right]$$
+$\displaystyle \left[\begin{matrix}\alpha \gamma\\\alpha \delta\\\beta \gamma\\\beta \delta\end{matrix}\right]$
 
 
 
@@ -829,7 +792,7 @@ measure_all(TensorProduct(psi, phi))
 
 
 
-$$\left [ \left ( {\left|00\right\rangle }, \quad \frac{\alpha \gamma \overline{\alpha} \overline{\gamma}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}\right ), \quad \left ( {\left|01\right\rangle }, \quad \frac{\alpha \delta \overline{\alpha} \overline{\delta}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}\right ), \quad \left ( {\left|10\right\rangle }, \quad \frac{\beta \gamma \overline{\beta} \overline{\gamma}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}\right ), \quad \left ( {\left|11\right\rangle }, \quad \frac{\beta \delta \overline{\beta} \overline{\delta}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}\right )\right ]$$
+$\displaystyle \left[ \left( {\left|00\right\rangle }, \  \frac{\alpha \gamma \overline{\alpha} \overline{\gamma} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}\right), \  \left( {\left|01\right\rangle }, \  \frac{\alpha \delta \overline{\alpha} \overline{\delta} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}\right), \  \left( {\left|10\right\rangle }, \  \frac{\beta \gamma \overline{\beta} \overline{\gamma} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}\right), \  \left( {\left|11\right\rangle }, \  \frac{\beta \delta \overline{\beta} \overline{\delta} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}\right)\right]$
 
 
 
@@ -841,52 +804,110 @@ measure_partial(TensorProduct(psi, phi), (0,))
 
 
 
-$$\left [ \left ( \frac{\alpha \gamma {\left|00\right\rangle }}{\sqrt{\frac{\left|{\alpha \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} + \frac{\beta \gamma {\left|10\right\rangle }}{\sqrt{\frac{\left|{\alpha \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}, \quad \frac{\alpha \gamma \overline{\alpha} \overline{\gamma}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\beta \gamma \overline{\beta} \overline{\gamma}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}\right ), \quad \left ( \frac{\alpha \delta {\left|01\right\rangle }}{\sqrt{\frac{\left|{\alpha \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} + \frac{\beta \delta {\left|11\right\rangle }}{\sqrt{\frac{\left|{\alpha \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}, \quad \frac{\alpha \delta \overline{\alpha} \overline{\delta}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\beta \delta \overline{\beta} \overline{\delta}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}\right )\right ]$$
+$\displaystyle \left[ \left( \frac{\alpha \gamma {\left|00\right\rangle }}{\sqrt{\frac{\left|{\alpha \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} + \frac{\beta \gamma {\left|10\right\rangle }}{\sqrt{\frac{\left|{\alpha \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \gamma}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}, \  \frac{\alpha \gamma \overline{\alpha} \overline{\gamma} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} + \frac{\beta \gamma \overline{\beta} \overline{\gamma} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}\right), \  \left( \frac{\alpha \delta {\left|01\right\rangle }}{\sqrt{\frac{\left|{\alpha \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} + \frac{\beta \delta {\left|11\right\rangle }}{\sqrt{\frac{\left|{\alpha \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}} + \frac{\left|{\beta \delta}\right|^{2}}{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} \sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}, \  \frac{\alpha \delta \overline{\alpha} \overline{\delta} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}} + \frac{\beta \delta \overline{\beta} \overline{\delta} \overline{\frac{1}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}}}{\sqrt{\left|{\alpha \delta}\right|^{2} + \left|{\alpha \gamma}\right|^{2} + \left|{\beta \delta}\right|^{2} + \left|{\beta \gamma}\right|^{2}}}\right)\right]$
+
+
+
+## ベル基底
+
+ベル基底を作ってみます。アダマールゲートとCNOTゲートを組み合わせることで可能です。
+
+
+```python
+qapply(CNOT(0,1) * H(0) * q00)
+```
+
+
+
+
+$\displaystyle \frac{\sqrt{2} {\left|00\right\rangle }}{2} + \frac{\sqrt{2} {\left|11\right\rangle }}{2}$
 
 
 
 
 ```python
-
+qapply(CNOT(0,1) * H(0) * q01)
 ```
 
 
-```python
-from sympy.physics.quantum.qubit import Qubit
-from sympy.physics.quantum.gate import H, CNOT
-from sympy.physics.quantum.qapply import qapply
-bell = {}
-# to Bell
-for yx in ['00', '10', '01', '11']:
-  result = qapply(CNOT(0,1)*H(0)*Qubit(yx))
-  bell[yx] = result
-  print (f'{yx} -> ', result)
-# from Bell
-for i, state in bell.items():
-  result = qapply(H(0)*CNOT(0,1)*state)
-  print(f'beta{i} -> ', result)
-```
 
-    00 ->  sqrt(2)*|00>/2 + sqrt(2)*|11>/2
-    10 ->  sqrt(2)*|01>/2 + sqrt(2)*|10>/2
-    01 ->  sqrt(2)*|00>/2 - sqrt(2)*|11>/2
-    11 ->  -sqrt(2)*|01>/2 + sqrt(2)*|10>/2
-    beta00 ->  |00>
-    beta10 ->  |10>
-    beta01 ->  |01>
-    beta11 ->  |11>
+
+$\displaystyle \frac{\sqrt{2} {\left|00\right\rangle }}{2} - \frac{\sqrt{2} {\left|11\right\rangle }}{2}$
+
 
 
 
 ```python
-
+qapply(CNOT(0,1) * H(0) * q10)
 ```
+
+
+
+
+$\displaystyle \frac{\sqrt{2} {\left|01\right\rangle }}{2} + \frac{\sqrt{2} {\left|10\right\rangle }}{2}$
+
+
 
 
 ```python
-from sympy import *
-from sympy.physics.quantum import *
-from sympy.physics.quantum.qubit import Qubit,QubitBra
-from sympy.physics.quantum.gate import X,Y,Z,H,S,T,CNOT,SWAP, CPHASE
-init_printing()
+qapply(CNOT(0,1) * H(0) * q11)
 ```
+
+
+
+
+$\displaystyle - \frac{\sqrt{2} {\left|01\right\rangle }}{2} + \frac{\sqrt{2} {\left|10\right\rangle }}{2}$
+
+
+
+最後に逆の仮定をたどり、元の状態に戻してみます。
+
+
+```python
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q00)
+```
+
+
+
+
+$\displaystyle {\left|00\right\rangle }$
+
+
+
+
+```python
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q01)
+```
+
+
+
+
+$\displaystyle {\left|01\right\rangle }$
+
+
+
+
+```python
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q01)
+```
+
+
+
+
+$\displaystyle {\left|01\right\rangle }$
+
+
+
+
+```python
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q11)
+```
+
+
+
+
+$\displaystyle {\left|11\right\rangle }$
+
+
+
+量子コンピュータのシミュレーションはqiskitなどを使うことが多いですが、sympyでもかなりの事ができることが分かりました。すごいです！

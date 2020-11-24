@@ -179,6 +179,8 @@ psi = a * q0 + b* q1
 psi
 
 
+# エルミート共役を取って内積を計算してみます。
+
 # In[21]:
 
 
@@ -315,75 +317,45 @@ measure_all(_)
 measure_all(q0)
 
 
+# 1量子ビットにmeasure_allすると、２量子ビットが出てきますね。（これは現在不明です）
+
 # In[40]:
 
 
 measure_all(q00)
 
 
-# In[55]:
+# In[41]:
 
 
 measure_partial(q00, (0,))
 
 
-# In[70]:
+# In[42]:
 
 
-measure_partial(q00, (1))
+measure_partial(q11, (1))
 
 
-# In[61]:
+# sympyのdescriptionにある例題を実行して、measure_partialがどうなるか見てみます。おそらく２量子系で意味のある測定が出来るという事でしょうか･･･１量子だとpartialは一つだけですし･･･
+
+# In[43]:
 
 
 qapply(H(0)*H(1)*Qubit('00'))
 
 
-# In[69]:
+# In[44]:
 
 
 measure_partial(qapply(H(0)*H(1)*Qubit('00')), (0,))
 
 
-# In[63]:
+# In[45]:
 
 
 measure_partial(qapply(H(0)*H(1)*Qubit('00')), (1,))
 
-
-# In[65]:
-
-
-measure_partial(qapply(H(0)*H(1)*Qubit('00')), (2,))
-
-
-# In[ ]:
-
-
-
-
-
-# In[73]:
-
-
-aaa = 1 / sympy.sqrt(2) * q00 + 1 / sympy.sqrt(2) * q11
-
-
-# In[74]:
-
-
-measure_all(aaa)
-
-
-# In[76]:
-
-
-measure_partial(aaa, (1, ))
-
-
-# この結果をSymPyでも計算してみよう。SymPyには測定用の関数が数種類用意されていて、一部の量子ビットを測定した場合の確率と測定後の状態を計算するには、measure_partialを用いればよい。測定する状態と、測定を行う量子ビットのインデックスを引数として渡すと、測定後の状態と測定の確率の組がリストとして出力される。1つめの量子ビットが0だった場合の量子状態と確率は[0]要素を参照すればよい。
-# 
-# https://dojo.qulacs.org/ja/latest/notebooks/1.3_multiqubit_representation_and_operations.html
 
 # ## 2量子系の演算
 # 
@@ -401,68 +373,76 @@ measure_partial(aaa, (1, ))
 #     A tuple of the form (control, target).
 # 
 # ```
+# 
+# CNOTとSWAPを読み込みます。
 
-# In[41]:
+# In[46]:
 
 
 from sympy.physics.quantum.gate import CNOT, SWAP
 
 
-# In[77]:
+# In[47]:
 
 
-represent(CNOT(1,0),nqubits=2
+represent(CNOT(1,0),nqubits=2)
 
 
-# In[86]:
+# CNOTをそれぞれの2量子ビットに作用させてみます。
+
+# In[48]:
 
 
 qapply(CNOT(1,0) * q00)
 
 
-# In[87]:
+# In[49]:
 
 
 qapply(CNOT(1,0) * q01)
 
 
-# In[88]:
+# In[50]:
 
 
 qapply(CNOT(1,0) * q10)
 
 
-# In[89]:
+# In[51]:
 
 
 qapply(CNOT(1,0) * q11)
 
 
-# In[82]:
+# SWAPゲートは以下の通りです。引数に交換した量子ビットを指定します。
+
+# In[52]:
 
 
 represent(SWAP(0,1),nqubits=2)
 
 
-# In[90]:
+# SWAPゲートをそれぞれの2量子ビットに作用させてみます。
+
+# In[53]:
 
 
 qapply(SWAP(0,1) * q00)
 
 
-# In[92]:
+# In[54]:
 
 
 qapply(SWAP(0,1) * q01)
 
 
-# In[95]:
+# In[55]:
 
 
 qapply(SWAP(0,1) * q10)
 
 
-# In[94]:
+# In[56]:
 
 
 qapply(SWAP(0,1) * q11)
@@ -470,7 +450,7 @@ qapply(SWAP(0,1) * q11)
 
 # ### テンソル積
 
-# In[42]:
+# In[57]:
 
 
 a, b, c, d = sympy.symbols('alpha,beta,gamma,delta')
@@ -478,13 +458,13 @@ psi = a * q0 + b * q1
 phi = c * q0 + d * q1
 
 
-# In[43]:
+# In[58]:
 
 
 psi
 
 
-# In[44]:
+# In[59]:
 
 
 phi
@@ -492,14 +472,14 @@ phi
 
 # テンソル積の計算をするには、TensorProductを利用します。
 
-# In[45]:
+# In[60]:
 
 
 from sympy.physics.quantum import TensorProduct
 TensorProduct(psi, phi)
 
 
-# In[46]:
+# In[61]:
 
 
 represent(TensorProduct(psi, phi))
@@ -507,54 +487,70 @@ represent(TensorProduct(psi, phi))
 
 # ### 測定
 
-# In[47]:
+# In[62]:
 
 
 measure_all(TensorProduct(psi, phi))
 
 
-# In[48]:
+# In[63]:
 
 
 measure_partial(TensorProduct(psi, phi), (0,))
 
 
-# In[ ]:
+# ## ベル基底
+# 
+# ベル基底を作ってみます。アダマールゲートとCNOTゲートを組み合わせることで可能です。
+
+# In[64]:
 
 
+qapply(CNOT(0,1) * H(0) * q00)
 
 
-
-# In[53]:
-
-
-from sympy.physics.quantum.qubit import Qubit
-from sympy.physics.quantum.gate import H, CNOT
-from sympy.physics.quantum.qapply import qapply
-bell = {}
-# to Bell
-for yx in ['00', '10', '01', '11']:
-  result = qapply(CNOT(0,1)*H(0)*Qubit(yx))
-  bell[yx] = result
-  print (f'{yx} -> ', result)
-# from Bell
-for i, state in bell.items():
-  result = qapply(H(0)*CNOT(0,1)*state)
-  print(f'beta{i} -> ', result)
+# In[65]:
 
 
-# In[ ]:
+qapply(CNOT(0,1) * H(0) * q01)
 
 
+# In[66]:
 
 
+qapply(CNOT(0,1) * H(0) * q10)
 
-# In[54]:
+
+# In[67]:
 
 
-from sympy import *
-from sympy.physics.quantum import *
-from sympy.physics.quantum.qubit import Qubit,QubitBra
-from sympy.physics.quantum.gate import X,Y,Z,H,S,T,CNOT,SWAP, CPHASE
-init_printing()
+qapply(CNOT(0,1) * H(0) * q11)
 
+
+# 最後に逆の仮定をたどり、元の状態に戻してみます。
+
+# In[68]:
+
+
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q00)
+
+
+# In[69]:
+
+
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q01)
+
+
+# In[70]:
+
+
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q01)
+
+
+# In[71]:
+
+
+qapply(H(0) * CNOT(0,1) * CNOT(0,1) * H(0) * q11)
+
+
+# 量子コンピュータのシミュレーションはqiskitなどを使うことが多いですが、sympyでもかなりの事ができることが分かりました。すごいです！
