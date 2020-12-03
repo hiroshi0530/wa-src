@@ -368,6 +368,228 @@ plt.show()
     KeyboardInterrupt: 
 
 
+    Error in callback <function flush_figures at 0x117e7d4c0> (for post_execute):
+
+
+
+    ---------------------------------------------------------------------------
+
+    KeyboardInterrupt                         Traceback (most recent call last)
+
+    ~/anaconda3/lib/python3.8/site-packages/ipykernel/pylab/backend_inline.py in flush_figures()
+        119         # ignore the tracking, just draw and close all figures
+        120         try:
+    --> 121             return show(True)
+        122         except Exception as e:
+        123             # safely show traceback if in IPython, else raise
+
+
+    ~/anaconda3/lib/python3.8/site-packages/ipykernel/pylab/backend_inline.py in show(close, block)
+         39     try:
+         40         for figure_manager in Gcf.get_all_fig_managers():
+    ---> 41             display(
+         42                 figure_manager.canvas.figure,
+         43                 metadata=_fetch_figure_metadata(figure_manager.canvas.figure)
+
+
+    ~/anaconda3/lib/python3.8/site-packages/IPython/core/display.py in display(include, exclude, metadata, transient, display_id, *objs, **kwargs)
+        311             publish_display_data(data=obj, metadata=metadata, **kwargs)
+        312         else:
+    --> 313             format_dict, md_dict = format(obj, include=include, exclude=exclude)
+        314             if not format_dict:
+        315                 # nothing to display (e.g. _ipython_display_ took over)
+
+
+    ~/anaconda3/lib/python3.8/site-packages/IPython/core/formatters.py in format(self, obj, include, exclude)
+        178             md = None
+        179             try:
+    --> 180                 data = formatter(obj)
+        181             except:
+        182                 # FIXME: log the exception
+
+
+    <decorator-gen-2> in __call__(self, obj)
+
+
+    ~/anaconda3/lib/python3.8/site-packages/IPython/core/formatters.py in catch_format_error(method, self, *args, **kwargs)
+        222     """show traceback on failed format call"""
+        223     try:
+    --> 224         r = method(self, *args, **kwargs)
+        225     except NotImplementedError:
+        226         # don't warn on NotImplementedErrors
+
+
+    ~/anaconda3/lib/python3.8/site-packages/IPython/core/formatters.py in __call__(self, obj)
+        339                 pass
+        340             else:
+    --> 341                 return printer(obj)
+        342             # Finally look for special method names
+        343             method = get_real_method(obj, self.print_method)
+
+
+    ~/anaconda3/lib/python3.8/site-packages/IPython/core/pylabtools.py in <lambda>(fig)
+        252         jpg_formatter.for_type(Figure, lambda fig: print_figure(fig, 'jpg', **kwargs))
+        253     if 'svg' in formats:
+    --> 254         svg_formatter.for_type(Figure, lambda fig: print_figure(fig, 'svg', **kwargs))
+        255     if 'pdf' in formats:
+        256         pdf_formatter.for_type(Figure, lambda fig: print_figure(fig, 'pdf', **kwargs))
+
+
+    ~/anaconda3/lib/python3.8/site-packages/IPython/core/pylabtools.py in print_figure(fig, fmt, bbox_inches, **kwargs)
+        130         FigureCanvasBase(fig)
+        131 
+    --> 132     fig.canvas.print_figure(bytes_io, **kw)
+        133     data = bytes_io.getvalue()
+        134     if fmt == 'svg':
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/backend_bases.py in print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, pad_inches, bbox_extra_artists, backend, **kwargs)
+       2208 
+       2209             try:
+    -> 2210                 result = print_method(
+       2211                     filename,
+       2212                     dpi=dpi,
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/backends/backend_svg.py in print_svg(self, filename, *args, **kwargs)
+       1327                 detach = True
+       1328 
+    -> 1329             self._print_svg(filename, fh, **kwargs)
+       1330 
+       1331             # Detach underlying stream from wrapper so that it remains open in
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/backend_bases.py in wrapper(*args, **kwargs)
+       1637             kwargs.pop(arg)
+       1638 
+    -> 1639         return func(*args, **kwargs)
+       1640 
+       1641     return wrapper
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/backends/backend_svg.py in _print_svg(self, filename, fh, dpi, bbox_inches_restore, metadata)
+       1351             bbox_inches_restore=bbox_inches_restore)
+       1352 
+    -> 1353         self.figure.draw(renderer)
+       1354         renderer.finalize()
+       1355 
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
+         39                 renderer.start_filter()
+         40 
+    ---> 41             return draw(artist, renderer, *args, **kwargs)
+         42         finally:
+         43             if artist.get_agg_filter() is not None:
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/figure.py in draw(self, renderer)
+       1861 
+       1862             self.patch.draw(renderer)
+    -> 1863             mimage._draw_list_compositing_images(
+       1864                 renderer, self, artists, self.suppressComposite)
+       1865 
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
+        129     if not_composite or not has_images:
+        130         for a in artists:
+    --> 131             a.draw(renderer)
+        132     else:
+        133         # Composite any adjacent images together
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
+         39                 renderer.start_filter()
+         40 
+    ---> 41             return draw(artist, renderer, *args, **kwargs)
+         42         finally:
+         43             if artist.get_agg_filter() is not None:
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/cbook/deprecation.py in wrapper(*inner_args, **inner_kwargs)
+        409                          else deprecation_addendum,
+        410                 **kwargs)
+    --> 411         return func(*inner_args, **inner_kwargs)
+        412 
+        413     return wrapper
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/axes/_base.py in draw(self, renderer, inframe)
+       2745             renderer.stop_rasterizing()
+       2746 
+    -> 2747         mimage._draw_list_compositing_images(renderer, self, artists)
+       2748 
+       2749         renderer.close_group('axes')
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/image.py in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
+        129     if not_composite or not has_images:
+        130         for a in artists:
+    --> 131             a.draw(renderer)
+        132     else:
+        133         # Composite any adjacent images together
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/artist.py in draw_wrapper(artist, renderer, *args, **kwargs)
+         39                 renderer.start_filter()
+         40 
+    ---> 41             return draw(artist, renderer, *args, **kwargs)
+         42         finally:
+         43             if artist.get_agg_filter() is not None:
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/patches.py in draw(self, renderer)
+        579             return
+        580         # Patch has traditionally ignored the dashoffset.
+    --> 581         with cbook._setattr_cm(self, _dashoffset=0), \
+        582                 self._bind_draw_path_function(renderer) as draw_path:
+        583             path = self.get_path()
+
+
+    ~/anaconda3/lib/python3.8/contextlib.py in __enter__(self)
+        111         del self.args, self.kwds, self.func
+        112         try:
+    --> 113             return next(self.gen)
+        114         except StopIteration:
+        115             raise RuntimeError("generator didn't yield") from None
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/patches.py in _bind_draw_path_function(self, renderer)
+        546 
+        547         gc.set_antialiased(self._antialiased)
+    --> 548         self._set_gc_clip(gc)
+        549         gc.set_url(self._url)
+        550         gc.set_snap(self.get_snap())
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/artist.py in _set_gc_clip(self, gc)
+        853             if self.clipbox is not None:
+        854                 gc.set_clip_rectangle(self.clipbox)
+    --> 855             gc.set_clip_path(self._clippath)
+        856         else:
+        857             gc.set_clip_rectangle(None)
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/backend_bases.py in set_clip_path(self, path)
+        906         path : `~matplotlib.transforms.TransformedPath` or None
+        907         """
+    --> 908         cbook._check_isinstance((transforms.TransformedPath, None), path=path)
+        909         self._clippath = path
+        910 
+
+
+    ~/anaconda3/lib/python3.8/site-packages/matplotlib/cbook/__init__.py in _check_isinstance(_types, **kwargs)
+       2229     """
+       2230     types = _types
+    -> 2231     if isinstance(types, type) or types is None:
+       2232         types = (types,)
+       2233     none_allowed = None in types
+
+
+    KeyboardInterrupt: 
+
+
 ## まとめ
 
 
