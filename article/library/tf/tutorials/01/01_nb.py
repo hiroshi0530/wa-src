@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 # ## tensorflow tutorials メモ
@@ -65,8 +65,8 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-get_ipython().magic('matplotlib inline')
-get_ipython().magic("config InlineBackend.figure_format = 'svg'")
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
 import matplotlib
 import matplotlib.pyplot as plt
 
@@ -106,11 +106,29 @@ train_images[0]
 train_labels[0]
 
 
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
 # In[7]:
 
 
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
+
+# In[ ]:
+
+
+
 
 
 # In[8]:
@@ -263,6 +281,18 @@ plot_image(i, predictions, test_labels, test_images)
 plt.subplot(1,2,2)
 plot_value_array(i, predictions,  test_labels)
 plt.show()
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # ## 感想

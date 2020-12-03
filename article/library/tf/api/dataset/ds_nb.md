@@ -154,6 +154,31 @@ for i in dataset_21:
 
 
 ```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
 import seaborn as sns
 import pandas as pd
 
@@ -171,9 +196,49 @@ df.plot()
 
 
 
-![png](ds_nb_files/ds_nb_17_1.png)
+![png](ds_nb_files/ds_nb_22_1.png)
 
+
+
+```python
+
+```
+
+
+```python
+
+```
 
 ## tf.keras.preprocessing 
 
 自然言語処理処理では、配列を同じ長さに揃える必要があります。 
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
