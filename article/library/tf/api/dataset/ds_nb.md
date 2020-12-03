@@ -21,8 +21,21 @@ tf.data.Dataset.from_tensors
 
 ```python
 import tensorflow as tf
+import numpy as np
+import pandas as pd
 
-tf.__version__
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+import matplotlib
+import matplotlib.pyplot as plt
+
+from tensorflow import keras
+
+print('tf version     : ', tf.__version__)
+print('keras version  : ', keras.__version__)
+print('numpy version  : ',np.__version__)
+print('pandas version : ',pd.__version__)
+print('matlib version : ',matplotlib.__version__)
 ```
 
 
