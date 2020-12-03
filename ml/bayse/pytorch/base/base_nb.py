@@ -245,7 +245,7 @@ plt.hist(posterior_a,density=True,alpha=0.5,bins=50)
 plt.show()
 
 
-# In[ ]:
+# In[26]:
 
 
 # bについて
