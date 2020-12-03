@@ -24,8 +24,21 @@
 
 
 import tensorflow as tf
+import numpy as np
+import pandas as pd
 
-tf.__version__
+get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
+import matplotlib
+import matplotlib.pyplot as plt
+
+from tensorflow import keras
+
+print('tf version     : ', tf.__version__)
+print('keras version  : ', keras.__version__)
+print('numpy version  : ',np.__version__)
+print('pandas version : ',pd.__version__)
+print('matlib version : ',matplotlib.__version__)
 
 
 # tensorflowの名前の元である、0階、1階、2階のtensorのDatasetは以下の様に作れます。引数はList型やtf.constなどでも大丈夫です。暗黙的にTensor型に変換してくれます。
