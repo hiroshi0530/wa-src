@@ -1,0 +1,109 @@
+
+## word2vec と doc2vec
+
+単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
+
+### github
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/scipy/template/template_nb.ipynb)
+
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/scipy/template/template_nb.ipynb)
+
+### 筆者の環境
+筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
+
+
+```python
+!sw_vers
+```
+
+    ProductName:	Mac OS X
+    ProductVersion:	10.14.6
+    BuildVersion:	18G6020
+
+
+
+```python
+!python -V
+```
+
+    Python 3.7.3
+
+
+基本的なライブラリをインポートしそのバージョンを確認しておきます。
+
+
+```python
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+```
+
+    matplotlib version : 3.0.3
+    scipy version : 1.4.1
+    numpy version : 1.19.4
+
+
+
+```python
+x = np.linspace(-np.pi, np.pi).reshape(-1,1)
+
+t = np.cos(x)
+
+plt.plot(x,t)
+plt.grid()
+plt.show()
+```
+
+
+![svg](keras_nb_files/keras_nb_5_0.svg)
+
+
+
+```python
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+```
+
+
+```python
+batch_size = 8
+n_in = 1
+n_mid = 20
+n_out = 1
+
+model = Sequential()
+model.add(Dense(n_mid, input_shape=(n_in,), activation='sigmoid'))
+model.add(Dense(n_out, activation='linear'))
+model.compile(loss="mean_squared_error", optimizer='sgd')
+
+model.summary()
+
+```
+
+    Model: "sequential_2"
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    dense_3 (Dense)              (None, 20)                40        
+    _________________________________________________________________
+    dense_4 (Dense)              (None, 1)                 21        
+    =================================================================
+    Total params: 61
+    Trainable params: 61
+    Non-trainable params: 0
+    _________________________________________________________________
+
+
+
+```python
+
+```
