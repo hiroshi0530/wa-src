@@ -44,7 +44,7 @@ print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 
 
-# In[9]:
+# In[4]:
 
 
 x = np.linspace(-np.pi, np.pi).reshape(-1,1)
@@ -56,14 +56,14 @@ plt.grid()
 plt.show()
 
 
-# In[21]:
+# In[5]:
 
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 
-# In[22]:
+# In[29]:
 
 
 batch_size = 8
@@ -79,8 +79,39 @@ model.compile(loss="mean_squared_error", optimizer='sgd')
 model.summary()
 
 
+# In[30]:
+
+
+history = model.fit(x, t, batch_size=batch_size, epochs=10, validation_split=0.1, verbose=0)
+
+
+# In[31]:
+
+
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+
+# In[32]:
+
+
+plt.plot(np.arange(len(loss)), loss)
+plt.plot(np.arange(len(val_loss)), val_loss)
+plt.grid()
+plt.show
+
+
+# In[33]:
+
+
+plt.plot(x, model.predict(x))
+plt.plot(x, t)
+plt.grid()
+plt.show()
+
+
 # In[ ]:
 
 
-
+#### TODO: epoch以前のグラフを示そう！
 

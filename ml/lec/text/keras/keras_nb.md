@@ -1,4 +1,3 @@
-
 ## word2vec と doc2vec
 
 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
@@ -19,7 +18,7 @@
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6020
+    BuildVersion:	18G6032
 
 
 
@@ -27,7 +26,7 @@
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.8.5
 
 
 基本的なライブラリをインポートしそのバージョンを確認しておきます。
@@ -47,9 +46,9 @@ print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 ```
 
-    matplotlib version : 3.0.3
-    scipy version : 1.4.1
-    numpy version : 1.19.4
+    matplotlib version : 3.3.2
+    scipy version : 1.5.2
+    numpy version : 1.18.5
 
 
 
@@ -64,7 +63,9 @@ plt.show()
 ```
 
 
+    
 ![svg](keras_nb_files/keras_nb_5_0.svg)
+    
 
 
 
@@ -89,13 +90,13 @@ model.summary()
 
 ```
 
-    Model: "sequential_2"
+    Model: "sequential_1"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    dense_3 (Dense)              (None, 20)                40        
+    dense_2 (Dense)              (None, 20)                40        
     _________________________________________________________________
-    dense_4 (Dense)              (None, 1)                 21        
+    dense_3 (Dense)              (None, 1)                 21        
     =================================================================
     Total params: 61
     Trainable params: 61
@@ -105,5 +106,51 @@ model.summary()
 
 
 ```python
+history = model.fit(x, t, batch_size=batch_size, epochs=10, validation_split=0.1, verbose=0)
+```
 
+
+```python
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+```
+
+
+```python
+plt.plot(np.arange(len(loss)), loss)
+plt.plot(np.arange(len(val_loss)), val_loss)
+plt.grid()
+plt.show
+```
+
+
+
+
+    <function matplotlib.pyplot.show(close=None, block=None)>
+
+
+
+
+    
+![svg](keras_nb_files/keras_nb_10_1.svg)
+    
+
+
+
+```python
+plt.plot(x, model.predict(x))
+plt.plot(x, t)
+plt.grid()
+plt.show()
+```
+
+
+    
+![svg](keras_nb_files/keras_nb_11_0.svg)
+    
+
+
+
+```python
+#### TODO: epoch以前のグラフを示そう！
 ```
