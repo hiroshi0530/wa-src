@@ -54,7 +54,6 @@ print('numpy version :', np.__version__)
 
 ```python
 x = np.linspace(-np.pi, np.pi).reshape(-1,1)
-
 t = np.cos(x)
 
 plt.plot(x,t)
@@ -90,13 +89,13 @@ model.summary()
 
 ```
 
-    Model: "sequential_1"
+    Model: "sequential"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    dense_2 (Dense)              (None, 20)                40        
+    dense (Dense)                (None, 20)                40        
     _________________________________________________________________
-    dense_3 (Dense)              (None, 1)                 21        
+    dense_1 (Dense)              (None, 1)                 21        
     =================================================================
     Total params: 61
     Trainable params: 61
@@ -150,7 +149,79 @@ plt.show()
     
 
 
+#### TODO: epoch以前のグラフを示そう！
+
 
 ```python
-#### TODO: epoch以前のグラフを示そう！
+x = np.linspace(-np.pi, np.pi).reshape(-1,1)
+t = np.cos(x)
+
+batch_size = 8
+n_in = 1
+n_mid = 20
+n_out = 1
+
+model = Sequential()
+model.add(Dense(n_mid, input_shape=(n_in,), activation='sigmoid'))
+model.add(Dense(n_out, activation='linear'))
+model.compile(loss="mean_squared_error", optimizer='sgd')
+
+
+def a(epochs):
+
+  
+  history = model.fit(x, t, batch_size=batch_size, epochs=epochs, validation_split=0.1, verbose=0)
+  
+  loss = history.history['loss']
+  val_loss = history.history['val_loss']
+
+  
+  plt.plot(x, model.predict(x), label='epochs = {}'.format(epochs))
+  plt.plot(x, t, label='correct data')
+  plt.legend()
+  plt.grid()
+  plt.show()
+```
+
+
+```python
+a(10)
+a(100)
+a(1000)
+```
+
+    WARNING:tensorflow:6 out of the last 11 calls to <function Model.make_predict_function.<locals>.predict_function at 0x13f7ee670> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has experimental_relax_shapes=True option that relaxes argument shapes that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/tutorials/customization/performance#python_or_tensor_args and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+
+
+
+    
+![svg](keras_nb_files/keras_nb_14_1.svg)
+    
+
+
+
+    
+![svg](keras_nb_files/keras_nb_14_2.svg)
+    
+
+
+
+    
+![svg](keras_nb_files/keras_nb_14_3.svg)
+    
+
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
 ```

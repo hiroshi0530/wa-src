@@ -48,7 +48,6 @@ print('numpy version :', np.__version__)
 
 
 x = np.linspace(-np.pi, np.pi).reshape(-1,1)
-
 t = np.cos(x)
 
 plt.plot(x,t)
@@ -63,7 +62,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 
-# In[29]:
+# In[6]:
 
 
 batch_size = 8
@@ -79,20 +78,20 @@ model.compile(loss="mean_squared_error", optimizer='sgd')
 model.summary()
 
 
-# In[30]:
+# In[7]:
 
 
 history = model.fit(x, t, batch_size=batch_size, epochs=10, validation_split=0.1, verbose=0)
 
 
-# In[31]:
+# In[8]:
 
 
 loss = history.history['loss']
 val_loss = history.history['val_loss']
 
 
-# In[32]:
+# In[9]:
 
 
 plt.plot(np.arange(len(loss)), loss)
@@ -101,7 +100,7 @@ plt.grid()
 plt.show
 
 
-# In[33]:
+# In[10]:
 
 
 plt.plot(x, model.predict(x))
@@ -110,8 +109,63 @@ plt.grid()
 plt.show()
 
 
+# #### TODO: epoch以前のグラフを示そう！
+
+# In[26]:
+
+
+x = np.linspace(-np.pi, np.pi).reshape(-1,1)
+t = np.cos(x)
+
+batch_size = 8
+n_in = 1
+n_mid = 20
+n_out = 1
+
+model = Sequential()
+model.add(Dense(n_mid, input_shape=(n_in,), activation='sigmoid'))
+model.add(Dense(n_out, activation='linear'))
+model.compile(loss="mean_squared_error", optimizer='sgd')
+
+
+def a(epochs):
+
+  
+  history = model.fit(x, t, batch_size=batch_size, epochs=epochs, validation_split=0.1, verbose=0)
+  
+  loss = history.history['loss']
+  val_loss = history.history['val_loss']
+
+  
+  plt.plot(x, model.predict(x), label='epochs = {}'.format(epochs))
+  plt.plot(x, t, label='correct data')
+  plt.legend()
+  plt.grid()
+  plt.show()
+
+
+# In[24]:
+
+
+a(10)
+a(100)
+a(1000)
+
+
 # In[ ]:
 
 
-#### TODO: epoch以前のグラフを示そう！
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
