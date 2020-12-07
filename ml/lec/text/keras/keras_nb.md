@@ -1,3 +1,4 @@
+
 ## word2vec と doc2vec
 
 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
@@ -62,9 +63,7 @@ plt.show()
 ```
 
 
-    
 ![svg](keras_nb_files/keras_nb_5_0.svg)
-    
 
 
 
@@ -130,9 +129,7 @@ plt.show
 
 
 
-    
 ![svg](keras_nb_files/keras_nb_10_1.svg)
-    
 
 
 
@@ -144,9 +141,7 @@ plt.show()
 ```
 
 
-    
 ![svg](keras_nb_files/keras_nb_11_0.svg)
-    
 
 
 #### TODO: epoch以前のグラフを示そう！
@@ -194,21 +189,15 @@ a(1000)
 
 
 
-    
 ![svg](keras_nb_files/keras_nb_14_1.svg)
-    
 
 
 
-    
 ![svg](keras_nb_files/keras_nb_14_2.svg)
-    
 
 
 
-    
 ![svg](keras_nb_files/keras_nb_14_3.svg)
-    
 
 
 
