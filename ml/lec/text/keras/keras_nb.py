@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## word2vec と doc2vec
+# # word2vec と doc2vec
 # 
 # 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
 # 
