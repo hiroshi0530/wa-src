@@ -1,4 +1,3 @@
-
 # word2vec と doc2vec
 
 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
@@ -63,7 +62,9 @@ plt.show()
 ```
 
 
+    
 ![svg](keras_nb_files/keras_nb_5_0.svg)
+    
 
 
 
@@ -129,7 +130,9 @@ plt.show
 
 
 
+    
 ![svg](keras_nb_files/keras_nb_10_1.svg)
+    
 
 
 
@@ -141,7 +144,9 @@ plt.show()
 ```
 
 
+    
 ![svg](keras_nb_files/keras_nb_11_0.svg)
+    
 
 
 #### TODO: epoch以前のグラフを示そう！
@@ -185,19 +190,22 @@ a(100)
 a(1000)
 ```
 
-    WARNING:tensorflow:6 out of the last 11 calls to <function Model.make_predict_function.<locals>.predict_function at 0x13f7ee670> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has experimental_relax_shapes=True option that relaxes argument shapes that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/tutorials/customization/performance#python_or_tensor_args and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+
+    
+![svg](keras_nb_files/keras_nb_14_0.svg)
+    
 
 
 
+    
 ![svg](keras_nb_files/keras_nb_14_1.svg)
+    
 
 
 
+    
 ![svg](keras_nb_files/keras_nb_14_2.svg)
-
-
-
-![svg](keras_nb_files/keras_nb_14_3.svg)
+    
 
 
 

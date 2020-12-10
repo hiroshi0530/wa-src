@@ -111,7 +111,7 @@ plt.show()
 
 # #### TODO: epoch以前のグラフを示そう！
 
-# In[26]:
+# In[11]:
 
 
 x = np.linspace(-np.pi, np.pi).reshape(-1,1)
@@ -144,7 +144,7 @@ def a(epochs):
   plt.show()
 
 
-# In[24]:
+# In[12]:
 
 
 a(10)
