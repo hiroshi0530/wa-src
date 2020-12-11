@@ -1,5 +1,3 @@
-
-
 ```julia
 using LinearAlgebra
 ```
@@ -61,6 +59,110 @@ dot(x,y)
     140
 
 
+
+
+```julia
+
+```
+
+
+```julia
+q = [1,0]
+```
+
+
+
+
+    2-element Array{Int64,1}:
+     1
+     0
+
+
+
+
+```julia
+kron(q,q)
+```
+
+
+
+
+    4-element Array{Int64,1}:
+     1
+     0
+     0
+     0
+
+
+
+
+```julia
+function svq(N)
+  q = [1,0]
+  sv = q
+  for i=2:N
+    sv = kron(sv,q)
+  end
+  return sv
+end
+```
+
+
+
+
+    svq (generic function with 1 method)
+
+
+
+
+```julia
+svq(3)
+```
+
+
+
+
+    8-element Array{Int64,1}:
+     1
+     0
+     0
+     0
+     0
+     0
+     0
+     0
+
+
+
+
+```julia
+
+```
+
+
+```julia
+
+```
+
+
+```julia
+
+```
+
+
+```julia
+
+```
+
+
+```julia
+
+```
+
+
+```julia
+
+```
 
 
 ```julia
