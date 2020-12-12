@@ -1,3 +1,4 @@
+
 ## word2vec と doc2vec
 
 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
@@ -67,9 +68,7 @@ plt.show()
 ```
 
 
-    
 ![svg](rnn_nb_files/rnn_nb_6_0.svg)
-    
 
 
 
@@ -561,9 +560,7 @@ plt.show()
 ```
 
 
-    
 ![svg](rnn_nb_files/rnn_nb_14_0.svg)
-    
 
 
 
@@ -584,9 +581,7 @@ plt.show()
 ```
 
 
-    
 ![svg](rnn_nb_files/rnn_nb_15_0.svg)
-    
 
 
 
