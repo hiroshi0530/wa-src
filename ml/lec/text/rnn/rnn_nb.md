@@ -1,4 +1,3 @@
-
 ## word2vec と doc2vec
 
 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
@@ -68,7 +67,9 @@ plt.show()
 ```
 
 
+    
 ![svg](rnn_nb_files/rnn_nb_6_0.svg)
+    
 
 
 
@@ -560,7 +561,9 @@ plt.show()
 ```
 
 
+    
 ![svg](rnn_nb_files/rnn_nb_14_0.svg)
+    
 
 
 
@@ -581,7 +584,9 @@ plt.show()
 ```
 
 
+    
 ![svg](rnn_nb_files/rnn_nb_15_0.svg)
+    
 
 
 
@@ -688,6 +693,31 @@ y
            -0.91450697, -0.86097864, -0.73670896, -0.85926455, -0.66287527,
            -0.30803123, -0.49036972, -0.22754274, -0.06676858,  0.01434108])
 
+
+
+
+```python
+from scipy.stats import norm
+
+norm?
+```
+
+
+```python
+a = [i for i in range(100)]
+```
+
+
+    ---------------------------------------------------------------------------
+
+    TypeError                                 Traceback (most recent call last)
+
+    <ipython-input-6-e19f3b6db115> in <module>
+          1 a = [i for i in range(100)]
+    ----> 2 a[[1,3,4,5] < 3]
+    
+
+    TypeError: '<' not supported between instances of 'list' and 'int'
 
 
 

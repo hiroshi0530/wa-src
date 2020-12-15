@@ -201,6 +201,20 @@ x
 y
 
 
+# In[2]:
+
+
+from scipy.stats import norm
+
+get_ipython().run_line_magic('pinfo', 'norm')
+
+
+# In[6]:
+
+
+a = [i for i in range(100)]
+
+
 # In[ ]:
 
 
