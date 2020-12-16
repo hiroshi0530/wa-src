@@ -1,4 +1,3 @@
-
 ## word2vec と doc2vec
 
 単語や文章を分散表現（意味が似たような単語や文章を似たようなベクトルとして表現）を取得します。
@@ -24,6 +23,7 @@
 
 
 ```python
+!python -V
 !python -V
 ```
 
@@ -51,6 +51,76 @@ print('numpy version :', np.__version__)
     scipy version : 1.4.1
     numpy version : 1.19.4
 
+
+
+```python
+
+```
+
+### aa
+
+青空文庫からすべての作品をダウンロード
+
+gitがかなり重いので、最新の履歴だけを取得します。
+
+```bash
+git clone --depth 1 https://github.com/aozorabunko/aozorabunko.git
+```
+
+
+```python
+!ls -a
+```
+
+    [34m.[m[m                       .gitignore              [34maozorabunko[m[m             w2v_nb.md               wagahaiwa_nekodearu.txt
+    [34m..[m[m                      [34m.ipynb_checkpoints[m[m      w2v_nb.ipynb            w2v_nb.py
+
+
+実際のファイルはcardsにzip形式として保存されているようです。
+
+
+```python
+ls ./aozorabunko/cards/*. | wc -l
+```
+
+        1118
+
+
+zipファイルだけzipsに移動させます。
+
+```bash
+find ./aozorabunko/cards/ -name *.zip | xargs -I{} cp {} -t ./zips/
+```
+
+
+```python
+!ls ./zips/ | head -n 5
+```
+
+    1000_ruby_2956.zip
+    1001_ruby_2229.zip
+    1002_ruby_20989.zip
+    1003_ruby_2008.zip
+    1004_ruby_2053.zip
+
+
+
+```python
+!ls ./zips/ | wc -l
+```
+
+       16442
+
+
+
+```python
+
+```
+
+
+```python
+
+```
 
 
 ```python
