@@ -24,6 +24,7 @@ get_ipython().system('sw_vers')
 
 
 get_ipython().system('python -V')
+get_ipython().system('python -V')
 
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
@@ -42,6 +43,66 @@ import numpy as np
 print('matplotlib version :', matplotlib.__version__)
 print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
+
+
+# In[ ]:
+
+
+
+
+
+# ### aa
+# 
+# 青空文庫からすべての作品をダウンロード
+# 
+# gitがかなり重いので、最新の履歴だけを取得します。
+# 
+# ```bash
+# git clone --depth 1 https://github.com/aozorabunko/aozorabunko.git
+# ```
+
+# In[4]:
+
+
+get_ipython().system('ls -a')
+
+
+# 実際のファイルはcardsにzip形式として保存されているようです。
+
+# In[6]:
+
+
+ls ./aozorabunko/cards/*. | wc -l
+
+
+# zipファイルだけzipsに移動させます。
+# 
+# ```bash
+# find ./aozorabunko/cards/ -name *.zip | xargs -I{} cp {} -t ./zips/
+# ```
+
+# In[9]:
+
+
+get_ipython().system('ls ./zips/ | head -n 5')
+
+
+# In[10]:
+
+
+get_ipython().system('ls ./zips/ | wc -l')
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
