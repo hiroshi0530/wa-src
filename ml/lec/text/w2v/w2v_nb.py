@@ -93,11 +93,11 @@ get_ipython().system('ls ./zips/ | head -n 5')
 get_ipython().system('ls ./zips/ | wc -l')
 
 
-# In[ ]:
-
-
-
-
+# となり、
+# 
+# ```bash
+# for i in `ls`; do [[ ${i##*.} == zip ]] && unzip -o $i -d ../texts/; done
+# ```
 
 # In[ ]:
 
