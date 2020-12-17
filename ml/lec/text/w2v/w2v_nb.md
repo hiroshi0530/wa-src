@@ -112,9 +112,10 @@ find ./aozorabunko/cards/ -name *.zip | xargs -I{} cp {} -t ./zips/
        16442
 
 
+となり、
 
-```python
-
+```bash
+for i in `ls`; do [[ ${i##*.} == zip ]] && unzip -o $i -d ../texts/; done
 ```
 
 
