@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## kerasとRNNの基礎
+# ## kerasとGRUの基礎
 # 
 # 復習を兼ねてkerasを用いて再帰型ニューラルネットワーク（Recurrent Neural Network：以下、RNN）の実装を行ってみようと思います。何でもいいと思いますが、時系列データとして、減衰振動曲線を用意して、それをRNNを用いて学習させてみようと思います。
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/rnn/rnn_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/gru/gru_nb.ipynb)
 # 
 # ### google colaboratory
-# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/rnn/rnn_nb.ipynb)
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/gru/gru_nb.ipynb)
 # 
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。

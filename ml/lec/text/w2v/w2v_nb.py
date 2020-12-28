@@ -24,7 +24,6 @@ get_ipython().system('sw_vers')
 
 
 get_ipython().system('python -V')
-get_ipython().system('python -V')
 
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。

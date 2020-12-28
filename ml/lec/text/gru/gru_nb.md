@@ -1,13 +1,13 @@
 
-## kerasとRNNの基礎
+## kerasとGRUの基礎
 
 復習を兼ねてkerasを用いて再帰型ニューラルネットワーク（Recurrent Neural Network：以下、RNN）の実装を行ってみようと思います。何でもいいと思いますが、時系列データとして、減衰振動曲線を用意して、それをRNNを用いて学習させてみようと思います。
 
 ### github
-- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/rnn/rnn_nb.ipynb)
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/gru/gru_nb.ipynb)
 
 ### google colaboratory
-- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/rnn/rnn_nb.ipynb)
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/gru/gru_nb.ipynb)
 
 ### 筆者の環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -115,7 +115,7 @@ plt.show()
 ```
 
 
-![svg](rnn_nb_files/rnn_nb_11_0.svg)
+![svg](gru_nb_files/gru_nb_11_0.svg)
 
 
 $\tau=5$として、綺麗な減衰曲線が得られました。
@@ -219,7 +219,7 @@ plt.show()
 ```
 
 
-![svg](rnn_nb_files/rnn_nb_20_0.svg)
+![svg](gru_nb_files/gru_nb_20_0.svg)
 
 
 ## 結果の確認
@@ -241,7 +241,7 @@ plt.show()
 ```
 
 
-![svg](rnn_nb_files/rnn_nb_22_0.svg)
+![svg](gru_nb_files/gru_nb_22_0.svg)
 
 
 単純なRNNだと少しずつずれが顕著になってきます。epochやモデルを改良すればもっと良い結果が出るかもしませんが、復習なのでここで一旦終わりとします。次はLSTMをやってみようと思います。
