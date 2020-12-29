@@ -1,15 +1,19 @@
 
-## kerasとLSTMの基礎, RNNとの比較
+## LSTMを使った株価予測
 
-以前の記事でRNNの復習しましたので、ついでにLSTMの復習も行います。LSTMは Long Short Term Memory の略で、長期的な依存関係を学習することのできると言われています。また、RNNの一種で、基本的な考え方は同じです。詳細は検索すればいくらでも出てくるので割愛します。
+LSTMは時系列データの予測のために利用されます。時系列データには、ある場所の気温や、来客数、商品の価格など多岐にわたりますが、最もデータを入手しやすい株価をLSTMで予測を行ってみたいと思います。
 
-また、LSTMとRNNの比較を行います。
+ただし、ニューラルネットはあくまでも得られたデータの範囲内でしか予測する事が出来ず、想定外の状況になった場合、そのモデルはほぼ意味をなしません。
+
+例えば、コロナショック前の1年前のデータを用いても、コロナショックを予測する事は出来ません。
+
+株価の形成はランダムな要素もあり、LSTMで未来を予測するのは難しいとは思いますが、LSTMに慣れるためにやってみようと思います。
 
 ### github
-- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
 
 ### google colaboratory
-- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
 
 ### 筆者の環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -93,7 +97,8 @@ print('keras version : ', keras.__version__)
 !ls 
 ```
 
-    lstm_nb.ipynb  lstm_nb.md     lstm_nb.py     [34mlstm_nb_files[m[m  nikkei.csv     sp500_2019.csv sp500_2020.csv
+    lstm_nb.ipynb   lstm_nb.py      nikkei.csv      sp500_2019.csv
+    lstm_nb.md      [34mlstm_nb_files[m[m   nikkei_utf8.csv sp500_2020.csv
 
 
 
@@ -421,6 +426,192 @@ plt.show()
 ![svg](lstm_nb_files/lstm_nb_22_0.svg)
 
 
+## データの準備
+
+kerasに投入するためにデータを整えます。
+
+
+```python
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
+
+NUM_LSTM = 100
+
+x = list(df['データ日付'])
+y = list(df['終値'])
+print(y[0:100])
+print(len(y))
+n = len(y) - NUM_LSTM
+l_x = np.zeros((n, NUM_LSTM))
+l_y = np.zeros((n, NUM_LSTM))
+for i in range(0, n):
+  l_x[i] = y[i: i + NUM_LSTM]
+  l_y[i] = y[i + 1: i + NUM_LSTM + 1]
+
+l_x = l_x.reshape(n, NUM_LSTM, 1)
+l_y = l_y.reshape(n, NUM_LSTM, 1)
+```
+
+    [19594.16, 19520.69, 19454.33, 19301.44, 19364.67, 19134.7, 19287.28, 19095.24, 18813.53, 18894.37, 19072.25, 19137.91, 18891.03, 18787.99, 19057.5, 19402.39, 19467.4, 19368.85, 19041.34, 19148.08, 18914.58, 18918.2, 18976.71, 18910.78, 19007.6, 18907.67, 19378.93, 19459.15, 19238.98, 19437.98, 19347.53, 19234.62, 19251.08, 19381.44, 19379.87, 19371.46, 19283.54, 19107.47, 19118.99, 19393.54, 19564.8, 19469.17, 19379.14, 19344.15, 19254.03, 19318.58, 19604.61, 19633.75, 19609.5, 19577.38, 19590.14, 19521.59, 19455.88, 19041.38, 19085.31, 19262.53, 18985.59, 19202.87, 19217.48, 19063.22, 18909.26, 18983.23, 18810.25, 18861.27, 18597.06, 18664.63, 18797.88, 18747.87, 18552.61, 18426.84, 18335.63, 18355.26, 18418.59, 18432.2, 18430.49, 18620.75, 18875.88, 19079.33, 19289.43, 19251.87, 19196.74, 19310.52, 19445.7, 19895.7, 19843.0, 19900.09, 19961.55, 19883.9, 19869.85, 19919.82, 19814.88, 19553.86, 19590.76, 19678.28, 19613.28, 19742.98, 19813.13, 19686.84, 19682.57, 19677.85]
+    975
+
+
+
+```python
+print(l_y.shape)
+print(l_x.shape)
+```
+
+    (875, 100, 1)
+    (875, 100, 1)
+
+
+
+```python
+l_x[0][:10,0]
+```
+
+
+
+
+    array([19594.16, 19520.69, 19454.33, 19301.44, 19364.67, 19134.7 ,
+           19287.28, 19095.24, 18813.53, 18894.37])
+
+
+
+モデルの構築を定義する関数です。
+
+
+```python
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Activation
+
+NUM_MIDDLE_01 = 120
+NUM_MIDDLE_02 = 120
+
+def build_lstm_model():
+  # LSTMニューラルネットの構築
+  # model = Sequential()
+  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  # model.add(Dense(1, activation="linear"))
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  # LSTMニューラルネットの構築
+  model = Sequential()
+  model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  model.add(Dropout(0.2))
+  model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  model.add(Dropout(0.2))
+  model.add(Dense(1))
+  model.add(Activation("linear"))
+  
+  model.compile(loss="mse", optimizer='rmsprop')
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  return model
+
+model = build_lstm_model()
+```
+
+詳細を確認します。
+
+
+```python
+print(model.summary())
+```
+
+    Model: "sequential"
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    lstm (LSTM)                  (None, 100, 120)          58560     
+    _________________________________________________________________
+    dropout (Dropout)            (None, 100, 120)          0         
+    _________________________________________________________________
+    lstm_1 (LSTM)                (None, 100, 120)          115680    
+    _________________________________________________________________
+    dropout_1 (Dropout)          (None, 100, 120)          0         
+    _________________________________________________________________
+    dense (Dense)                (None, 100, 1)            121       
+    _________________________________________________________________
+    activation (Activation)      (None, 100, 1)            0         
+    =================================================================
+    Total params: 174,361
+    Trainable params: 174,361
+    Non-trainable params: 0
+    _________________________________________________________________
+    None
+
+
+
+```python
+batch_size = 20
+epochs = 500
+
+# validation_split で最後の10％を検証用に利用します
+history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+```
+
+## 損失関数の可視化
+
+学習によって誤差が減少していく様子を可視化してみます。
+
+
+```python
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
+plt.grid()
+plt.legend()
+plt.show()
+```
+
+## 結果の確認
+
+
+```python
+# 初期の入力値
+res = l_y[0].reshape(-1)
+
+for i in range(0, n):
+  _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
+  res = np.append(res, _y[0][NUM_LSTM - 1][0])
+  
+plt.plot(np.arange(len(y)), y, label="nikkei stock")
+plt.plot(np.arange(len(res)), res, label="lstm pred result")
+plt.legend()
+plt.grid()
+plt.show()
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
 
 ```python
 
@@ -613,277 +804,10 @@ def predict_sequences_multiple(model, data, window_size, prediction_len):
         prediction_seqs.append(predicted)
     return prediction_seqs
  
-
-"model.fit(X_train, y_train, batch_size=512, nb_epoch=epoch, validation_split=0.05)"
- "predictions = lstm.predict_sequences_multiple(model, X_test, seq_len, 50)"
-
-
-```
-
-
-```python
+"""
+model.fit(X_train, y_train, batch_size=512, nb_epoch=epoch, validation_split=0.05)
+predictions = lstm.predict_sequences_multiple(model, X_test, seq_len, 50)
+model = lstm.build_model([1, 50, 100, 1])
+"""
 
 ```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-## 減衰振動曲線
-
-サンプル用のデータとして、以下の式からサンプリングを行います。
-
-$$
-y = \exp\left(-\frac{x}{\tau}\right)\cos(x) 
-$$
-
-波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。単純なRNNと比較するため、サンプルデータは同じ関数とします。
-
-
-```python
-x = np.linspace(0, 5 * np.pi, 200)
-y = np.exp(-x / 5) * (np.cos(x))
-```
-
-### データの確認
-
-$x$と$y$のデータの詳細を見てみます。
-
-
-```python
-print('shape : ', x.shape)
-print('ndim : ', x.ndim)
-print('data : ', x[:10])
-```
-
-    shape :  (200,)
-    ndim :  1
-    data :  [0.         0.07893449 0.15786898 0.23680347 0.31573796 0.39467244
-     0.47360693 0.55254142 0.63147591 0.7104104 ]
-
-
-
-```python
-print('shape : ', y.shape)
-print('ndim : ', y.ndim)
-print('data : ', y[:10])
-```
-
-    shape :  (200,)
-    ndim :  1
-    data :  [1.         0.98127212 0.9568705  0.92712705 0.89239742 0.85305798
-     0.80950282 0.76214062 0.71139167 0.65768474]
-
-
-グラフを確認してみます。
-
-
-```python
-plt.plot(x,y)
-plt.grid()
-plt.show()
-```
-
-
-![svg](lstm_nb_files/lstm_nb_39_0.svg)
-
-
-$\tau=5$として、綺麗な減衰曲線が得られました。
-
-## ニューラルネットの構築
-
-kerasに投入するためにデータの前処理を行い、再帰型のニューラルネットの構築を行います。
-
-構築が終了したら、compileメソッドを利用して、モデルをコンパイルします。compileの仕様は以下の様になっています。
-
-```bash
-compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
-```
-
-
-```python
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import LSTM
-
-NUM_RNN = 20
-NUM_MIDDLE = 40
-
-# データの前処理
-n = len(x) - NUM_RNN
-r_x = np.zeros((n, NUM_RNN))
-r_y = np.zeros((n, NUM_RNN))
-for i in range(0, n):
-  r_x[i] = y[i: i + NUM_RNN]
-  r_y[i] = y[i + 1: i + NUM_RNN + 1]
-
-r_x = r_x.reshape(n, NUM_RNN, 1)
-r_y = r_y.reshape(n, NUM_RNN, 1)
-
-# RNNニューラルネットの構築
-rnn_model = Sequential()
-rnn_model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-rnn_model.add(Dense(1, activation="linear"))
-rnn_model.compile(loss="mean_squared_error", optimizer="sgd")
-
-# LSTMニューラルネットの構築
-lstm_model = Sequential()
-lstm_model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-lstm_model.add(Dense(1, activation="linear"))
-lstm_model.compile(loss="mean_squared_error", optimizer="sgd")
-```
-
-投入するデータや、モデルの概要を確認します。
-
-
-```python
-print(r_y.shape)
-print(r_x.shape)
-```
-
-    (180, 20, 1)
-    (180, 20, 1)
-
-
-二つのモデルの比較を行います。LSTMの方がパラメタ数が多いことがわかります。学習するにもLSTMの方が時間がかかります。
-
-
-```python
-print(rnn_model.summary())
-print(lstm_model.summary())
-```
-
-    Model: "sequential"
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    simple_rnn (SimpleRNN)       (None, 20, 40)            1680      
-    _________________________________________________________________
-    dense (Dense)                (None, 20, 1)             41        
-    =================================================================
-    Total params: 1,721
-    Trainable params: 1,721
-    Non-trainable params: 0
-    _________________________________________________________________
-    None
-    Model: "sequential_1"
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    lstm (LSTM)                  (None, 20, 40)            6720      
-    _________________________________________________________________
-    dense_1 (Dense)              (None, 20, 1)             41        
-    =================================================================
-    Total params: 6,761
-    Trainable params: 6,761
-    Non-trainable params: 0
-    _________________________________________________________________
-    None
-
-
-## 学習
-
-fitメソッドを利用して、学習を行います。
-fitメソッドの仕様は以下の通りになっています。[こちら](https://keras.io/ja/models/sequential/)を参照してください。
-
-```bash
-fit(self, x=None, y=None, batch_size=None, epochs=1, verbose=1, callbacks=None, validation_split=0.0, validation_data=None, shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0, steps_per_epoch=None, validation_steps=None)
-```
-
-
-```python
-batch_size = 10
-epochs = 1000
-
-# validation_split で最後の10％を検証用に利用します
-rnn_history = rnn_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
-
-# validation_split で最後の10％を検証用に利用します
-lstm_history = lstm_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
-```
-
-## 損失関数の可視化
-
-学習によって誤差が減少していく様子を可視化してみます。
-
-
-```python
-rnn_loss = rnn_history.history['loss'] # 訓練データの損失関数
-rnn_val_loss = rnn_history.history['val_loss'] #テストデータの損失関数
-
-lstm_loss = lstm_history.history['loss'] # 訓練データの損失関数
-lstm_val_loss = lstm_history.history['val_loss'] #テストデータの損失関数
-
-plt.plot(np.arange(len(rnn_loss)), rnn_loss, label='rnn_loss')
-plt.plot(np.arange(len(rnn_val_loss)), rnn_val_loss, label='rnn_val_loss')
-plt.plot(np.arange(len(lstm_loss)), lstm_loss, label='lstm_loss')
-plt.plot(np.arange(len(lstm_val_loss)), lstm_val_loss, label='lstm_val_loss')
-plt.grid()
-plt.legend()
-plt.show()
-```
-
-
-![svg](lstm_nb_files/lstm_nb_50_0.svg)
-
-
-## 結果の確認
-
-
-```python
-# 初期の入力値
-rnn_res = r_y[0].reshape(-1)
-lstm_res = r_y[0].reshape(-1)
-
-for i in range(0, n):
-  _rnn_y = rnn_model.predict(rnn_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  rnn_res = np.append(rnn_res, _rnn_y[0][NUM_RNN - 1][0])
-  
-  _lstm_y = lstm_model.predict(lstm_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  lstm_res = np.append(lstm_res, _lstm_y[0][NUM_RNN - 1][0])
-  
-plt.plot(np.arange(len(y)), y, label=r"$\exp\left(-\frac{x}{\tau}\right) \cos x$")
-plt.plot(np.arange(len(rnn_res)), rnn_res, label="RNN result")
-plt.plot(np.arange(len(lstm_res)), lstm_res, label="LSTM result")
-plt.legend()
-plt.grid()
-plt.show()
-```
-
-
-![svg](lstm_nb_files/lstm_nb_52_0.svg)
-
-
-減衰振動曲線の場合、今回設定したパラメタでは、LSTMとRNNの差は出ていないようです。ただ、実務レベルでは、RNNよりLSTMの方がより使われており、結果も出ているように思います。今回はただの練習なので、ここで終わりにしようと思います。

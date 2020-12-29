@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## kerasとLSTMの基礎, RNNとの比較
+# ## LSTMを使った株価予測
 # 
-# 以前の記事でRNNの復習しましたので、ついでにLSTMの復習も行います。LSTMは Long Short Term Memory の略で、長期的な依存関係を学習することのできると言われています。また、RNNの一種で、基本的な考え方は同じです。詳細は検索すればいくらでも出てくるので割愛します。
+# LSTMは時系列データの予測のために利用されます。時系列データには、ある場所の気温や、来客数、商品の価格など多岐にわたりますが、最もデータを入手しやすい株価をLSTMで予測を行ってみたいと思います。
 # 
-# また、LSTMとRNNの比較を行います。
+# ただし、ニューラルネットはあくまでも得られたデータの範囲内でしか予測する事が出来ず、想定外の状況になった場合、そのモデルはほぼ意味をなしません。
+# 
+# 例えば、コロナショック前の1年前のデータを用いても、コロナショックを予測する事は出来ません。
+# 
+# 株価の形成はランダムな要素もあり、LSTMで未来を予測するのは難しいとは思いますが、LSTMに慣れるためにやってみようと思います。
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
 # 
 # ### google colaboratory
-# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
 # 
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -30,7 +34,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[5]:
+# In[3]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -80,13 +84,13 @@ print('keras version : ', keras.__version__)
 # ## データの確認
 # まず最初に日経のデータを見てみます。
 
-# In[6]:
+# In[4]:
 
 
 get_ipython().system('ls ')
 
 
-# In[9]:
+# In[5]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
@@ -94,19 +98,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
 
 # 文字コードがshift-jisになっているので、utf-8に直します。
 
-# In[11]:
+# In[6]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf --guess nikkei.csv')
 
 
-# In[13]:
+# In[7]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf -w nikkei.csv > nikkei_utf8.csv')
 
 
-# In[23]:
+# In[8]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
@@ -114,19 +118,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
 
 # 問題ないようなので、pandasで読み込みます。
 
-# In[24]:
+# In[ ]:
 
 
 df = pd.read_csv('nikkei_utf8.csv')
 
 
-# In[25]:
+# In[ ]:
 
 
 df.head()
 
 
-# In[26]:
+# In[ ]:
 
 
 df.tail()
@@ -134,13 +138,13 @@ df.tail()
 
 # 最後の行に著作権に関する注意書きがありますが、これを削除します。複写や流布は行いません。
 
-# In[27]:
+# In[ ]:
 
 
 df.drop(index=975, inplace=True)
 
 
-# In[28]:
+# In[ ]:
 
 
 df.tail()
@@ -148,7 +152,7 @@ df.tail()
 
 # データを可視化してみます。コロナショックで大きくへこんでいることがわかりますが、2020年の年末の時点では金融緩和の影響を受けて大幅に上がっています。
 
-# In[51]:
+# In[ ]:
 
 
 ticks = 10
@@ -159,6 +163,166 @@ plt.grid()
 plt.legend()
 plt.xticks(df['データ日付'][::xticks], rotation=60)
 plt.show()
+
+
+# ## データの準備
+# 
+# kerasに投入するためにデータを整えます。
+
+# In[ ]:
+
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
+
+NUM_LSTM = 100
+
+x = list(df['データ日付'])
+y = list(df['終値'])
+print(y[0:100])
+print(len(y))
+n = len(y) - NUM_LSTM
+l_x = np.zeros((n, NUM_LSTM))
+l_y = np.zeros((n, NUM_LSTM))
+for i in range(0, n):
+  l_x[i] = y[i: i + NUM_LSTM]
+  l_y[i] = y[i + 1: i + NUM_LSTM + 1]
+
+l_x = l_x.reshape(n, NUM_LSTM, 1)
+l_y = l_y.reshape(n, NUM_LSTM, 1)
+
+
+# In[ ]:
+
+
+print(l_y.shape)
+print(l_x.shape)
+
+
+# In[ ]:
+
+
+l_x[0][:10,0]
+
+
+# モデルの構築を定義する関数です。
+
+# In[ ]:
+
+
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Activation
+
+NUM_MIDDLE_01 = 120
+NUM_MIDDLE_02 = 120
+
+def build_lstm_model():
+  # LSTMニューラルネットの構築
+  # model = Sequential()
+  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  # model.add(Dense(1, activation="linear"))
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  # LSTMニューラルネットの構築
+  model = Sequential()
+  model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  model.add(Dropout(0.2))
+  model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  model.add(Dropout(0.2))
+  model.add(Dense(1))
+  model.add(Activation("linear"))
+  
+  model.compile(loss="mse", optimizer='rmsprop')
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  return model
+
+model = build_lstm_model()
+
+
+# 詳細を確認します。
+
+# In[ ]:
+
+
+print(model.summary())
+
+
+# In[ ]:
+
+
+batch_size = 20
+epochs = 500
+
+# validation_split で最後の10％を検証用に利用します
+history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+
+
+# ## 損失関数の可視化
+# 
+# 学習によって誤差が減少していく様子を可視化してみます。
+
+# In[ ]:
+
+
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
+plt.grid()
+plt.legend()
+plt.show()
+
+
+# ## 結果の確認
+
+# In[ ]:
+
+
+# 初期の入力値
+res = l_y[0].reshape(-1)
+
+for i in range(0, n):
+  _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
+  res = np.append(res, _y[0][NUM_LSTM - 1][0])
+  
+plt.plot(np.arange(len(y)), y, label="nikkei stock")
+plt.plot(np.arange(len(res)), res, label="lstm pred result")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
@@ -355,237 +519,9 @@ def predict_sequences_multiple(model, data, window_size, prediction_len):
         prediction_seqs.append(predicted)
     return prediction_seqs
  
+"""
+model.fit(X_train, y_train, batch_size=512, nb_epoch=epoch, validation_split=0.05)
+predictions = lstm.predict_sequences_multiple(model, X_test, seq_len, 50)
+model = lstm.build_model([1, 50, 100, 1])
+"""
 
-"model.fit(X_train, y_train, batch_size=512, nb_epoch=epoch, validation_split=0.05)"
- "predictions = lstm.predict_sequences_multiple(model, X_test, seq_len, 50)"
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# ## 減衰振動曲線
-# 
-# サンプル用のデータとして、以下の式からサンプリングを行います。
-# 
-# $$
-# y = \exp\left(-\frac{x}{\tau}\right)\cos(x) 
-# $$
-# 
-# 波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。単純なRNNと比較するため、サンプルデータは同じ関数とします。
-
-# In[4]:
-
-
-x = np.linspace(0, 5 * np.pi, 200)
-y = np.exp(-x / 5) * (np.cos(x))
-
-
-# ### データの確認
-# 
-# $x$と$y$のデータの詳細を見てみます。
-
-# In[5]:
-
-
-print('shape : ', x.shape)
-print('ndim : ', x.ndim)
-print('data : ', x[:10])
-
-
-# In[6]:
-
-
-print('shape : ', y.shape)
-print('ndim : ', y.ndim)
-print('data : ', y[:10])
-
-
-# グラフを確認してみます。
-
-# In[7]:
-
-
-plt.plot(x,y)
-plt.grid()
-plt.show()
-
-
-# $\tau=5$として、綺麗な減衰曲線が得られました。
-
-# ## ニューラルネットの構築
-# 
-# kerasに投入するためにデータの前処理を行い、再帰型のニューラルネットの構築を行います。
-# 
-# 構築が終了したら、compileメソッドを利用して、モデルをコンパイルします。compileの仕様は以下の様になっています。
-# 
-# ```bash
-# compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
-# ```
-
-# In[8]:
-
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import LSTM
-
-NUM_RNN = 20
-NUM_MIDDLE = 40
-
-# データの前処理
-n = len(x) - NUM_RNN
-r_x = np.zeros((n, NUM_RNN))
-r_y = np.zeros((n, NUM_RNN))
-for i in range(0, n):
-  r_x[i] = y[i: i + NUM_RNN]
-  r_y[i] = y[i + 1: i + NUM_RNN + 1]
-
-r_x = r_x.reshape(n, NUM_RNN, 1)
-r_y = r_y.reshape(n, NUM_RNN, 1)
-
-# RNNニューラルネットの構築
-rnn_model = Sequential()
-rnn_model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-rnn_model.add(Dense(1, activation="linear"))
-rnn_model.compile(loss="mean_squared_error", optimizer="sgd")
-
-# LSTMニューラルネットの構築
-lstm_model = Sequential()
-lstm_model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-lstm_model.add(Dense(1, activation="linear"))
-lstm_model.compile(loss="mean_squared_error", optimizer="sgd")
-
-
-# 投入するデータや、モデルの概要を確認します。
-
-# In[9]:
-
-
-print(r_y.shape)
-print(r_x.shape)
-
-
-# 二つのモデルの比較を行います。LSTMの方がパラメタ数が多いことがわかります。学習するにもLSTMの方が時間がかかります。
-
-# In[10]:
-
-
-print(rnn_model.summary())
-print(lstm_model.summary())
-
-
-# ## 学習
-# 
-# fitメソッドを利用して、学習を行います。
-# fitメソッドの仕様は以下の通りになっています。[こちら](https://keras.io/ja/models/sequential/)を参照してください。
-# 
-# ```bash
-# fit(self, x=None, y=None, batch_size=None, epochs=1, verbose=1, callbacks=None, validation_split=0.0, validation_data=None, shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0, steps_per_epoch=None, validation_steps=None)
-# ```
-
-# In[11]:
-
-
-batch_size = 10
-epochs = 1000
-
-# validation_split で最後の10％を検証用に利用します
-rnn_history = rnn_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
-
-# validation_split で最後の10％を検証用に利用します
-lstm_history = lstm_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
-
-
-# ## 損失関数の可視化
-# 
-# 学習によって誤差が減少していく様子を可視化してみます。
-
-# In[12]:
-
-
-rnn_loss = rnn_history.history['loss'] # 訓練データの損失関数
-rnn_val_loss = rnn_history.history['val_loss'] #テストデータの損失関数
-
-lstm_loss = lstm_history.history['loss'] # 訓練データの損失関数
-lstm_val_loss = lstm_history.history['val_loss'] #テストデータの損失関数
-
-plt.plot(np.arange(len(rnn_loss)), rnn_loss, label='rnn_loss')
-plt.plot(np.arange(len(rnn_val_loss)), rnn_val_loss, label='rnn_val_loss')
-plt.plot(np.arange(len(lstm_loss)), lstm_loss, label='lstm_loss')
-plt.plot(np.arange(len(lstm_val_loss)), lstm_val_loss, label='lstm_val_loss')
-plt.grid()
-plt.legend()
-plt.show()
-
-
-# ## 結果の確認
-
-# In[13]:
-
-
-# 初期の入力値
-rnn_res = r_y[0].reshape(-1)
-lstm_res = r_y[0].reshape(-1)
-
-for i in range(0, n):
-  _rnn_y = rnn_model.predict(rnn_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  rnn_res = np.append(rnn_res, _rnn_y[0][NUM_RNN - 1][0])
-  
-  _lstm_y = lstm_model.predict(lstm_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  lstm_res = np.append(lstm_res, _lstm_y[0][NUM_RNN - 1][0])
-  
-plt.plot(np.arange(len(y)), y, label=r"$\exp\left(-\frac{x}{\tau}\right) \cos x$")
-plt.plot(np.arange(len(rnn_res)), rnn_res, label="RNN result")
-plt.plot(np.arange(len(lstm_res)), lstm_res, label="LSTM result")
-plt.legend()
-plt.grid()
-plt.show()
-
-
-# 減衰振動曲線の場合、今回設定したパラメタでは、LSTMとRNNの差は出ていないようです。ただ、実務レベルでは、RNNよりLSTMの方がより使われており、結果も出ているように思います。今回はただの練習なので、ここで終わりにしようと思います。
