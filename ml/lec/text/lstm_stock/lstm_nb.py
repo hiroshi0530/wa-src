@@ -169,7 +169,7 @@ plt.show()
 # 
 # kerasに投入するためにデータを整えます。
 
-# In[68]:
+# In[83]:
 
 
 from tensorflow.keras.models import Sequential
@@ -199,7 +199,7 @@ l_x = l_x.reshape(n, NUM_LSTM, 1)
 l_y = l_y.reshape(n, NUM_LSTM, 1)
 
 
-# In[69]:
+# In[84]:
 
 
 print('shape : ', x.shape)
@@ -207,7 +207,7 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[70]:
+# In[85]:
 
 
 print('shape : ', y.shape)
@@ -215,7 +215,7 @@ print('ndim : ', y.ndim)
 print('data : ', y[:10])
 
 
-# In[71]:
+# In[86]:
 
 
 print(l_y.shape)
@@ -224,7 +224,7 @@ print(l_x.shape)
 
 # モデルの構築を定義する関数です。
 
-# In[72]:
+# In[87]:
 
 
 from tensorflow.keras.layers import Dropout
@@ -259,13 +259,13 @@ model = build_lstm_model()
 
 # # 詳細を確認します。
 
-# In[73]:
+# In[88]:
 
 
 print(model.summary())
 
 
-# In[80]:
+# In[89]:
 
 
 batch_size = 20
@@ -279,7 +279,7 @@ history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_s
 # 
 # 学習によって誤差が減少していく様子を可視化してみます。
 
-# In[81]:
+# In[ ]:
 
 
 loss = history.history['loss']
@@ -294,7 +294,7 @@ plt.show()
 
 # ## 結果の確認
 
-# In[82]:
+# In[ ]:
 
 
 # 初期の入力値
