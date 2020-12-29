@@ -113,7 +113,7 @@ get_ipython().system('ls ./texts/ | grep ginga_tetsudo')
 # In[9]:
 
 
-get_ipython().system('head ./texts/ginga_tetsudono_yoru.txt')
+get_ipython().run_cell_magic('bash', '', 'head ./texts/ginga_tetsudono_yoru.txt')
 
 
 # In[10]:
@@ -135,41 +135,17 @@ get_ipython().system('nkf -w ./texts/ginga_tetsudono_yoru.txt > ginga.txt')
 # In[12]:
 
 
-get_ipython().system('cat ginga.txt | head -n 25')
+get_ipython().run_cell_magic('bash', '', 'cat ginga.txt | head -n 25')
 
 
 # In[13]:
 
 
-get_ipython().system('cat ginga.txt | tail -n 25')
+get_ipython().run_cell_magic('bash', '', 'cat ginga.txt | tail -n 25')
 
 
 # となり、ファイルの先頭と、末尾に参考情報が載っているほかは、ちゃんとテキストとしてデータが取れている模様です。
 # 先ず、この辺の前処理を行います。
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
 
 # In[14]:
 
@@ -204,7 +180,7 @@ all_sentence = re.sub("《[^》]+》", "", all_sentence)
 all_sentence = re.split("\-{8,}", all_sentence)[2]
 
 
-# 。で分割し、文ごとにリストに格納します。
+# 次に、「。」で分割し、文ごとにリストに格納します。
 
 # In[18]:
 
@@ -228,8 +204,12 @@ sentence_list[:5]
 # ## janomeによる形態素解析
 # 
 # janomeは日本語の文章を形態素ごとに分解する事が出来るツールです。同じようなツールとして、MecabやGinzaなどがあります。一長一短があると思いますが、ここではjanomeを利用します。
+# 
+# word2vecには文ごとに単語分割した行列が必要なので、それをword_per_sentenceとして取得します。また、全単語をリスト化したword_listも作っておきます。
+# 
+# また、何も考えずに形態素解析を行うと、「の」や「は」などの助詞が多く含まれてしまうので、「名詞」と「動詞」だけに限定します。
 
-# In[65]:
+# In[20]:
 
 
 from janome.tokenizer import Tokenizer
@@ -237,62 +217,76 @@ from janome.tokenizer import Tokenizer
 t = Tokenizer()
 
 word_list = []
-# word_per_sentence_list = []
-# for sentence in sentence_list:
-#   word_list.extend(list(t.tokenize(sentence, wakati=True)))
-#   word_per_sentence_list.append(list(t.tokenize(sentence, wakati=True)))
+word_per_sentence_list = []
 
-# テキストを引数として、形態素解析の結果、名詞・動詞・形容詞(原形)のみを配列で抽出する関数を定義 
-def extract_words(text):
-  tokens = t.tokenize(text)
-  return [token.base_form for token in tokens if token.part_of_speech.split(',')[0] in['名詞', '動詞']]
-    
+# 名詞と動詞だけを取得する
+def get_words_by_janome(sentence):
+  tokens = t.tokenize(sentence)
+  return [token.base_form for token in tokens if token.part_of_speech.split(',')[0] in['動詞', '名詞']]
 
-#  関数テスト
-# ret = extract_words('三四郎は京都でちょっと用があって降りたついでに。')
-# for word in ret:
-#    print(word)
-
-# 全体のテキストを句点('。')で区切った配列にする。 
-# sentences = text.split('。')
-# それぞれの文章を単語リストに変換(処理に数分かかります)
-# word_list = [extract_words(sentence) for sentence in sentence_list] 
 for sentence in sentence_list:
-  word_list.extend(extract_words(sentence))
-print(word_list[:10])
-# print(word_per_sentence_list[:5])
+  word_list.extend(get_words_by_janome(sentence))
+  word_per_sentence_list.append(get_words_by_janome(sentence))
+
+
+# 中身を少し見てみます。想定通りそれぞれの配列に単語が格納されているのが分かります。
+
+# In[21]:
+
+
+word_per_sentence_list[:5]
+
+
+# In[22]:
+
+
+word_list[:10]
 
 
 # ## 単語のカウント
 # 
 # 単語のカウントを行い、出現頻度の高いベスト10を抽出してみます。名詞のみに限定した方が良かったかもしれません。
 
-# In[56]:
+# In[23]:
 
 
 import collections
 
 count = collections.Counter(word_list)
 count.most_common()[:10]
+
+
+# 「銀河」と「ジョバンニ」がどれぐらい含まれているかカウントしてみます。
+
+# In[24]:
+
+
 dict(count.most_common())['銀河']
+
+
+# In[25]:
+
+
 dict(count.most_common())['ジョバンニ']
 
 
 # ## gensimに含まれるword2vecを用いた学習
 # 
-# word2vecを用いて、word_listの分散表現を取得します。使い方はいくらでも検索できますので、ここでは割愛します。単語のリストを渡せば、ほぼ自動的に分散表現を作ってくれます。
+# word2vecを用いて、word_listの分散表現を取得します。使い方はいくらでも検索できますので、ここでは割愛します。文章ごとの単語のリストを渡せば、ほぼ自動的に分散表現を作ってくれます。
 
-# In[84]:
+# In[26]:
 
 
 from gensim.models import word2vec
 
-model = word2vec.Word2Vec(word_list, size=100, min_count=5, window=5, iter=1000, sg=0)
+model = word2vec.Word2Vec(word_per_sentence_list, size=100, min_count=5, window=5, iter=1000, sg=0)
 
 
 # ### 分散行列
+# 
+# 得られた分散表現を見てみます。
 
-# In[75]:
+# In[27]:
 
 
 model.wv.vectors
@@ -300,38 +294,17 @@ model.wv.vectors
 
 # ### 分散行列の形状確認
 # 
-# 443個の単語について、100次元のベクトルが生成されました。
+# 408個の単語について、100次元のベクトルが生成されました。
 
-# In[76]:
+# In[28]:
 
 
 model.wv.vectors.shape
 
 
-# 全単語数は、
+# この分散表現の中で、「銀河」がどういう表現になっているか確認します。
 
-# In[77]:
-
-
-len(set(word_list))
-
-
-# ですが、word2vecのmin_countを5にしているので、その文単語数が少なくなっています。
-
-# In[83]:
-
-
-model.wv.index2word[:10]
-print(model.__dict__['wv']['銀河'])
-
-
-# In[79]:
-
-
-model.wv.vectors[0]
-
-
-# In[82]:
+# In[29]:
 
 
 model.wv.__getitem__("銀河")
@@ -341,39 +314,45 @@ model.wv.__getitem__("銀河")
 # 
 # ベクトルの内積を計算することにより、指定した単語に類似した単語をその$\cos$の値と一緒に抽出する事ができます。
 
-# In[81]:
+# In[30]:
 
 
-print(model.wv.most_similar("銀河"))
-print(model.wv.most_similar("本"))
-print(model.wv.most_similar("ジョバンニ"))
+model.wv.most_similar("銀河")
+
+
+# In[31]:
+
+
+model.wv.most_similar("ジョバンニ")
 
 
 # ### 単語ベクトルによる演算
 # 
 # 足し算するにはpositiveメソッドを引き算にはnegativeメソッドを利用します。
 # 
-# まず、銀河＋男を計算します。
+# まず、「銀河＋ジョバンニ」を計算します。
 
-# In[ ]:
+# In[32]:
 
 
 model.wv.most_similar(positive=["銀河", "ジョバンニ"])
 
 
-# 次に銀河＋ジョバンニー家を計算します。
+# 次に「銀河＋ジョバンニー家」を計算します。
 
-# In[ ]:
+# In[33]:
 
 
 model.wv.most_similar(positive=["銀河", "ジョバンニ"], negative=["家"])
 
 
+# 高校の先輩ではありながら、私は宮沢賢治の作品は読んだ事がないので、単語の演算の結果は感覚と合っていますでしょうか？
+
 # ## doc2vec
 # 
-# 文章毎にタグ付けされたTaggedDocumentを作成します。
+# 次に文章ごとに分散表現を作成できるdoc2vecを利用して、文章語との類似度を計算してみます。文章毎にタグ付けされたTaggedDocumentを作成します。
 
-# In[ ]:
+# In[34]:
 
 
 from gensim.models.doc2vec import Doc2Vec
@@ -387,49 +366,44 @@ for i, sentence in enumerate(word_per_sentence_list):
 print(tagged_doc_list[0])
 
 
-# In[ ]:
+# doc2vecもgensimのメソッドを呼び出すだけです。
+
+# In[35]:
 
 
 model = Doc2Vec(documents=tagged_doc_list, vector_size=100, min_count=5, window=5, epochs=20, dm=0)
 
 
-# In[ ]:
+# このモデルを利用して、入力した文章の分散表現を取得することが出来ます。以下では、word_per_sentence_list[0]のベクトルを取得しています。
+
+# In[36]:
 
 
 word_per_sentence_list[0]
 
 
-# In[ ]:
+# In[37]:
 
 
 model.docvecs[0]
 
 
-# most_similarで類似度が高い文章のIDと類似度を取得することが出来ます。
+# また、word2vecと同様、most_similarで類似度が高い文章のIDと類似度を取得することが出来ます。
 
-# In[ ]:
+# In[38]:
 
 
+# 文章IDが0の文章と似た文章とその内積を得ることが出来る。
 model.docvecs.most_similar(0)
 
 
-# In[ ]:
+# In[39]:
 
 
 for p in model.docvecs.most_similar(0):
   print(word_per_sentence_list[p[0]])
 
 
-# 感覚的ですが、似たような文章が抽出されています。
+# ['先生','黒板','吊す','星座','図','上','下','けぶる','銀河','帯','やう','ところ','指す','みんな','問','かける']　という文章と、同じ文章を抽出していますが、どうでしょうか？
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
+# 一通り、word2vecを用いた分散表現の取得から、doc2vecまでやってみました。言葉で数学的な演算が出来るというのは、やはり画期的な事なんだと思います。考えた人はすごいです。実際の業務に利用するには、wikipediaなどの巨大なデータセットから既に学習済みのモデルを利用する事が多いと思いますが、カスタムしたい場合など一から自前で作成する場合もあります。
