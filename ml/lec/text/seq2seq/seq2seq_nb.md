@@ -1,4 +1,3 @@
-
 ## kerasとsequnece to sequence
 
 復習を兼ねてkerasを用いて再帰型ニューラルネットワーク（Recurrent Neural Network：以下、seq2seq）の実装を行ってみようと思います。何でもいいと思いますが、時系列データとして、減衰振動曲線を用意して、それをseq2seqを用いて学習させてみようと思います。
@@ -115,7 +114,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_11_0.svg)
+    
 
 
 $\tau=5$として、綺麗な減衰曲線が得られました。
@@ -219,7 +220,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_20_0.svg)
+    
 
 
 ## 結果の確認
@@ -241,7 +244,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_22_0.svg)
+    
 
 
 単純なRNNだと少しずつずれが顕著になってきます。epochやモデルを改良すればもっと良い結果が出るかもしませんが、復習なのでここで一旦終わりとします。次はLSTMをやってみようと思います。
