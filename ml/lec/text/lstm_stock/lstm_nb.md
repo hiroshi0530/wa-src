@@ -19,7 +19,7 @@ LSTMは時系列データの予測のために利用されます。時系列デ�
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
 
-```python
+```
 !sw_vers
 ```
 
@@ -29,7 +29,7 @@ LSTMは時系列データの予測のために利用されます。時系列デ�
 
 
 
-```python
+```
 !python -V
 ```
 
@@ -39,7 +39,7 @@ LSTMは時系列データの予測のために利用されます。時系列デ�
 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
 
-```python
+```
 %matplotlib inline
 %config InlineBackend.figure_format = 'svg'
 
@@ -67,12 +67,12 @@ print('keras version : ', keras.__version__)
 
 
 
-```python
+```
 
 ```
 
 
-```python
+```
 
 ```
 
@@ -93,7 +93,7 @@ print('keras version : ', keras.__version__)
 まず最初に日経のデータを見てみます。
 
 
-```python
+```
 !ls 
 ```
 
@@ -157,12 +157,12 @@ head nikkei_utf8.csv
 問題ないようなので、pandasで読み込みます。
 
 
-```python
+```
 df = pd.read_csv('nikkei_utf8.csv')
 ```
 
 
-```python
+```
 df.head()
 ```
 
@@ -242,7 +242,7 @@ df.head()
 
 
 
-```python
+```
 df.tail()
 ```
 
@@ -324,12 +324,12 @@ df.tail()
 最後の行に著作権に関する注意書きがありますが、これを削除します。複写や流布は行いません。
 
 
-```python
+```
 df.drop(index=975, inplace=True)
 ```
 
 
-```python
+```
 df.tail()
 ```
 
@@ -411,7 +411,7 @@ df.tail()
 データを可視化してみます。コロナショックで大きくへこんでいることがわかりますが、2020年の年末の時点では金融緩和の影響を受けて大幅に上がっています。
 
 
-```python
+```
 ticks = 10
 xticks = ticks * 5 
 
@@ -431,7 +431,7 @@ plt.show()
 kerasに投入するためにデータを整えます。
 
 
-```python
+```
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
@@ -458,7 +458,7 @@ l_y = l_y.reshape(n, NUM_LSTM, 1)
 
 
 
-```python
+```
 print(l_y.shape)
 print(l_x.shape)
 ```
@@ -468,7 +468,7 @@ print(l_x.shape)
 
 
 
-```python
+```
 l_x[0][:10,0]
 ```
 
@@ -483,11 +483,11 @@ l_x[0][:10,0]
 モデルの構築を定義する関数です。
 
 
-```python
+```
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Activation
 
-NUM_MIDDLE_01 = 120
+NUM_MIDDLE_01 = 100
 NUM_MIDDLE_02 = 120
 
 def build_lstm_model():
@@ -500,9 +500,9 @@ def build_lstm_model():
   # LSTMニューラルネットの構築
   model = Sequential()
   model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
-  model.add(Dropout(0.2))
-  model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
-  model.add(Dropout(0.2))
+  # model.add(Dropout(0.2))
+  # model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  # model.add(Dropout(0.2))
   model.add(Dense(1))
   model.add(Activation("linear"))
   
@@ -517,37 +517,31 @@ model = build_lstm_model()
 詳細を確認します。
 
 
-```python
+```
 print(model.summary())
 ```
 
-    Model: "sequential"
+    Model: "sequential_2"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    lstm (LSTM)                  (None, 100, 120)          58560     
+    lstm_3 (LSTM)                (None, 100, 100)          40800     
     _________________________________________________________________
-    dropout (Dropout)            (None, 100, 120)          0         
+    dense_2 (Dense)              (None, 100, 1)            101       
     _________________________________________________________________
-    lstm_1 (LSTM)                (None, 100, 120)          115680    
-    _________________________________________________________________
-    dropout_1 (Dropout)          (None, 100, 120)          0         
-    _________________________________________________________________
-    dense (Dense)                (None, 100, 1)            121       
-    _________________________________________________________________
-    activation (Activation)      (None, 100, 1)            0         
+    activation_2 (Activation)    (None, 100, 1)            0         
     =================================================================
-    Total params: 174,361
-    Trainable params: 174,361
+    Total params: 40,901
+    Trainable params: 40,901
     Non-trainable params: 0
     _________________________________________________________________
     None
 
 
 
-```python
+```
 batch_size = 20
-epochs = 500
+epochs = 50
 
 # validation_split で最後の10％を検証用に利用します
 history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
@@ -558,7 +552,7 @@ history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_s
 学習によって誤差が減少していく様子を可視化してみます。
 
 
-```python
+```
 loss = history.history['loss']
 val_loss = history.history['val_loss']
 
@@ -569,10 +563,14 @@ plt.legend()
 plt.show()
 ```
 
+
+![svg](lstm_nb_files/lstm_nb_33_0.svg)
+
+
 ## 結果の確認
 
 
-```python
+```
 # 初期の入力値
 res = l_y[0].reshape(-1)
 
@@ -588,37 +586,41 @@ plt.show()
 ```
 
 
-```python
+![svg](lstm_nb_files/lstm_nb_35_0.svg)
+
+
+
+```
 
 ```
 
 
-```python
+```
 
 ```
 
 
-```python
+```
 
 ```
 
 
-```python
+```
 
 ```
 
 
-```python
+```
 
 ```
 
 
-```python
+```
 
 ```
 
 
-```python
+```
 
 
 
@@ -811,3 +813,11 @@ model = lstm.build_model([1, 50, 100, 1])
 """
 
 ```
+
+
+      File "<tokenize>", line 95
+        import os
+        ^
+    IndentationError: unindent does not match any outer indentation level
+
+
