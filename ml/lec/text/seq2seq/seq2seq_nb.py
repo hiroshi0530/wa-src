@@ -3,7 +3,9 @@
 
 # ## kerasとsequnece to sequence
 # 
-# 復習を兼ねてkerasを用いて再帰型ニューラルネットワーク（Recurrent Neural Network：以下、seq2seq）の実装を行ってみようと思います。何でもいいと思いますが、時系列データとして、減衰振動曲線を用意して、それをseq2seqを用いて学習させてみようと思います。
+# 前回、LSTMによる実装を行いましたので、次はsquence to sequenceモデルを実装していこうと思います。今現在では、機械翻訳などの自然言語処理では、このsequnece to sequenceとAttentionを基本としたモデルがよく利用されています。BERTなどもAttentionモデルが基本となっています。
+# 
+# ここでは、復習もかねて、基本的なsequnece to sequenceを実装します。$y=\exp x$を$y=\log x$に翻訳するモデルの構築を行います。なお、モデルの詳細は検索すればいくらでも出てきますのでここでは割愛します。文献や教科書、技術者によっては、sequnece to sequenceモデルは、「Encoder-Decoderモデル」、「系列変換モデル」などと呼ばれることも多いようです。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/seq2seq/seq2seq_nb.ipynb)
@@ -28,7 +30,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[3]:
+# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -41,36 +43,42 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow import keras
+import gensim
 
 print('matplotlib version :', matplotlib.__version__)
 print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 print('tensorflow version : ', tf.__version__)
 print('keras version : ', keras.__version__)
+print('gensim version : ', gensim.__version__)
 
 
-# ## 減衰振動曲線
+# ## サンプルデータ
 # 
-# サンプル用のデータとして、以下の式からサンプリングを行います。
+# サンプル用のデータとして、以下の式を利用します。
 # 
 # $$
-# y = \exp\left(-\frac{x}{\tau}\right)\cos(x) 
+# encoder_y = \exp x
 # $$
 # 
-# 波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。
+# $$
+# dencoder_y = \log x
+# $$
+# 
 
-# In[4]:
+# In[7]:
 
 
-x = np.linspace(0, 5 * np.pi, 200)
-y = np.exp(-x / 5) * (np.cos(x))
+x = np.linspace(0, 3, 200)
+ey = np.exp(x)
+dy = np.log(x)
 
 
 # ### データの確認
 # 
 # $x$と$y$のデータの詳細を見てみます。
 
-# In[5]:
+# In[8]:
 
 
 print('shape : ', x.shape)
@@ -78,25 +86,99 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[6]:
+# In[9]:
 
 
-print('shape : ', y.shape)
-print('ndim : ', y.ndim)
-print('data : ', y[:10])
+print('shape : ', y1.shape)
+print('ndim : ', y1.ndim)
+print('data : ', y1[:10])
 
 
 # グラフを確認してみます。
 
-# In[7]:
+# In[12]:
 
 
-plt.plot(x,y)
+plt.plot(x, y1, label='$y=\exp x$')
+plt.plot(x, y2, label='$y=\log x$')
+plt.legend()
 plt.grid()
 plt.show()
 
 
-# $\tau=5$として、綺麗な減衰曲線が得られました。
+# In[ ]:
+
+
+from keras.models import Model
+from keras.layers import LSTM
+from keras.layers import Input
+from keras.layers import Dense
+
+n_mid = 20
+
+encoder_input = Input(shape=(n_rnn, 1))
+encoder_lstm = LSTM(n_mid, return_state=True)
+encoder_output, encoder_state_h, encoder_state_c = encoder_lstm(encoder_input)
+encoder_state = [encoder_state_h, encoder_state_c]
+
+decoder_input = Input(shape=(n_rnn, 1))
+decoder_lstm = LSTM(n_mid, return_sequences=True, return_state=True)
+decoder_output, _, _ = decoder_lstm(decoder_input, initial_state=encoder_state)
+decoder_dense = Dense(1, activation='linear')
+decoder_output = decoder_dense(decoder_output)
+
+model = Model([encoder_input, decoder_input], decoder_output)
+model.compile(loss="mean_squared_error", optimizer="adam")
+print(model.summary())
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
 
 # ## ニューラルネットの構築
 # 
