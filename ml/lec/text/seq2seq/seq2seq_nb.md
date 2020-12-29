@@ -1,6 +1,9 @@
+
 ## kerasとsequnece to sequence
 
-復習を兼ねてkerasを用いて再帰型ニューラルネットワーク（Recurrent Neural Network：以下、seq2seq）の実装を行ってみようと思います。何でもいいと思いますが、時系列データとして、減衰振動曲線を用意して、それをseq2seqを用いて学習させてみようと思います。
+前回、LSTMによる実装を行いましたので、次はsquence to sequenceモデルを実装していこうと思います。今現在では、機械翻訳などの自然言語処理では、このsequnece to sequenceとAttentionを基本としたモデルがよく利用されています。BERTなどもAttentionモデルが基本となっています。
+
+ここでは、復習もかねて、基本的なsequnece to sequenceを実装します。$y=\exp x$を$y=\log x$に翻訳するモデルの構築を行います。なお、モデルの詳細は検索すればいくらでも出てきますのでここでは割愛します。文献や教科書、技術者によっては、sequnece to sequenceモデルは、「Encoder-Decoderモデル」、「系列変換モデル」などと呼ばれることも多いようです。
 
 ### github
 - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/seq2seq/seq2seq_nb.ipynb)
@@ -43,12 +46,14 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow import keras
+import gensim
 
 print('matplotlib version :', matplotlib.__version__)
 print('scipy version :', scipy.__version__)
 print('numpy version :', np.__version__)
 print('tensorflow version : ', tf.__version__)
 print('keras version : ', keras.__version__)
+print('gensim version : ', gensim.__version__)
 ```
 
     matplotlib version : 3.0.3
@@ -56,23 +61,32 @@ print('keras version : ', keras.__version__)
     numpy version : 1.19.4
     tensorflow version :  2.1.0
     keras version :  2.2.4-tf
+    gensim version :  3.8.3
 
 
-## 減衰振動曲線
+## サンプルデータ
 
-サンプル用のデータとして、以下の式からサンプリングを行います。
+サンプル用のデータとして、以下の式を利用します。
 
 $$
-y = \exp\left(-\frac{x}{\tau}\right)\cos(x) 
+encoder_y = \exp x
 $$
 
-波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。
+$$
+dencoder_y = \log x
+$$
+
 
 
 ```python
-x = np.linspace(0, 5 * np.pi, 200)
-y = np.exp(-x / 5) * (np.cos(x))
+x = np.linspace(0, 3, 200)
+ey = np.exp(x)
+dy = np.log(x)
 ```
+
+    /Users/hiroshi/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:3: RuntimeWarning: divide by zero encountered in log
+      This is separate from the ipykernel package so we can avoid doing imports until
+
 
 ### データの確認
 
@@ -87,39 +101,102 @@ print('data : ', x[:10])
 
     shape :  (200,)
     ndim :  1
-    data :  [0.         0.07893449 0.15786898 0.23680347 0.31573796 0.39467244
-     0.47360693 0.55254142 0.63147591 0.7104104 ]
+    data :  [0.         0.01507538 0.03015075 0.04522613 0.06030151 0.07537688
+     0.09045226 0.10552764 0.12060302 0.13567839]
 
 
 
 ```python
-print('shape : ', y.shape)
-print('ndim : ', y.ndim)
-print('data : ', y[:10])
+print('shape : ', y1.shape)
+print('ndim : ', y1.ndim)
+print('data : ', y1[:10])
 ```
 
     shape :  (200,)
     ndim :  1
-    data :  [1.         0.98127212 0.9568705  0.92712705 0.89239742 0.85305798
-     0.80950282 0.76214062 0.71139167 0.65768474]
+    data :  [1.         1.01518958 1.03060989 1.04626443 1.06215675 1.07829047
+     1.09466925 1.11129682 1.12817695 1.14531349]
 
 
 グラフを確認してみます。
 
 
 ```python
-plt.plot(x,y)
+plt.plot(x, y1, label='$y=\exp x$')
+plt.plot(x, y2, label='$y=\log x$')
+plt.legend()
 plt.grid()
 plt.show()
 ```
 
 
-    
 ![svg](seq2seq_nb_files/seq2seq_nb_11_0.svg)
-    
 
 
-$\tau=5$として、綺麗な減衰曲線が得られました。
+
+```python
+from keras.models import Model
+from keras.layers import LSTM
+from keras.layers import Input
+from keras.layers import Dense
+
+n_mid = 20
+
+encoder_input = Input(shape=(n_rnn, 1))
+encoder_lstm = LSTM(n_mid, return_state=True)
+encoder_output, encoder_state_h, encoder_state_c = encoder_lstm(encoder_input)
+encoder_state = [encoder_state_h, encoder_state_c]
+
+decoder_input = Input(shape=(n_rnn, 1))
+decoder_lstm = LSTM(n_mid, return_sequences=True, return_state=True)
+decoder_output, _, _ = decoder_lstm(decoder_input, initial_state=encoder_state)
+decoder_dense = Dense(1, activation='linear')
+decoder_output = decoder_dense(decoder_output)
+
+model = Model([encoder_input, decoder_input], decoder_output)
+model.compile(loss="mean_squared_error", optimizer="adam")
+print(model.summary())
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
 
 ## ニューラルネットの構築
 
@@ -220,9 +297,7 @@ plt.show()
 ```
 
 
-    
-![svg](seq2seq_nb_files/seq2seq_nb_20_0.svg)
-    
+![svg](seq2seq_nb_files/seq2seq_nb_28_0.svg)
 
 
 ## 結果の確認
@@ -244,9 +319,7 @@ plt.show()
 ```
 
 
-    
-![svg](seq2seq_nb_files/seq2seq_nb_22_0.svg)
-    
+![svg](seq2seq_nb_files/seq2seq_nb_30_0.svg)
 
 
 単純なRNNだと少しずつずれが顕著になってきます。epochやモデルを改良すればもっと良い結果が出るかもしませんが、復習なのでここで一旦終わりとします。次はLSTMをやってみようと思います。

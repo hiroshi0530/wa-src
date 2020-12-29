@@ -1,13 +1,15 @@
 
-## kerasとRNNの基礎
+## kerasとLSTMの基礎, RNNとの比較
 
-復習を兼ねてkerasを用いて再帰型ニューラルネットワーク（Recurrent Neural Network：以下、RNN）の実装を行ってみようと思います。何でもいいと思いますが、時系列データとして、減衰振動曲線を用意して、それをRNNを用いて学習させてみようと思います。
+以前の記事でRNNの復習しましたので、ついでにLSTMの復習も行います。LSTMは Long Short Term Memory の略で、長期的な依存関係を学習することのできると言われています。また、RNNの一種で、基本的な考え方は同じです。詳細は検索すればいくらでも出てくるので割愛します。
+
+また、LSTMとRNNの比較を行います。
 
 ### github
-- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/rnn/rnn_nb.ipynb)
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
 
 ### google colaboratory
-- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/rnn/rnn_nb.ipynb)
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
 
 ### 筆者の環境
 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -67,7 +69,7 @@ $$
 y = \exp\left(-\frac{x}{\tau}\right)\cos(x) 
 $$
 
-波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。
+波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。単純なRNNと比較するため、サンプルデータは同じ関数とします。
 
 
 ```python
@@ -115,7 +117,7 @@ plt.show()
 ```
 
 
-![svg](rnn_nb_files/rnn_nb_11_0.svg)
+![svg](lstm_nb_files/lstm_nb_11_0.svg)
 
 
 $\tau=5$として、綺麗な減衰曲線が得られました。
@@ -135,6 +137,7 @@ compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_m
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import SimpleRNN
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
 
 NUM_RNN = 20
 NUM_MIDDLE = 40
@@ -150,12 +153,17 @@ for i in range(0, n):
 r_x = r_x.reshape(n, NUM_RNN, 1)
 r_y = r_y.reshape(n, NUM_RNN, 1)
 
-# ニューラルネットの構築
-model = Sequential()
+# RNNニューラルネットの構築
+rnn_model = Sequential()
+rnn_model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
+rnn_model.add(Dense(1, activation="linear"))
+rnn_model.compile(loss="mean_squared_error", optimizer="sgd")
 
-model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-model.add(Dense(1, activation="linear"))
-model.compile(loss="mean_squared_error", optimizer="sgd")
+# LSTMニューラルネットの構築
+lstm_model = Sequential()
+lstm_model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
+lstm_model.add(Dense(1, activation="linear"))
+lstm_model.compile(loss="mean_squared_error", optimizer="sgd")
 ```
 
 投入するデータや、モデルの概要を確認します。
@@ -164,11 +172,20 @@ model.compile(loss="mean_squared_error", optimizer="sgd")
 ```python
 print(r_y.shape)
 print(r_x.shape)
-print(model.summary())
 ```
 
     (180, 20, 1)
     (180, 20, 1)
+
+
+二つのモデルの比較を行います。LSTMの方がパラメタ数が多いことがわかります。学習するにもLSTMの方が時間がかかります。
+
+
+```python
+print(rnn_model.summary())
+print(lstm_model.summary())
+```
+
     Model: "sequential"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
@@ -179,6 +196,19 @@ print(model.summary())
     =================================================================
     Total params: 1,721
     Trainable params: 1,721
+    Non-trainable params: 0
+    _________________________________________________________________
+    None
+    Model: "sequential_1"
+    _________________________________________________________________
+    Layer (type)                 Output Shape              Param #   
+    =================================================================
+    lstm (LSTM)                  (None, 20, 40)            6720      
+    _________________________________________________________________
+    dense_1 (Dense)              (None, 20, 1)             41        
+    =================================================================
+    Total params: 6,761
+    Trainable params: 6,761
     Non-trainable params: 0
     _________________________________________________________________
     None
@@ -196,10 +226,13 @@ fit(self, x=None, y=None, batch_size=None, epochs=1, verbose=1, callbacks=None, 
 
 ```python
 batch_size = 10
-epochs = 500
+epochs = 1000
 
 # validation_split で最後の10％を検証用に利用します
-history = model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+rnn_history = rnn_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+
+# validation_split で最後の10％を検証用に利用します
+lstm_history = lstm_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
 ```
 
 ## 損失関数の可視化
@@ -208,18 +241,23 @@ history = model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_s
 
 
 ```python
-loss = history.history['loss'] # 訓練データの損失関数
-val_loss = history.history['val_loss'] #テストデータの損失関数
+rnn_loss = rnn_history.history['loss'] # 訓練データの損失関数
+rnn_val_loss = rnn_history.history['val_loss'] #テストデータの損失関数
 
-plt.plot(np.arange(len(loss)), loss, label='loss')
-plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
+lstm_loss = lstm_history.history['loss'] # 訓練データの損失関数
+lstm_val_loss = lstm_history.history['val_loss'] #テストデータの損失関数
+
+plt.plot(np.arange(len(rnn_loss)), rnn_loss, label='rnn_loss')
+plt.plot(np.arange(len(rnn_val_loss)), rnn_val_loss, label='rnn_val_loss')
+plt.plot(np.arange(len(lstm_loss)), lstm_loss, label='lstm_loss')
+plt.plot(np.arange(len(lstm_val_loss)), lstm_val_loss, label='lstm_val_loss')
 plt.grid()
 plt.legend()
 plt.show()
 ```
 
 
-![svg](rnn_nb_files/rnn_nb_20_0.svg)
+![svg](lstm_nb_files/lstm_nb_22_0.svg)
 
 
 ## 結果の確認
@@ -227,21 +265,26 @@ plt.show()
 
 ```python
 # 初期の入力値
-res = r_y[0].reshape(-1)
+rnn_res = r_y[0].reshape(-1)
+lstm_res = r_y[0].reshape(-1)
 
 for i in range(0, n):
-  _y = model.predict(res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  res = np.append(res, _y[0][NUM_RNN - 1][0])
+  _rnn_y = rnn_model.predict(rnn_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
+  rnn_res = np.append(rnn_res, _rnn_y[0][NUM_RNN - 1][0])
+  
+  _lstm_y = lstm_model.predict(lstm_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
+  lstm_res = np.append(lstm_res, _lstm_y[0][NUM_RNN - 1][0])
   
 plt.plot(np.arange(len(y)), y, label=r"$\exp\left(-\frac{x}{\tau}\right) \cos x$")
-plt.plot(np.arange(len(res)), res, label="RNN result")
+plt.plot(np.arange(len(rnn_res)), rnn_res, label="RNN result")
+plt.plot(np.arange(len(lstm_res)), lstm_res, label="LSTM result")
 plt.legend()
 plt.grid()
 plt.show()
 ```
 
 
-![svg](rnn_nb_files/rnn_nb_22_0.svg)
+![svg](lstm_nb_files/lstm_nb_24_0.svg)
 
 
-単純なRNNだと少しずつずれが顕著になってきます。epochやモデルを改良すればもっと良い結果が出るかもしませんが、復習なのでここで一旦終わりとします。次はLSTMをやってみようと思います。
+減衰振動曲線の場合、今回設定したパラメタでは、LSTMとRNNの差は出ていないようです。ただ、実務レベルでは、RNNよりLSTMの方がより使われており、結果も出ているように思います。今回はただの練習なので、ここで終わりにしようと思います。
