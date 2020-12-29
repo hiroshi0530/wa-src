@@ -118,19 +118,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
 
 # 問題ないようなので、pandasで読み込みます。
 
-# In[ ]:
+# In[9]:
 
 
 df = pd.read_csv('nikkei_utf8.csv')
 
 
-# In[ ]:
+# In[10]:
 
 
 df.head()
 
 
-# In[ ]:
+# In[11]:
 
 
 df.tail()
@@ -138,13 +138,13 @@ df.tail()
 
 # 最後の行に著作権に関する注意書きがありますが、これを削除します。複写や流布は行いません。
 
-# In[ ]:
+# In[12]:
 
 
 df.drop(index=975, inplace=True)
 
 
-# In[ ]:
+# In[13]:
 
 
 df.tail()
@@ -152,7 +152,7 @@ df.tail()
 
 # データを可視化してみます。コロナショックで大きくへこんでいることがわかりますが、2020年の年末の時点では金融緩和の影響を受けて大幅に上がっています。
 
-# In[ ]:
+# In[14]:
 
 
 ticks = 10
@@ -169,19 +169,25 @@ plt.show()
 # 
 # kerasに投入するためにデータを整えます。
 
-# In[ ]:
+# In[68]:
 
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 
-NUM_LSTM = 100
+NUM_LSTM = 20
 
-x = list(df['データ日付'])
-y = list(df['終値'])
-print(y[0:100])
-print(len(y))
+x = np.array((df['データ日付']))
+y = np.array((df['終値']))
+
+
+
+# x = np.linspace(0, 5 * np.pi, 200)
+# y = np.exp(-x / 5) * (np.cos(x))
+
+
+
 n = len(y) - NUM_LSTM
 l_x = np.zeros((n, NUM_LSTM))
 l_y = np.zeros((n, NUM_LSTM))
@@ -193,47 +199,57 @@ l_x = l_x.reshape(n, NUM_LSTM, 1)
 l_y = l_y.reshape(n, NUM_LSTM, 1)
 
 
-# In[ ]:
+# In[69]:
+
+
+print('shape : ', x.shape)
+print('ndim : ', x.ndim)
+print('data : ', x[:10])
+
+
+# In[70]:
+
+
+print('shape : ', y.shape)
+print('ndim : ', y.ndim)
+print('data : ', y[:10])
+
+
+# In[71]:
 
 
 print(l_y.shape)
 print(l_x.shape)
 
 
-# In[ ]:
-
-
-l_x[0][:10,0]
-
-
 # モデルの構築を定義する関数です。
 
-# In[ ]:
+# In[72]:
 
 
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Activation
 
-NUM_MIDDLE_01 = 120
+NUM_MIDDLE = 40 
+NUM_MIDDLE_01 = 100
 NUM_MIDDLE_02 = 120
 
 def build_lstm_model():
   # LSTMニューラルネットの構築
-  # model = Sequential()
-  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
-  # model.add(Dense(1, activation="linear"))
-  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  model = Sequential()
+  model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  model.add(Dense(1, activation="linear"))
+  model.compile(loss="mean_squared_error", optimizer="sgd")
   
   # LSTMニューラルネットの構築
-  model = Sequential()
-  model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
-  model.add(Dropout(0.2))
-  model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
-  model.add(Dropout(0.2))
-  model.add(Dense(1))
-  model.add(Activation("linear"))
-  
-  model.compile(loss="mse", optimizer='rmsprop')
+  # model = Sequential()
+  # model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  # model.add(Dropout(0.2))
+  # model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  # model.add(Dropout(0.2))
+  # model.add(Dense(1))
+  # model.add(Activation("linear"))
+  # model.compile(loss="mse", optimizer='rmsprop')
   # model.compile(loss="mean_squared_error", optimizer="sgd")
   
   return model
@@ -241,19 +257,19 @@ def build_lstm_model():
 model = build_lstm_model()
 
 
-# 詳細を確認します。
+# # 詳細を確認します。
 
-# In[ ]:
+# In[73]:
 
 
 print(model.summary())
 
 
-# In[ ]:
+# In[80]:
 
 
 batch_size = 20
-epochs = 500
+epochs = 2000
 
 # validation_split で最後の10％を検証用に利用します
 history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
@@ -263,7 +279,7 @@ history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_s
 # 
 # 学習によって誤差が減少していく様子を可視化してみます。
 
-# In[ ]:
+# In[81]:
 
 
 loss = history.history['loss']
@@ -278,7 +294,7 @@ plt.show()
 
 # ## 結果の確認
 
-# In[ ]:
+# In[82]:
 
 
 # 初期の入力値
@@ -331,7 +347,7 @@ plt.show()
 
 
 
-# In[ ]:
+# In[24]:
 
 
 
