@@ -1,0 +1,347 @@
+
+!sw_vers
+
+!python -V
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+import pandas as pd
+
+import tensorflow as tf
+from tensorflow import keras
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+print('tensorflow version : ', tf.__version__)
+print('keras version : ', keras.__version__)
+
+
+
+
+
+!ls 
+
+%%bash
+head nikkei.csv
+
+%%bash
+nkf --guess nikkei.csv
+
+%%bash
+nkf -w nikkei.csv > nikkei_utf8.csv
+
+%%bash
+head nikkei_utf8.csv
+
+df = pd.read_csv('nikkei_utf8.csv')
+
+df.head()
+
+df.tail()
+
+df.drop(index=975, inplace=True)
+
+df.tail()
+
+ticks = 10
+xticks = ticks * 5 
+
+plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='nikkei stock')
+plt.grid()
+plt.legend()
+plt.xticks(df['データ日付'][::xticks], rotation=60)
+plt.show()
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
+
+NUM_LSTM = 100
+
+x = list(df['データ日付'])
+y = list(df['終値'])
+print(y[0:100])
+print(len(y))
+n = len(y) - NUM_LSTM
+l_x = np.zeros((n, NUM_LSTM))
+l_y = np.zeros((n, NUM_LSTM))
+for i in range(0, n):
+  l_x[i] = y[i: i + NUM_LSTM]
+  l_y[i] = y[i + 1: i + NUM_LSTM + 1]
+
+l_x = l_x.reshape(n, NUM_LSTM, 1)
+l_y = l_y.reshape(n, NUM_LSTM, 1)
+
+print(l_y.shape)
+print(l_x.shape)
+
+l_x[0][:10,0]
+
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Activation
+
+NUM_MIDDLE_01 = 100
+NUM_MIDDLE_02 = 120
+
+def build_lstm_model():
+  # LSTMニューラルネットの構築
+  # model = Sequential()
+  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  # model.add(Dense(1, activation="linear"))
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  # LSTMニューラルネットの構築
+  model = Sequential()
+  model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  # model.add(Dropout(0.2))
+  # model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  # model.add(Dropout(0.2))
+  model.add(Dense(1))
+  model.add(Activation("linear"))
+  
+  model.compile(loss="mse", optimizer='rmsprop')
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  return model
+
+model = build_lstm_model()
+
+print(model.summary())
+
+batch_size = 20
+epochs = 50
+
+# validation_split で最後の10％を検証用に利用します
+history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
+plt.grid()
+plt.legend()
+plt.show()
+
+# 初期の入力値
+res = l_y[0].reshape(-1)
+
+for i in range(0, n):
+  _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
+  res = np.append(res, _y[0][NUM_LSTM - 1][0])
+  
+plt.plot(np.arange(len(y)), y, label="nikkei stock")
+plt.plot(np.arange(len(res)), res, label="lstm pred result")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import os
+import time
+import warnings
+import numpy as np
+from numpy import newaxis
+from keras.layers.core import Dense, Activation, Dropout
+from keras.layers.recurrent import LSTM
+from keras.models import Sequential
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+warnings.filterwarnings("ignore")
+
+def load_data(filename, seq_len, normalise_window):
+    f = open(filename, 'rb').read()
+    data = f.decode().split('\n')
+
+    sequence_length = seq_len + 1
+    result = []
+    for index in range(len(data) - sequence_length):
+        result.append(data[index: index + sequence_length])
+
+    if normalise_window:
+        result = normalise_windows(result)
+
+    result = np.array(result)
+
+    row = round(0.9 * result.shape[0])
+    train = result[:int(row),:]
+    np.random.shuffle(train)
+    x_train = train[:,:-1]
+    y_train = train[:,-1]
+    x_test = result[int(row):, :-1]
+    y_test = result[int(row):, -1]
+
+    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))
+    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+
+    return [x_train, y_train, x_test, y_test]
+
+def normalise_windows(window_data):
+    normalised_data = []
+    for window in window_data:
+        normalised_window = [((float(p) / float(window[0])) - 1) for p in window]
+        normalised_data.append(normalised_window)
+    return normalised_data
+
+def build_model(layers):
+    model = Sequential()
+
+    model.add(LSTM(input_shape = (layers[1], layers[0]),
+                    output_dim=layers[1],
+                    return_sequences=True))
+    model.add(Dropout(0.2))
+
+    model.add(LSTM(layers[2],return_sequences=False))
+    model.add(Dropout(0.2))
+
+    model.add(Dense(output_dim=layers[3]))
+    model.add(Activation("linear"))
+
+    start = time.time()
+    model.compile(loss="mse", optimizer='rmsprop')
+    print(" 実行時間：　", time.time() - start)
+    return model
+
+def predict_point_by_point(model, data):
+    predicted = model.predict(data)
+    predicted = np.reshape(predicted, (predicted.size,))
+    return predicted
+
+def predict_sequence_full(model, data, window_size):
+    curr_frame = data[0]
+    predicted = []
+    for i in range(len(data)):
+        predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
+        curr_frame = curr_frame[1:]
+        curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
+    return predicted
+
+def predict_sequences_multiple(model, data, window_size, prediction_len):
+    prediction_seqs = []
+    for i in range(int(len(data)/prediction_len)):
+        curr_frame = data[i*prediction_len]
+        predicted = []
+        for j in range(prediction_len):
+            predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
+            curr_frame = curr_frame[1:]
+            curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
+        prediction_seqs.append(predicted)
+    return prediction_seqs
+
+ import os
+import time
+import warnings
+import numpy as np
+from numpy import newaxis
+from keras.layers.core import Dense, Activation, Dropout
+from keras.layers.recurrent import LSTM
+from keras.models import Sequential
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+warnings.filterwarnings("ignore")
+
+def load_data(filename, seq_len, normalise_window):
+    f = open(filename, 'rb').read()
+    data = f.decode().split('\n')
+
+    sequence_length = seq_len + 1
+    result = []
+    for index in range(len(data) - sequence_length):
+        result.append(data[index: index + sequence_length])
+
+    if normalise_window:
+        result = normalise_windows(result)
+
+    result = np.array(result)
+
+    row = round(0.9 * result.shape[0])
+    train = result[:int(row),:]
+    np.random.shuffle(train)
+    x_train = train[:,:-1]
+    y_train = train[:,-1]
+    x_test = result[int(row):, :-1]
+    y_test = result[int(row):, -1]
+
+    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))
+    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+
+    return [x_train, y_train, x_test, y_test]
+
+def normalise_windows(window_data):
+    normalised_data = []
+    for window in window_data:
+        normalised_window = [((float(p) / float(window[0])) - 1) for p in window]
+        normalised_data.append(normalised_window)
+    return normalised_data
+
+def build_model(layers):
+    model = Sequential()
+
+    model.add(LSTM(input_shape = (layers[1], layers[0]),
+                    output_dim=layers[1],
+                    return_sequences=True))
+    model.add(Dropout(0.2))
+
+    model.add(LSTM(layers[2],return_sequences=False))
+    model.add(Dropout(0.2))
+
+    model.add(Dense(output_dim=layers[3]))
+    model.add(Activation("linear"))
+
+    start = time.time()
+    model.compile(loss="mse", optimizer='rmsprop')
+    print(" 実行時間：　", time.time() - start)
+    return model
+
+def predict_point_by_point(model, data):
+    predicted = model.predict(data)
+    predicted = np.reshape(predicted, (predicted.size,))
+    return predicted
+
+def predict_sequence_full(model, data, window_size):
+    curr_frame = data[0]
+    predicted = []
+    for i in range(len(data)):
+        predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
+        curr_frame = curr_frame[1:]
+        curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
+    return predicted
+
+def predict_sequences_multiple(model, data, window_size, prediction_len):
+    prediction_seqs = []
+    for i in range(int(len(data)/prediction_len)):
+        curr_frame = data[i*prediction_len]
+        predicted = []
+        for j in range(prediction_len):
+            predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
+            curr_frame = curr_frame[1:]
+            curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
+        prediction_seqs.append(predicted)
+    return prediction_seqs
+ 
+"""
+model.fit(X_train, y_train, batch_size=512, nb_epoch=epoch, validation_split=0.05)
+predictions = lstm.predict_sequences_multiple(model, X_test, seq_len, 50)
+model = lstm.build_model([1, 50, 100, 1])
+"""
+
