@@ -272,7 +272,15 @@ def translate(input_data):
 # In[ ]:
 
 
-
+demo_idices = [0, 13, 26, 39]
+for i in demo_idices:
+  x_demo = x_encoder[i : i + 1]
+  y_demo = translate(x_demo)
+  
+  plt.plot(axis_x[i : i + n_rnn], x_demo.reshape(-1), color="b")
+  plt.plot(axis_x[i : i + n_rnn], y_demo, color="r")
+  
+plt.show()  
 
 
 # In[ ]:
