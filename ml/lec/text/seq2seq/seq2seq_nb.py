@@ -30,7 +30,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[1]:
+# In[3]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -53,6 +53,27 @@ print('keras version : ', keras.__version__)
 print('gensim version : ', gensim.__version__)
 
 
+# ## sequence to sequence モデルの入出力データ
+# 
+# 最初にsequence to sequence モデルのアルゴリズムの概要と、それをkerasで実行する場合、どのようなデータの入出力になるのかを簡単に説明しようと思います。
+# 
+# ### データの入出力のイメージ
+# 
+# ![svg](seq2seq_nb_files_local/seq2seq.svg)
+# 
+# sequence to sequence はencoderとdecoderという二つの部分で構成されています。それぞれの部分はRNNやLSTMなどのモデルで構築されます。
+# このような特徴から時系列データの解析に強く、機械翻訳や音声認識などの分野で利用されているようです。
+# 
+# kerasでseq2seqを実装するには、encoderとdecoderそれぞれへの入力データ（図で言うdataset 1と2）と正解データ（dataset 3)が必要になります。
+# 
+# 正解データは、decoderへの入力セットから時系列的に一つずれていることがポイントになります。
+# 
+# 以下のサイトを参考にさせていただきました。
+# 
+# - https://blog.octopt.com/sequence-to-sequence/
+# 
+# 
+
 # ## サンプルデータ
 # 
 # サンプル用のデータとして、以下の式を利用します。
@@ -66,19 +87,19 @@ print('gensim version : ', gensim.__version__)
 # $$
 # 
 
-# In[7]:
+# In[4]:
 
 
 x = np.linspace(0, 3, 200)
-ey = np.exp(x)
-dy = np.log(x)
+seq_in = np.exp(x)
+seq_out = np.log(x)
 
 
 # ### データの確認
 # 
 # $x$と$y$のデータの詳細を見てみます。
 
-# In[8]:
+# In[5]:
 
 
 print('shape : ', x.shape)
@@ -86,202 +107,194 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[9]:
+# In[6]:
 
 
-print('shape : ', y1.shape)
-print('ndim : ', y1.ndim)
-print('data : ', y1[:10])
+print('shape : ', seq_in.shape)
+print('ndim : ', seq_in.ndim)
+print('data : ', seq_in[:10])
 
-
-# グラフを確認してみます。
-
-# In[12]:
-
-
-plt.plot(x, y1, label='$y=\exp x$')
-plt.plot(x, y2, label='$y=\log x$')
-plt.legend()
-plt.grid()
-plt.show()
-
-
-# In[ ]:
-
-
-from keras.models import Model
-from keras.layers import LSTM
-from keras.layers import Input
-from keras.layers import Dense
-
-n_mid = 20
-
-encoder_input = Input(shape=(n_rnn, 1))
-encoder_lstm = LSTM(n_mid, return_state=True)
-encoder_output, encoder_state_h, encoder_state_c = encoder_lstm(encoder_input)
-encoder_state = [encoder_state_h, encoder_state_c]
-
-decoder_input = Input(shape=(n_rnn, 1))
-decoder_lstm = LSTM(n_mid, return_sequences=True, return_state=True)
-decoder_output, _, _ = decoder_lstm(decoder_input, initial_state=encoder_state)
-decoder_dense = Dense(1, activation='linear')
-decoder_output = decoder_dense(decoder_output)
-
-model = Model([encoder_input, decoder_input], decoder_output)
-model.compile(loss="mean_squared_error", optimizer="adam")
-print(model.summary())
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# ## ニューラルネットの構築
-# 
-# kerasに投入するためにデータの前処理を行い、再帰型のニューラルネットの構築を行います。
-# 
-# 構築が終了したら、compileメソッドを利用して、モデルをコンパイルします。compileの仕様は以下の様になっています。
-# 
-# ```bash
-# compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
-# ```
 
 # In[8]:
 
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN
-from tensorflow.keras.layers import Dense
-
-NUM_RNN = 20
-NUM_MIDDLE = 40
-
-# データの前処理
-n = len(x) - NUM_RNN
-r_x = np.zeros((n, NUM_RNN))
-r_y = np.zeros((n, NUM_RNN))
-for i in range(0, n):
-  r_x[i] = y[i: i + NUM_RNN]
-  r_y[i] = y[i + 1: i + NUM_RNN + 1]
-
-r_x = r_x.reshape(n, NUM_RNN, 1)
-r_y = r_y.reshape(n, NUM_RNN, 1)
-
-# ニューラルネットの構築
-model = Sequential()
-
-model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-model.add(Dense(1, activation="linear"))
-model.compile(loss="mean_squared_error", optimizer="sgd")
+print('shape : ', seq_out.shape)
+print('ndim : ', seq_out.ndim)
+print('data : ', seq_out[:10])
 
 
-# 投入するデータや、モデルの概要を確認します。
+# グラフを確認してみます。
 
 # In[9]:
 
 
-print(r_y.shape)
-print(r_x.shape)
-print(model.summary())
-
-
-# ## 学習
-# 
-# fitメソッドを利用して、学習を行います。
-# fitメソッドの仕様は以下の通りになっています。[こちら](https://keras.io/ja/models/sequential/)を参照してください。
-# 
-# ```bash
-# fit(self, x=None, y=None, batch_size=None, epochs=1, verbose=1, callbacks=None, validation_split=0.0, validation_data=None, shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0, steps_per_epoch=None, validation_steps=None)
-# ```
-
-# In[10]:
-
-
-batch_size = 10
-epochs = 500
-
-# validation_split で最後の10％を検証用に利用します
-history = model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
-
-
-# ## 損失関数の可視化
-# 
-# 学習によって誤差が減少していく様子を可視化してみます。
-
-# In[11]:
-
-
-loss = history.history['loss'] # 訓練データの損失関数
-val_loss = history.history['val_loss'] #テストデータの損失関数
-
-plt.plot(np.arange(len(loss)), loss, label='loss')
-plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
-plt.grid()
+plt.plot(x, seq_in, label='$y=\exp x$')
+plt.plot(x, seq_out, label='$y=\log x$')
 plt.legend()
+plt.grid()
 plt.show()
 
 
-# ## 結果の確認
+# ### データの準備
+# 
+# kerasに入力するためのデータをnumpy配列に格納します。
 
 # In[12]:
 
 
-# 初期の入力値
-res = r_y[0].reshape(-1)
+NUM_LSTM = 10
+
+n = len(x) - NUM_LSTM
+ex = np.zeros((n, NUM_LSTM))
+dx = np.zeros((n, NUM_LSTM))
+dy = np.zeros((n, NUM_LSTM))
 
 for i in range(0, n):
-  _y = model.predict(res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  res = np.append(res, _y[0][NUM_RNN - 1][0])
+  ex[i] = seq_in[i:i+NUM_LSTM]
+  dx[i, 1:] = seq_out[i:i+NUM_LSTM-1]
+  dy[i] = seq_out[i:i+NUM_LSTM]
+
+ex = ex.reshape(n, NUM_LSTM, 1)
+dx = dx.reshape(n, NUM_LSTM, 1)
+dy = dy.reshape(n, NUM_LSTM, 1)
+
+
+# ## モデルの構築
+# 
+# sequence to sequenceのモデルをkerasを用いて実装します。
+# 単純なRNNやLSTMとは異なり、モデルが複数あり、それぞれから入力する必要があるため、Sequenceではなく、Modelを利用します。
+
+# In[15]:
+
+
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model
+
+NUM_MID = 20
+
+def build_seq2se2_model():
+  e_input = Input(shape=(NUM_LSTM, 1))
+  e_lstm = LSTM(NUM_MID, return_state=True)
+  e_output, e_state_h, e_state_c = e_lstm(e_input)
+  e_state = [e_state_h, e_state_c]
   
-plt.plot(np.arange(len(y)), y, label=r"$\exp\left(-\frac{x}{\tau}\right) \cos x$")
-plt.plot(np.arange(len(res)), res, label="RNN result")
-plt.legend()
-plt.grid()
+  d_input = Input(shape=(NUM_LSTM, 1))
+  d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
+  d_output, _, _ = d_lstm(d_input, initial_state=e_state)
+  d_dense = Dense(1, activation='linear')
+  d_output = d_dense(d_output)
+  
+  model = Model([e_input, d_input], d_output)
+  model.compile(loss="mean_squared_error", optimizer="adam")
+  print(model.summary())
+  
+  return model
+
+seq2seq_model = build_seq2se2_model()
+
+
+# ## モデルの学習
+
+# In[19]:
+
+
+# 学習用のパラメタを設定します
+batch_size = 10
+epochs = 20
+
+history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=8)
+
+
+# ## 損失関数
+# 
+# 損失関数が減少していく様子を可視化してみます。
+
+# In[21]:
+
+
+loss = history.history['loss']
+plt.plot(np.arange(len(loss)), loss)
 plt.show()
 
 
-# 単純なRNNだと少しずつずれが顕著になってきます。epochやモデルを改良すればもっと良い結果が出るかもしませんが、復習なのでここで一旦終わりとします。次はLSTMをやってみようと思います。
+# In[ ]:
+
+
+
+
+
+# ## 予測するためのencoderとdecoderのモデルを返す関数を作成します
+
+# In[22]:
+
+
+def build_predict_encoder_d_model():
+  e_model = Model(e_input, e_state)
+  
+  d_input = Input(shape=(1, 1))
+  d_state_in_h = Input(shape=(NUM_MID,))
+  d_state_in_c = Input(shape=(NUM_MID,))
+  d_state_in = [d_state_in_h, d_state_in_c]
+  
+  d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
+  d_state = [d_state_h, d_state_c]
+  
+  d_output = d_dense(d_output)
+  d_model = Model([d_input] + d_state_in, [d_output] + d_state)
+  
+  return e_model, d_model
+
+
+# データを変換するための関数を実装します。
+
+# In[ ]:
+
+
+def translate(input_data):
+  state_value = encoder_model.predict(input_data)
+  y_decoder = np.zeros((1, 1, 1))
+  translated = []
+  
+  for i in range(0, n_rnn):  # 各時刻ごとに予測を行う
+    y, h, c = decoder_model.predict([y_decoder] + state_value)
+    y = y[0][0][0]
+    translated.append(y)
+    y_decoder[0][0][0] = y
+    state_value = [h, c]
+
+  return translated
+
+
+# 結果の確認
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+

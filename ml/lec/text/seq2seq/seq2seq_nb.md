@@ -59,9 +59,30 @@ print('gensim version : ', gensim.__version__)
     matplotlib version : 3.0.3
     scipy version : 1.4.1
     numpy version : 1.19.4
-    tensorflow version :  2.1.0
-    keras version :  2.2.4-tf
+    tensorflow version :  2.4.0
+    keras version :  2.4.0
     gensim version :  3.8.3
+
+
+## sequence to sequence モデルの入出力データ
+
+最初にsequence to sequence モデルのアルゴリズムの概要と、それをkerasで実行する場合、どのようなデータの入出力になるのかを簡単に説明しようと思います。
+
+### データの入出力のイメージ
+
+![svg](seq2seq_nb_files_local/seq2seq.svg)
+
+sequence to sequence はencoderとdecoderという二つの部分で構成されています。それぞれの部分はRNNやLSTMなどのモデルで構築されます。
+このような特徴から時系列データの解析に強く、機械翻訳や音声認識などの分野で利用されているようです。
+
+kerasでseq2seqを実装するには、encoderとdecoderそれぞれへの入力データ（図で言うdataset 1と2）と正解データ（dataset 3)が必要になります。
+
+正解データは、decoderへの入力セットから時系列的に一つずれていることがポイントになります。
+
+以下のサイトを参考にさせていただきました。
+
+- https://blog.octopt.com/sequence-to-sequence/
+
 
 
 ## サンプルデータ
@@ -80,8 +101,8 @@ $$
 
 ```python
 x = np.linspace(0, 3, 200)
-ey = np.exp(x)
-dy = np.log(x)
+seq_in = np.exp(x)
+seq_out = np.log(x)
 ```
 
     /Users/hiroshi/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:3: RuntimeWarning: divide by zero encountered in log
@@ -107,9 +128,9 @@ print('data : ', x[:10])
 
 
 ```python
-print('shape : ', y1.shape)
-print('ndim : ', y1.ndim)
-print('data : ', y1[:10])
+print('shape : ', seq_in.shape)
+print('ndim : ', seq_in.ndim)
+print('data : ', seq_in[:10])
 ```
 
     shape :  (200,)
@@ -118,208 +139,259 @@ print('data : ', y1[:10])
      1.09466925 1.11129682 1.12817695 1.14531349]
 
 
+
+```python
+print('shape : ', seq_out.shape)
+print('ndim : ', seq_out.ndim)
+print('data : ', seq_out[:10])
+```
+
+    shape :  (200,)
+    ndim :  1
+    data :  [       -inf -4.19469254 -3.50154536 -3.09608025 -2.80839817 -2.58525462
+     -2.40293307 -2.24878239 -2.11525099 -1.99746796]
+
+
 グラフを確認してみます。
 
 
 ```python
-plt.plot(x, y1, label='$y=\exp x$')
-plt.plot(x, y2, label='$y=\log x$')
+plt.plot(x, seq_in, label='$y=\exp x$')
+plt.plot(x, seq_out, label='$y=\log x$')
 plt.legend()
 plt.grid()
 plt.show()
 ```
 
 
-![svg](seq2seq_nb_files/seq2seq_nb_11_0.svg)
+![svg](seq2seq_nb_files/seq2seq_nb_13_0.svg)
 
 
+### データの準備
 
-```python
-from keras.models import Model
-from keras.layers import LSTM
-from keras.layers import Input
-from keras.layers import Dense
-
-n_mid = 20
-
-encoder_input = Input(shape=(n_rnn, 1))
-encoder_lstm = LSTM(n_mid, return_state=True)
-encoder_output, encoder_state_h, encoder_state_c = encoder_lstm(encoder_input)
-encoder_state = [encoder_state_h, encoder_state_c]
-
-decoder_input = Input(shape=(n_rnn, 1))
-decoder_lstm = LSTM(n_mid, return_sequences=True, return_state=True)
-decoder_output, _, _ = decoder_lstm(decoder_input, initial_state=encoder_state)
-decoder_dense = Dense(1, activation='linear')
-decoder_output = decoder_dense(decoder_output)
-
-model = Model([encoder_input, decoder_input], decoder_output)
-model.compile(loss="mean_squared_error", optimizer="adam")
-print(model.summary())
-```
+kerasに入力するためのデータをnumpy配列に格納します。
 
 
 ```python
+NUM_LSTM = 10
 
-```
+n = len(x) - NUM_LSTM
+ex = np.zeros((n, NUM_LSTM))
+dx = np.zeros((n, NUM_LSTM))
+dy = np.zeros((n, NUM_LSTM))
 
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-## ニューラルネットの構築
-
-kerasに投入するためにデータの前処理を行い、再帰型のニューラルネットの構築を行います。
-
-構築が終了したら、compileメソッドを利用して、モデルをコンパイルします。compileの仕様は以下の様になっています。
-
-```bash
-compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
-```
-
-
-```python
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN
-from tensorflow.keras.layers import Dense
-
-NUM_RNN = 20
-NUM_MIDDLE = 40
-
-# データの前処理
-n = len(x) - NUM_RNN
-r_x = np.zeros((n, NUM_RNN))
-r_y = np.zeros((n, NUM_RNN))
 for i in range(0, n):
-  r_x[i] = y[i: i + NUM_RNN]
-  r_y[i] = y[i + 1: i + NUM_RNN + 1]
+  ex[i] = seq_in[i:i+NUM_LSTM]
+  dx[i, 1:] = seq_out[i:i+NUM_LSTM-1]
+  dy[i] = seq_out[i:i+NUM_LSTM]
 
-r_x = r_x.reshape(n, NUM_RNN, 1)
-r_y = r_y.reshape(n, NUM_RNN, 1)
-
-# ニューラルネットの構築
-model = Sequential()
-
-model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-model.add(Dense(1, activation="linear"))
-model.compile(loss="mean_squared_error", optimizer="sgd")
+ex = ex.reshape(n, NUM_LSTM, 1)
+dx = dx.reshape(n, NUM_LSTM, 1)
+dy = dy.reshape(n, NUM_LSTM, 1)
 ```
 
-投入するデータや、モデルの概要を確認します。
+## モデルの構築
+
+sequence to sequenceのモデルをkerasを用いて実装します。
+単純なRNNやLSTMとは異なり、モデルが複数あり、それぞれから入力する必要があるため、Sequenceではなく、Modelを利用します。
 
 
 ```python
-print(r_y.shape)
-print(r_x.shape)
-print(model.summary())
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model
+
+NUM_MID = 20
+
+def build_seq2se2_model():
+  e_input = Input(shape=(NUM_LSTM, 1))
+  e_lstm = LSTM(NUM_MID, return_state=True)
+  e_output, e_state_h, e_state_c = e_lstm(e_input)
+  e_state = [e_state_h, e_state_c]
+  
+  d_input = Input(shape=(NUM_LSTM, 1))
+  d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
+  d_output, _, _ = d_lstm(d_input, initial_state=e_state)
+  d_dense = Dense(1, activation='linear')
+  d_output = d_dense(d_output)
+  
+  model = Model([e_input, d_input], d_output)
+  model.compile(loss="mean_squared_error", optimizer="adam")
+  print(model.summary())
+  
+  return model
+
+seq2seq_model = build_seq2se2_model()
 ```
 
-    (180, 20, 1)
-    (180, 20, 1)
-    Model: "sequential"
-    _________________________________________________________________
-    Layer (type)                 Output Shape              Param #   
-    =================================================================
-    simple_rnn (SimpleRNN)       (None, 20, 40)            1680      
-    _________________________________________________________________
-    dense (Dense)                (None, 20, 1)             41        
-    =================================================================
-    Total params: 1,721
-    Trainable params: 1,721
+    Model: "model_1"
+    __________________________________________________________________________________________________
+    Layer (type)                    Output Shape         Param #     Connected to                     
+    ==================================================================================================
+    input_3 (InputLayer)            [(None, 10, 1)]      0                                            
+    __________________________________________________________________________________________________
+    input_4 (InputLayer)            [(None, 10, 1)]      0                                            
+    __________________________________________________________________________________________________
+    lstm_2 (LSTM)                   [(None, 20), (None,  1760        input_3[0][0]                    
+    __________________________________________________________________________________________________
+    lstm_3 (LSTM)                   [(None, 10, 20), (No 1760        input_4[0][0]                    
+                                                                     lstm_2[0][1]                     
+                                                                     lstm_2[0][2]                     
+    __________________________________________________________________________________________________
+    dense_1 (Dense)                 (None, 10, 1)        21          lstm_3[0][0]                     
+    ==================================================================================================
+    Total params: 3,541
+    Trainable params: 3,541
     Non-trainable params: 0
-    _________________________________________________________________
+    __________________________________________________________________________________________________
     None
 
 
-## 学習
-
-fitメソッドを利用して、学習を行います。
-fitメソッドの仕様は以下の通りになっています。[こちら](https://keras.io/ja/models/sequential/)を参照してください。
-
-```bash
-fit(self, x=None, y=None, batch_size=None, epochs=1, verbose=1, callbacks=None, validation_split=0.0, validation_data=None, shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0, steps_per_epoch=None, validation_steps=None)
-```
+## モデルの学習
 
 
 ```python
+# 学習用のパラメタを設定します
 batch_size = 10
-epochs = 500
+epochs = 20
 
-# validation_split で最後の10％を検証用に利用します
-history = model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=8)
 ```
 
-## 損失関数の可視化
+    Epoch 1/20
+    24/24 [==============================] - 5s 12ms/step - loss: nan
+    Epoch 2/20
+    24/24 [==============================] - 0s 14ms/step - loss: nan
+    Epoch 3/20
+    24/24 [==============================] - 0s 19ms/step - loss: nan
+    Epoch 4/20
+    24/24 [==============================] - 0s 13ms/step - loss: nan
+    Epoch 5/20
+    24/24 [==============================] - 0s 12ms/step - loss: nan
+    Epoch 6/20
+    24/24 [==============================] - 0s 10ms/step - loss: nan
+    Epoch 7/20
+    24/24 [==============================] - 0s 9ms/step - loss: nan
+    Epoch 8/20
+    24/24 [==============================] - 0s 10ms/step - loss: nan
+    Epoch 9/20
+    24/24 [==============================] - 0s 17ms/step - loss: nan
+    Epoch 10/20
+    24/24 [==============================] - 0s 11ms/step - loss: nan
+    Epoch 11/20
+    24/24 [==============================] - 0s 12ms/step - loss: nan
+    Epoch 12/20
+    24/24 [==============================] - 1s 23ms/step - loss: nan
+    Epoch 13/20
+    24/24 [==============================] - 0s 17ms/step - loss: nan 0s - l
+    Epoch 14/20
+    24/24 [==============================] - 0s 16ms/step - loss: nan
+    Epoch 15/20
+    24/24 [==============================] - 0s 16ms/step - loss: nan
+    Epoch 16/20
+    24/24 [==============================] - 0s 14ms/step - loss: nan
+    Epoch 17/20
+    24/24 [==============================] - 0s 16ms/step - loss: nan
+    Epoch 18/20
+    24/24 [==============================] - 0s 16ms/step - loss: nan
+    Epoch 19/20
+    24/24 [==============================] - 0s 15ms/step - loss: nan
+    Epoch 20/20
+    24/24 [==============================] - 0s 16ms/step - loss: nan
 
-学習によって誤差が減少していく様子を可視化してみます。
+
+## 損失関数
+
+損失関数が減少していく様子を可視化してみます。
 
 
 ```python
-loss = history.history['loss'] # 訓練データの損失関数
-val_loss = history.history['val_loss'] #テストデータの損失関数
-
-plt.plot(np.arange(len(loss)), loss, label='loss')
-plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
-plt.grid()
-plt.legend()
+loss = history.history['loss']
+plt.plot(np.arange(len(loss)), loss)
 plt.show()
 ```
 
 
-![svg](seq2seq_nb_files/seq2seq_nb_28_0.svg)
+![svg](seq2seq_nb_files/seq2seq_nb_21_0.svg)
 
-
-## 結果の確認
 
 
 ```python
-# 初期の入力値
-res = r_y[0].reshape(-1)
 
-for i in range(0, n):
-  _y = model.predict(res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  res = np.append(res, _y[0][NUM_RNN - 1][0])
+```
+
+## 予測するためのencoderとdecoderのモデルを返す関数を作成します
+
+
+```python
+def build_predict_encoder_d_model():
+  e_model = Model(e_input, e_state)
   
-plt.plot(np.arange(len(y)), y, label=r"$\exp\left(-\frac{x}{\tau}\right) \cos x$")
-plt.plot(np.arange(len(res)), res, label="RNN result")
-plt.legend()
-plt.grid()
-plt.show()
+  d_input = Input(shape=(1, 1))
+  d_state_in_h = Input(shape=(NUM_MID,))
+  d_state_in_c = Input(shape=(NUM_MID,))
+  d_state_in = [d_state_in_h, d_state_in_c]
+  
+  d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
+  d_state = [d_state_h, d_state_c]
+  
+  d_output = d_dense(d_output)
+  d_model = Model([d_input] + d_state_in, [d_output] + d_state)
+  
+  return e_model, d_model
+```
+
+データを変換するための関数を実装します。
+
+
+```python
+def translate(input_data):
+  state_value = encoder_model.predict(input_data)
+  y_decoder = np.zeros((1, 1, 1))
+  translated = []
+  
+  for i in range(0, n_rnn):  # 各時刻ごとに予測を行う
+    y, h, c = decoder_model.predict([y_decoder] + state_value)
+    y = y[0][0][0]
+    translated.append(y)
+    y_decoder[0][0][0] = y
+    state_value = [h, c]
+
+  return translated
+```
+
+結果の確認
+
+
+```python
+demo_idices = [0, 13, 26, 39]
+for i in demo_idices:
+  x_demo = x_encoder[i : i + 1]
+  y_demo = translate(x_demo)
+  
+  plt.plot(axis_x[i : i + n_rnn], x_demo.reshape(-1), color="b")
+  plt.plot(axis_x[i : i + n_rnn], y_demo, color="r")
+  
+plt.show()  
 ```
 
 
-![svg](seq2seq_nb_files/seq2seq_nb_30_0.svg)
+```python
+
+```
 
 
-単純なRNNだと少しずつずれが顕著になってきます。epochやモデルを改良すればもっと良い結果が出るかもしませんが、復習なのでここで一旦終わりとします。次はLSTMをやってみようと思います。
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
