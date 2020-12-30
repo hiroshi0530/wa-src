@@ -108,7 +108,7 @@ plt.show()
 # compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
 # ```
 
-# In[8]:
+# In[ ]:
 
 
 from tensorflow.keras.models import Sequential
