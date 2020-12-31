@@ -294,7 +294,8 @@ for i in demo_idices:
   
   plt.plot(x[i : i + NUM_LSTM], x_demo.reshape(-1), color="b")
   plt.plot(x[i : i + NUM_LSTM], y_demo, color="r")
-  
+
+plt.grid()
 plt.show()  
 
 
