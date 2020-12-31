@@ -7,6 +7,8 @@
 # 
 # ここでは、復習もかねて、基本的なsequnece to sequenceを実装します。$y=\exp x$を$y=\log x$に翻訳するモデルの構築を行います。なお、モデルの詳細は検索すればいくらでも出てきますのでここでは割愛します。文献や教科書、技術者によっては、sequnece to sequenceモデルは、「Encoder-Decoderモデル」、「系列変換モデル」などと呼ばれることも多いようです。
 # 
+# 以下ではkerasを用いてseq2seqの実装を行いますが、詳細は[公式ブログ](https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html)を参照してください。
+# 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/seq2seq/seq2seq_nb.ipynb)
 # 
@@ -76,23 +78,31 @@ print('gensim version : ', gensim.__version__)
 
 # ## サンプルデータ
 # 
-# サンプル用のデータとして、以下の式を利用します。
+# サンプル用のエンコーダーデータ、デコーダーデータとして、以下の式を利用します。
 # 
 # $$
-# encoder_y = \exp x
+# \text{encoder} : y = \sqrt{x} 
 # $$
 # 
 # $$
-# dencoder_y = \log x
+# \text{dencoder} : y = x^2
 # $$
 # 
 
 # In[4]:
 
 
-x = np.linspace(0, 3, 200)
-seq_in = np.exp(x)
-seq_out = np.log(x)
+x = np.linspace(0, 1.5, 50)
+seq_out = np.array(x ** 0.5)
+seq_in = np.array(x ** 2)
+
+# x = np.linspace(-2*np.pi, 2*np.pi)  # -2πから2πまで
+# seq_in = np.sin(x)
+# seq_out = np.cos(x)
+
+# x = np.linspace(0, 5 * np.pi, 50)
+# seq_in = np.exp(-x / 5) * (np.cos(x))
+# seq_out = np.exp(-x / 5) * (np.sin(x))
 
 
 # ### データの確認
@@ -115,7 +125,7 @@ print('ndim : ', seq_in.ndim)
 print('data : ', seq_in[:10])
 
 
-# In[8]:
+# In[7]:
 
 
 print('shape : ', seq_out.shape)
@@ -125,7 +135,7 @@ print('data : ', seq_out[:10])
 
 # グラフを確認してみます。
 
-# In[9]:
+# In[8]:
 
 
 plt.plot(x, seq_in, label='$y=\exp x$')
@@ -139,10 +149,10 @@ plt.show()
 # 
 # kerasに入力するためのデータをnumpy配列に格納します。
 
-# In[12]:
+# In[9]:
 
 
-NUM_LSTM = 10
+NUM_LSTM = 10 
 
 n = len(x) - NUM_LSTM
 ex = np.zeros((n, NUM_LSTM))
@@ -164,7 +174,7 @@ dy = dy.reshape(n, NUM_LSTM, 1)
 # sequence to sequenceのモデルをkerasを用いて実装します。
 # 単純なRNNやLSTMとは異なり、モデルが複数あり、それぞれから入力する必要があるため、Sequenceではなく、Modelを利用します。
 
-# In[15]:
+# In[10]:
 
 
 from tensorflow.keras.layers import LSTM
@@ -174,94 +184,96 @@ from tensorflow.keras.models import Model
 
 NUM_MID = 20
 
-def build_seq2se2_model():
-  e_input = Input(shape=(NUM_LSTM, 1))
-  e_lstm = LSTM(NUM_MID, return_state=True)
-  e_output, e_state_h, e_state_c = e_lstm(e_input)
-  e_state = [e_state_h, e_state_c]
-  
-  d_input = Input(shape=(NUM_LSTM, 1))
-  d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
-  d_output, _, _ = d_lstm(d_input, initial_state=e_state)
-  d_dense = Dense(1, activation='linear')
-  d_output = d_dense(d_output)
-  
-  model = Model([e_input, d_input], d_output)
-  model.compile(loss="mean_squared_error", optimizer="adam")
-  print(model.summary())
-  
-  return model
+e_input = Input(shape=(NUM_LSTM, 1))
+e_lstm = LSTM(NUM_MID, return_state=True)
+e_output, e_state_h, e_state_c = e_lstm(e_input)
+e_state = [e_state_h, e_state_c]
 
-seq2seq_model = build_seq2se2_model()
+d_input = Input(shape=(NUM_LSTM, 1))
+d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
+d_output, _, _ = d_lstm(d_input, initial_state=e_state)
+d_dense = Dense(1, activation='linear')
+d_output = d_dense(d_output)
+
+seq2seq_model = Model([e_input, d_input], d_output)
+seq2seq_model.compile(loss="mean_squared_error", optimizer="adam")
+
+# モデルの確認
+print(seq2seq_model.summary())
 
 
 # ## モデルの学習
 
-# In[19]:
+# In[11]:
 
 
 # 学習用のパラメタを設定します
-batch_size = 10
-epochs = 20
+batch_size = 8
+epochs = 30
 
-history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=8)
+history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=batch_size, verbose=False)
 
 
 # ## 損失関数
 # 
 # 損失関数が減少していく様子を可視化してみます。
 
-# In[21]:
+# In[12]:
 
 
 loss = history.history['loss']
-plt.plot(np.arange(len(loss)), loss)
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.grid()
+plt.legend()
 plt.show()
 
 
-# In[ ]:
+# 十分に収束してる事が分かります。
+
+# ## 予測するためのencoderとdecoderのモデルを返す関数の作成
+# 
+# ### encoderモデルの構築
+
+# In[13]:
 
 
+# encoderのモデルを構築
+e_model = Model(e_input, e_state)
 
 
-
-# ## 予測するためのencoderとdecoderのモデルを返す関数を作成します
-
-# In[22]:
+# In[14]:
 
 
-def build_predict_encoder_d_model():
-  e_model = Model(e_input, e_state)
-  
-  d_input = Input(shape=(1, 1))
-  d_state_in_h = Input(shape=(NUM_MID,))
-  d_state_in_c = Input(shape=(NUM_MID,))
-  d_state_in = [d_state_in_h, d_state_in_c]
-  
-  d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
-  d_state = [d_state_h, d_state_c]
-  
-  d_output = d_dense(d_output)
-  d_model = Model([d_input] + d_state_in, [d_output] + d_state)
-  
-  return e_model, d_model
+# decoderのモデルを構築
+d_input = Input(shape=(1, 1))
+
+d_state_in_h = Input(shape=(NUM_MID,))
+d_state_in_c = Input(shape=(NUM_MID,))
+d_state_in = [d_state_in_h, d_state_in_c]
+
+d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
+                                                                 
+d_state = [d_state_h, d_state_c]
+
+d_output = d_dense(d_output)
+d_model = Model([d_input] + d_state_in, [d_output] + d_state)
 
 
 # データを変換するための関数を実装します。
 
-# In[ ]:
+# In[15]:
 
 
 def translate(input_data):
-  state_value = encoder_model.predict(input_data)
+  state_value = e_model.predict(input_data)
   y_decoder = np.zeros((1, 1, 1))
   translated = []
   
-  for i in range(0, n_rnn):  # 各時刻ごとに予測を行う
-    y, h, c = decoder_model.predict([y_decoder] + state_value)
+  for i in range(0, NUM_LSTM):
+    y, h, c = d_model.predict([y_decoder] + state_value)
     y = y[0][0][0]
     translated.append(y)
-    y_decoder[0][0][0] = y
+    dy[0][0][0] = y
     state_value = [h, c]
 
   return translated
@@ -269,24 +281,31 @@ def translate(input_data):
 
 # 結果の確認
 
-# In[ ]:
+# In[16]:
 
 
-demo_idices = [0, 13, 26, 39]
+demo_idices = [0, 13, 26, 39]  # デモに使うデータのインデックス
+# demo_idices = [0, 13, 26, 39]  # デモに使うデータのインデックス
+# demo_idices = [0, 20, 40, 60, 80]  # デモに使うデータのインデックス
+
 for i in demo_idices:
-  x_demo = x_encoder[i : i + 1]
+  x_demo = ex[i : i + 1]
   y_demo = translate(x_demo)
   
-  plt.plot(axis_x[i : i + n_rnn], x_demo.reshape(-1), color="b")
-  plt.plot(axis_x[i : i + n_rnn], y_demo, color="r")
+  plt.plot(x[i : i + NUM_LSTM], x_demo.reshape(-1), color="b")
+  plt.plot(x[i : i + NUM_LSTM], y_demo, color="r")
   
 plt.show()  
 
 
-# In[ ]:
+# In[17]:
 
 
-
+plt.plot(x, seq_in, label='$y=\exp x$')
+plt.plot(x, seq_out, label='$y=\log x$')
+plt.legend()
+plt.grid()
+plt.show()
 
 
 # In[ ]:
