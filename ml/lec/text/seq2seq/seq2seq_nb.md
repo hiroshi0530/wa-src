@@ -1,9 +1,10 @@
-
 ## kerasとsequnece to sequence
 
 前回、LSTMによる実装を行いましたので、次はsquence to sequenceモデルを実装していこうと思います。今現在では、機械翻訳などの自然言語処理では、このsequnece to sequenceとAttentionを基本としたモデルがよく利用されています。BERTなどもAttentionモデルが基本となっています。
 
 ここでは、復習もかねて、基本的なsequnece to sequenceを実装します。$y=\exp x$を$y=\log x$に翻訳するモデルの構築を行います。なお、モデルの詳細は検索すればいくらでも出てきますのでここでは割愛します。文献や教科書、技術者によっては、sequnece to sequenceモデルは、「Encoder-Decoderモデル」、「系列変換モデル」などと呼ばれることも多いようです。
+
+以下ではkerasを用いてseq2seqの実装を行いますが、詳細は[公式ブログ](https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html)を参照してください。
 
 ### github
 - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/seq2seq/seq2seq_nb.ipynb)
@@ -21,7 +22,7 @@
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6020
+    BuildVersion:	18G6032
 
 
 
@@ -29,7 +30,7 @@
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.8.5
 
 
 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
@@ -56,10 +57,10 @@ print('keras version : ', keras.__version__)
 print('gensim version : ', gensim.__version__)
 ```
 
-    matplotlib version : 3.0.3
-    scipy version : 1.4.1
-    numpy version : 1.19.4
-    tensorflow version :  2.4.0
+    matplotlib version : 3.3.2
+    scipy version : 1.5.2
+    numpy version : 1.18.5
+    tensorflow version :  2.3.1
     keras version :  2.4.0
     gensim version :  3.8.3
 
@@ -87,27 +88,31 @@ kerasでseq2seqを実装するには、encoderとdecoderそれぞれへの入力
 
 ## サンプルデータ
 
-サンプル用のデータとして、以下の式を利用します。
+サンプル用のエンコーダーデータ、デコーダーデータとして、以下の式を利用します。
 
 $$
-encoder_y = \exp x
+\text{encoder} : y = \sqrt{x} 
 $$
 
 $$
-dencoder_y = \log x
+\text{dencoder} : y = x^2
 $$
 
 
 
 ```python
-x = np.linspace(0, 3, 200)
-seq_in = np.exp(x)
-seq_out = np.log(x)
+x = np.linspace(0, 1.5, 50)
+seq_out = np.array(x ** 0.5)
+seq_in = np.array(x ** 2)
+
+# x = np.linspace(-2*np.pi, 2*np.pi)  # -2πから2πまで
+# seq_in = np.sin(x)
+# seq_out = np.cos(x)
+
+# x = np.linspace(0, 5 * np.pi, 50)
+# seq_in = np.exp(-x / 5) * (np.cos(x))
+# seq_out = np.exp(-x / 5) * (np.sin(x))
 ```
-
-    /Users/hiroshi/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:3: RuntimeWarning: divide by zero encountered in log
-      This is separate from the ipykernel package so we can avoid doing imports until
-
 
 ### データの確認
 
@@ -120,10 +125,10 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 ```
 
-    shape :  (200,)
+    shape :  (50,)
     ndim :  1
-    data :  [0.         0.01507538 0.03015075 0.04522613 0.06030151 0.07537688
-     0.09045226 0.10552764 0.12060302 0.13567839]
+    data :  [0.         0.03061224 0.06122449 0.09183673 0.12244898 0.15306122
+     0.18367347 0.21428571 0.24489796 0.2755102 ]
 
 
 
@@ -133,10 +138,10 @@ print('ndim : ', seq_in.ndim)
 print('data : ', seq_in[:10])
 ```
 
-    shape :  (200,)
+    shape :  (50,)
     ndim :  1
-    data :  [1.         1.01518958 1.03060989 1.04626443 1.06215675 1.07829047
-     1.09466925 1.11129682 1.12817695 1.14531349]
+    data :  [0.         0.00093711 0.00374844 0.00843399 0.01499375 0.02342774
+     0.03373594 0.04591837 0.05997501 0.07590587]
 
 
 
@@ -146,10 +151,10 @@ print('ndim : ', seq_out.ndim)
 print('data : ', seq_out[:10])
 ```
 
-    shape :  (200,)
+    shape :  (50,)
     ndim :  1
-    data :  [       -inf -4.19469254 -3.50154536 -3.09608025 -2.80839817 -2.58525462
-     -2.40293307 -2.24878239 -2.11525099 -1.99746796]
+    data :  [0.         0.17496355 0.24743583 0.30304576 0.34992711 0.3912304
+     0.42857143 0.46291005 0.49487166 0.52489066]
 
 
 グラフを確認してみます。
@@ -164,7 +169,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_13_0.svg)
+    
 
 
 ### データの準備
@@ -173,7 +180,7 @@ kerasに入力するためのデータをnumpy配列に格納します。
 
 
 ```python
-NUM_LSTM = 10
+NUM_LSTM = 10 
 
 n = len(x) - NUM_LSTM
 ex = np.zeros((n, NUM_LSTM))
@@ -204,42 +211,39 @@ from tensorflow.keras.models import Model
 
 NUM_MID = 20
 
-def build_seq2se2_model():
-  e_input = Input(shape=(NUM_LSTM, 1))
-  e_lstm = LSTM(NUM_MID, return_state=True)
-  e_output, e_state_h, e_state_c = e_lstm(e_input)
-  e_state = [e_state_h, e_state_c]
-  
-  d_input = Input(shape=(NUM_LSTM, 1))
-  d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
-  d_output, _, _ = d_lstm(d_input, initial_state=e_state)
-  d_dense = Dense(1, activation='linear')
-  d_output = d_dense(d_output)
-  
-  model = Model([e_input, d_input], d_output)
-  model.compile(loss="mean_squared_error", optimizer="adam")
-  print(model.summary())
-  
-  return model
+e_input = Input(shape=(NUM_LSTM, 1))
+e_lstm = LSTM(NUM_MID, return_state=True)
+e_output, e_state_h, e_state_c = e_lstm(e_input)
+e_state = [e_state_h, e_state_c]
 
-seq2seq_model = build_seq2se2_model()
+d_input = Input(shape=(NUM_LSTM, 1))
+d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
+d_output, _, _ = d_lstm(d_input, initial_state=e_state)
+d_dense = Dense(1, activation='linear')
+d_output = d_dense(d_output)
+
+seq2seq_model = Model([e_input, d_input], d_output)
+seq2seq_model.compile(loss="mean_squared_error", optimizer="adam")
+
+# モデルの確認
+print(seq2seq_model.summary())
 ```
 
-    Model: "model_1"
+    Model: "functional_1"
     __________________________________________________________________________________________________
     Layer (type)                    Output Shape         Param #     Connected to                     
     ==================================================================================================
-    input_3 (InputLayer)            [(None, 10, 1)]      0                                            
+    input_1 (InputLayer)            [(None, 10, 1)]      0                                            
     __________________________________________________________________________________________________
-    input_4 (InputLayer)            [(None, 10, 1)]      0                                            
+    input_2 (InputLayer)            [(None, 10, 1)]      0                                            
     __________________________________________________________________________________________________
-    lstm_2 (LSTM)                   [(None, 20), (None,  1760        input_3[0][0]                    
+    lstm (LSTM)                     [(None, 20), (None,  1760        input_1[0][0]                    
     __________________________________________________________________________________________________
-    lstm_3 (LSTM)                   [(None, 10, 20), (No 1760        input_4[0][0]                    
-                                                                     lstm_2[0][1]                     
-                                                                     lstm_2[0][2]                     
+    lstm_1 (LSTM)                   [(None, 10, 20), (No 1760        input_2[0][0]                    
+                                                                     lstm[0][1]                       
+                                                                     lstm[0][2]                       
     __________________________________________________________________________________________________
-    dense_1 (Dense)                 (None, 10, 1)        21          lstm_3[0][0]                     
+    dense (Dense)                   (None, 10, 1)        21          lstm_1[0][0]                     
     ==================================================================================================
     Total params: 3,541
     Trainable params: 3,541
@@ -253,53 +257,11 @@ seq2seq_model = build_seq2se2_model()
 
 ```python
 # 学習用のパラメタを設定します
-batch_size = 10
-epochs = 20
+batch_size = 8
+epochs = 30
 
-history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=8)
+history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=batch_size, verbose=False)
 ```
-
-    Epoch 1/20
-    24/24 [==============================] - 5s 12ms/step - loss: nan
-    Epoch 2/20
-    24/24 [==============================] - 0s 14ms/step - loss: nan
-    Epoch 3/20
-    24/24 [==============================] - 0s 19ms/step - loss: nan
-    Epoch 4/20
-    24/24 [==============================] - 0s 13ms/step - loss: nan
-    Epoch 5/20
-    24/24 [==============================] - 0s 12ms/step - loss: nan
-    Epoch 6/20
-    24/24 [==============================] - 0s 10ms/step - loss: nan
-    Epoch 7/20
-    24/24 [==============================] - 0s 9ms/step - loss: nan
-    Epoch 8/20
-    24/24 [==============================] - 0s 10ms/step - loss: nan
-    Epoch 9/20
-    24/24 [==============================] - 0s 17ms/step - loss: nan
-    Epoch 10/20
-    24/24 [==============================] - 0s 11ms/step - loss: nan
-    Epoch 11/20
-    24/24 [==============================] - 0s 12ms/step - loss: nan
-    Epoch 12/20
-    24/24 [==============================] - 1s 23ms/step - loss: nan
-    Epoch 13/20
-    24/24 [==============================] - 0s 17ms/step - loss: nan 0s - l
-    Epoch 14/20
-    24/24 [==============================] - 0s 16ms/step - loss: nan
-    Epoch 15/20
-    24/24 [==============================] - 0s 16ms/step - loss: nan
-    Epoch 16/20
-    24/24 [==============================] - 0s 14ms/step - loss: nan
-    Epoch 17/20
-    24/24 [==============================] - 0s 16ms/step - loss: nan
-    Epoch 18/20
-    24/24 [==============================] - 0s 16ms/step - loss: nan
-    Epoch 19/20
-    24/24 [==============================] - 0s 15ms/step - loss: nan
-    Epoch 20/20
-    24/24 [==============================] - 0s 16ms/step - loss: nan
-
 
 ## 損失関数
 
@@ -308,38 +270,45 @@ history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=8)
 
 ```python
 loss = history.history['loss']
-plt.plot(np.arange(len(loss)), loss)
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.grid()
+plt.legend()
 plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_21_0.svg)
+    
 
+
+十分に収束してる事が分かります。
+
+## 予測するためのencoderとdecoderのモデルを返す関数の作成
+
+### encoderモデルの構築
 
 
 ```python
-
+# encoderのモデルを構築
+e_model = Model(e_input, e_state)
 ```
 
-## 予測するためのencoderとdecoderのモデルを返す関数を作成します
-
 
 ```python
-def build_predict_encoder_d_model():
-  e_model = Model(e_input, e_state)
-  
-  d_input = Input(shape=(1, 1))
-  d_state_in_h = Input(shape=(NUM_MID,))
-  d_state_in_c = Input(shape=(NUM_MID,))
-  d_state_in = [d_state_in_h, d_state_in_c]
-  
-  d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
-  d_state = [d_state_h, d_state_c]
-  
-  d_output = d_dense(d_output)
-  d_model = Model([d_input] + d_state_in, [d_output] + d_state)
-  
-  return e_model, d_model
+# decoderのモデルを構築
+d_input = Input(shape=(1, 1))
+
+d_state_in_h = Input(shape=(NUM_MID,))
+d_state_in_c = Input(shape=(NUM_MID,))
+d_state_in = [d_state_in_h, d_state_in_c]
+
+d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
+                                                                 
+d_state = [d_state_h, d_state_c]
+
+d_output = d_dense(d_output)
+d_model = Model([d_input] + d_state_in, [d_output] + d_state)
 ```
 
 データを変換するための関数を実装します。
@@ -347,15 +316,15 @@ def build_predict_encoder_d_model():
 
 ```python
 def translate(input_data):
-  state_value = encoder_model.predict(input_data)
+  state_value = e_model.predict(input_data)
   y_decoder = np.zeros((1, 1, 1))
   translated = []
   
-  for i in range(0, n_rnn):  # 各時刻ごとに予測を行う
-    y, h, c = decoder_model.predict([y_decoder] + state_value)
+  for i in range(0, NUM_LSTM):
+    y, h, c = d_model.predict([y_decoder] + state_value)
     y = y[0][0][0]
     translated.append(y)
-    y_decoder[0][0][0] = y
+    dy[0][0][0] = y
     state_value = [h, c]
 
   return translated
@@ -365,21 +334,40 @@ def translate(input_data):
 
 
 ```python
-demo_idices = [0, 13, 26, 39]
+demo_idices = [0, 13, 26, 39]  # デモに使うデータのインデックス
+# demo_idices = [0, 13, 26, 39]  # デモに使うデータのインデックス
+# demo_idices = [0, 20, 40, 60, 80]  # デモに使うデータのインデックス
+
 for i in demo_idices:
-  x_demo = x_encoder[i : i + 1]
+  x_demo = ex[i : i + 1]
   y_demo = translate(x_demo)
   
-  plt.plot(axis_x[i : i + n_rnn], x_demo.reshape(-1), color="b")
-  plt.plot(axis_x[i : i + n_rnn], y_demo, color="r")
+  plt.plot(x[i : i + NUM_LSTM], x_demo.reshape(-1), color="b")
+  plt.plot(x[i : i + NUM_LSTM], y_demo, color="r")
   
 plt.show()  
 ```
 
 
-```python
+    
+![svg](seq2seq_nb_files/seq2seq_nb_29_0.svg)
+    
 
+
+
+```python
+plt.plot(x, seq_in, label='$y=\exp x$')
+plt.plot(x, seq_out, label='$y=\log x$')
+plt.legend()
+plt.grid()
+plt.show()
 ```
+
+
+    
+![svg](seq2seq_nb_files/seq2seq_nb_30_0.svg)
+    
+
 
 
 ```python
