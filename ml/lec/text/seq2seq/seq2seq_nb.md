@@ -1,4 +1,3 @@
-
 ## kerasとsequnece to sequence
 
 前回、LSTMによる実装を行いましたので、次はsquence to sequenceモデルを実装していこうと思います。今現在では、機械翻訳などの自然言語処理では、このsequnece to sequenceとAttentionを基本としたモデルがよく利用されています。BERTなどもAttentionモデルが基本となっています。
@@ -170,7 +169,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_13_0.svg)
+    
 
 
 ### データの準備
@@ -276,7 +277,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_21_0.svg)
+    
 
 
 十分に収束してる事が分かります。
@@ -347,7 +350,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_29_0.svg)
+    
 
 
 
@@ -360,7 +365,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_30_0.svg)
+    
 
 
 
