@@ -1,8 +1,9 @@
+
 ## kerasとsequnece to sequence
 
 前回、LSTMによる実装を行いましたので、次はsquence to sequenceモデルを実装していこうと思います。今現在では、機械翻訳などの自然言語処理では、このsequnece to sequenceとAttentionを基本としたモデルがよく利用されています。BERTなどもAttentionモデルが基本となっています。
 
-ここでは、復習もかねて、基本的なsequnece to sequenceを実装します。$y=\exp x$を$y=\log x$に翻訳するモデルの構築を行います。なお、モデルの詳細は検索すればいくらでも出てきますのでここでは割愛します。文献や教科書、技術者によっては、sequnece to sequenceモデルは、「Encoder-Decoderモデル」、「系列変換モデル」などと呼ばれることも多いようです。
+ここでは、復習もかねて、基本的なsequnece to sequenceを実装します。$y=\sin x$を$y=\cos x$に翻訳するモデルの構築を行います。なお、モデルの詳細は検索すればいくらでも出てきますのでここでは割愛します。文献や教科書、技術者によっては、sequnece to sequenceモデルは、「Encoder-Decoderモデル」、「系列変換モデル」などと呼ばれることも多いようです。
 
 以下ではkerasを用いてseq2seqの実装を行いますが、詳細は[公式ブログ](https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html)を参照してください。
 
@@ -22,7 +23,7 @@
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6032
+    BuildVersion:	18G6020
 
 
 
@@ -30,7 +31,7 @@
 !python -V
 ```
 
-    Python 3.8.5
+    Python 3.7.3
 
 
 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
@@ -57,10 +58,10 @@ print('keras version : ', keras.__version__)
 print('gensim version : ', gensim.__version__)
 ```
 
-    matplotlib version : 3.3.2
-    scipy version : 1.5.2
-    numpy version : 1.18.5
-    tensorflow version :  2.3.1
+    matplotlib version : 3.0.3
+    scipy version : 1.4.1
+    numpy version : 1.19.4
+    tensorflow version :  2.4.0
     keras version :  2.4.0
     gensim version :  3.8.3
 
@@ -91,27 +92,21 @@ kerasでseq2seqを実装するには、encoderとdecoderそれぞれへの入力
 サンプル用のエンコーダーデータ、デコーダーデータとして、以下の式を利用します。
 
 $$
-\text{encoder} : y = \sqrt{x} 
+\text{encoder} : y = \sin{x} 
 $$
 
 $$
-\text{dencoder} : y = x^2
+\text{dencoder} : y = \cos x
 $$
 
+サイン関数をコサイン関数に変換します。
 
 
 ```python
-x = np.linspace(0, 1.5, 50)
-seq_out = np.array(x ** 0.5)
-seq_in = np.array(x ** 2)
-
-# x = np.linspace(-2*np.pi, 2*np.pi)  # -2πから2πまで
-# seq_in = np.sin(x)
-# seq_out = np.cos(x)
-
-# x = np.linspace(0, 5 * np.pi, 50)
-# seq_in = np.exp(-x / 5) * (np.cos(x))
-# seq_out = np.exp(-x / 5) * (np.sin(x))
+## seq2seq sin cos
+x = np.linspace(-2*np.pi, 2*np.pi, 100)  # -2πから2πまで
+seq_in = np.sin(x)
+seq_out = np.cos(x)
 ```
 
 ### データの確認
@@ -125,10 +120,10 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 ```
 
-    shape :  (50,)
+    shape :  (100,)
     ndim :  1
-    data :  [0.         0.03061224 0.06122449 0.09183673 0.12244898 0.15306122
-     0.18367347 0.21428571 0.24489796 0.2755102 ]
+    data :  [-6.28318531 -6.15625227 -6.02931923 -5.9023862  -5.77545316 -5.64852012
+     -5.52158709 -5.39465405 -5.26772102 -5.14078798]
 
 
 
@@ -138,10 +133,11 @@ print('ndim : ', seq_in.ndim)
 print('data : ', seq_in[:10])
 ```
 
-    shape :  (50,)
+    shape :  (100,)
     ndim :  1
-    data :  [0.         0.00093711 0.00374844 0.00843399 0.01499375 0.02342774
-     0.03373594 0.04591837 0.05997501 0.07590587]
+    data :  [2.44929360e-16 1.26592454e-01 2.51147987e-01 3.71662456e-01
+     4.86196736e-01 5.92907929e-01 6.90079011e-01 7.76146464e-01
+     8.49725430e-01 9.09631995e-01]
 
 
 
@@ -151,10 +147,10 @@ print('ndim : ', seq_out.ndim)
 print('data : ', seq_out[:10])
 ```
 
-    shape :  (50,)
+    shape :  (100,)
     ndim :  1
-    data :  [0.         0.17496355 0.24743583 0.30304576 0.34992711 0.3912304
-     0.42857143 0.46291005 0.49487166 0.52489066]
+    data :  [1.         0.99195481 0.9679487  0.92836793 0.87384938 0.80527026
+     0.72373404 0.63055267 0.52722547 0.41541501]
 
 
 グラフを確認してみます。
@@ -169,28 +165,37 @@ plt.show()
 ```
 
 
-    
 ![svg](seq2seq_nb_files/seq2seq_nb_13_0.svg)
-    
 
 
-### データの準備
+### データとパラメタの準備
+
+学習に利用するハイパーパラメタの値を設定します。
+
+
+```python
+# LSTMネットワークのパラメタ
+NUM_LSTM = 24
+NUM_MID = 75
+
+# 学習用のパラメタ
+batch_size = 10
+epochs = 35
+```
 
 kerasに入力するためのデータをnumpy配列に格納します。
 
 
 ```python
-NUM_LSTM = 10 
-
 n = len(x) - NUM_LSTM
 ex = np.zeros((n, NUM_LSTM))
 dx = np.zeros((n, NUM_LSTM))
 dy = np.zeros((n, NUM_LSTM))
 
 for i in range(0, n):
-  ex[i] = seq_in[i:i+NUM_LSTM]
-  dx[i, 1:] = seq_out[i:i+NUM_LSTM-1]
-  dy[i] = seq_out[i:i+NUM_LSTM]
+  ex[i] = seq_in[i : i + NUM_LSTM]
+  dx[i, 1: ] = seq_out[i: i + NUM_LSTM-1]
+  dy[i] = seq_out[i: i + NUM_LSTM]
 
 ex = ex.reshape(n, NUM_LSTM, 1)
 dx = dx.reshape(n, NUM_LSTM, 1)
@@ -202,6 +207,8 @@ dy = dy.reshape(n, NUM_LSTM, 1)
 sequence to sequenceのモデルをkerasを用いて実装します。
 単純なRNNやLSTMとは異なり、モデルが複数あり、それぞれから入力する必要があるため、Sequenceではなく、Modelを利用します。
 
+詳細はkerasの[公式ブログ](https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html)を参照にしてください。
+
 
 ```python
 from tensorflow.keras.layers import LSTM
@@ -209,11 +216,11 @@ from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Model
 
-NUM_MID = 20
-
 e_input = Input(shape=(NUM_LSTM, 1))
 e_lstm = LSTM(NUM_MID, return_state=True)
 e_output, e_state_h, e_state_c = e_lstm(e_input)
+
+# decoeder側に隠れ層とセルの状態を受け渡す必要があるので、リストを作成
 e_state = [e_state_h, e_state_c]
 
 d_input = Input(shape=(NUM_LSTM, 1))
@@ -223,30 +230,33 @@ d_dense = Dense(1, activation='linear')
 d_output = d_dense(d_output)
 
 seq2seq_model = Model([e_input, d_input], d_output)
-seq2seq_model.compile(loss="mean_squared_error", optimizer="adam")
+
+# 最適化のモデルと損失関数の定義=>どちらでも大きな変化なし
+seq2seq_model.compile(optimizer="adam", loss="mean_squared_error")
+# seq2seq_model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 # モデルの確認
 print(seq2seq_model.summary())
 ```
 
-    Model: "functional_1"
+    Model: "model"
     __________________________________________________________________________________________________
     Layer (type)                    Output Shape         Param #     Connected to                     
     ==================================================================================================
-    input_1 (InputLayer)            [(None, 10, 1)]      0                                            
+    input_1 (InputLayer)            [(None, 24, 1)]      0                                            
     __________________________________________________________________________________________________
-    input_2 (InputLayer)            [(None, 10, 1)]      0                                            
+    input_2 (InputLayer)            [(None, 24, 1)]      0                                            
     __________________________________________________________________________________________________
-    lstm (LSTM)                     [(None, 20), (None,  1760        input_1[0][0]                    
+    lstm (LSTM)                     [(None, 75), (None,  23100       input_1[0][0]                    
     __________________________________________________________________________________________________
-    lstm_1 (LSTM)                   [(None, 10, 20), (No 1760        input_2[0][0]                    
+    lstm_1 (LSTM)                   [(None, 24, 75), (No 23100       input_2[0][0]                    
                                                                      lstm[0][1]                       
                                                                      lstm[0][2]                       
     __________________________________________________________________________________________________
-    dense (Dense)                   (None, 10, 1)        21          lstm_1[0][0]                     
+    dense (Dense)                   (None, 24, 1)        76          lstm_1[0][0]                     
     ==================================================================================================
-    Total params: 3,541
-    Trainable params: 3,541
+    Total params: 46,276
+    Trainable params: 46,276
     Non-trainable params: 0
     __________________________________________________________________________________________________
     None
@@ -256,10 +266,6 @@ print(seq2seq_model.summary())
 
 
 ```python
-# 学習用のパラメタを設定します
-batch_size = 8
-epochs = 30
-
 history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=batch_size, verbose=False)
 ```
 
@@ -277,110 +283,191 @@ plt.show()
 ```
 
 
-    
-![svg](seq2seq_nb_files/seq2seq_nb_21_0.svg)
-    
+![svg](seq2seq_nb_files/seq2seq_nb_23_0.svg)
 
 
 十分に収束してる事が分かります。
 
 ## 予測するためのencoderとdecoderのモデルを返す関数の作成
 
-### encoderモデルの構築
+### 予測用のencoderモデルの構築
+
+インプットするインスタンスや隠れ層やセルの状態は訓練済みのものを利用します。
 
 
 ```python
-# encoderのモデルを構築
-e_model = Model(e_input, e_state)
+pred_e_model = Model(e_input, e_state)
 ```
+
+### 予測用のdecoderモデルの構築
 
 
 ```python
 # decoderのモデルを構築
-d_input = Input(shape=(1, 1))
+pred_d_input = Input(shape=(1, 1))
 
-d_state_in_h = Input(shape=(NUM_MID,))
-d_state_in_c = Input(shape=(NUM_MID,))
-d_state_in = [d_state_in_h, d_state_in_c]
+pred_d_state_in_h = Input(shape=(NUM_MID,))
+pred_d_state_in_c = Input(shape=(NUM_MID,))
+pred_d_state_in = [pred_d_state_in_h, pred_d_state_in_c]
 
-d_output, d_state_h, d_state_c = d_lstm(d_input, initial_state=d_state_in)
-                                                                 
-d_state = [d_state_h, d_state_c]
+# 学習の時に利用したLSTMを利用
+pred_d_output, pred_d_state_h, pred_d_state_c = d_lstm(pred_d_input, initial_state=pred_d_state_in)
+pred_d_state = [pred_d_state_h, pred_d_state_c]
 
-d_output = d_dense(d_output)
-d_model = Model([d_input] + d_state_in, [d_output] + d_state)
+# 学習の時に利用したDENSE層を利用
+pred_d_output = d_dense(pred_d_output)
+pred_d_model = Model([pred_d_input] + pred_d_state_in, [pred_d_output] + pred_d_state)
 ```
 
-データを変換するための関数を実装します。
+## 予測用関数の定義
+
+インプットデータを受け取り、それをdecoderで変換して、結果を出力する関数を構築します。
 
 
 ```python
-def translate(input_data):
-  state_value = e_model.predict(input_data)
-  y_decoder = np.zeros((1, 1, 1))
-  translated = []
+def get_output_data(input_data):
+  state_value = pred_e_model.predict(input_data)
+  _dy = np.zeros((1, 1, 1))
   
+  output_data = []
   for i in range(0, NUM_LSTM):
-    y, h, c = d_model.predict([y_decoder] + state_value)
-    y = y[0][0][0]
-    translated.append(y)
-    dy[0][0][0] = y
-    state_value = [h, c]
+    y_output, y_state_h, y_state_c = pred_d_model.predict([_dy] + state_value)
+    
+    output_data.append(y_output[0, 0, 0])
+    dy[0, 0, 0] = y_output
+    state_value = [y_state_h, y_state_c]
 
-  return translated
+  return output_data
 ```
 
-結果の確認
+## 結果の確認
+
 
 
 ```python
-demo_idices = [0, 13, 26, 39]  # デモに使うデータのインデックス
-# demo_idices = [0, 13, 26, 39]  # デモに使うデータのインデックス
-# demo_idices = [0, 20, 40, 60, 80]  # デモに使うデータのインデックス
+init_points = [0, 24, 49, 74]
 
-for i in demo_idices:
-  x_demo = ex[i : i + 1]
-  y_demo = translate(x_demo)
+for i in init_points:
+  _x = ex[i : i + 1]
+  _y = get_output_data(_x)
+    
+  if i == 0:
+    plt.plot(x[i : i + NUM_LSTM], _x.reshape(-1), color="b", label='input')
+    plt.plot(x[i : i + NUM_LSTM], _y, color="r", label='output')
+  else:
+    plt.plot(x[i : i + NUM_LSTM], _x.reshape(-1), color="b")
+    plt.plot(x[i : i + NUM_LSTM], _y, color="r")
   
-  plt.plot(x[i : i + NUM_LSTM], x_demo.reshape(-1), color="b")
-  plt.plot(x[i : i + NUM_LSTM], y_demo, color="r")
-
+plt.plot(x, seq_out, color = 'r', linestyle = "dashed", label = 'correct')
 plt.grid()
+plt.legend()
 plt.show()  
 ```
 
 
-    
-![svg](seq2seq_nb_files/seq2seq_nb_29_0.svg)
-    
+![svg](seq2seq_nb_files/seq2seq_nb_32_0.svg)
 
 
+何となく形状は捉えているような感じがしますが、どうでしょうか？もう少し、突き詰めれば良い変換が出来そうですが、今回はデモなので子ここまでにしておきます。
 
-```python
-plt.plot(x, seq_in, label='$y=\exp x$')
-plt.plot(x, seq_out, label='$y=\log x$')
-plt.legend()
-plt.grid()
-plt.show()
-```
+## 様々なseq2seq
 
-
-    
-![svg](seq2seq_nb_files/seq2seq_nb_30_0.svg)
-    
-
+最後のコードを関数化し、様々なインプットに対して、アウトプットがどうなるか見てみます。
 
 
 ```python
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model
 
+
+def main(x, seq_in, seq_out):
+
+  n = len(x) - NUM_LSTM
+  ex = np.zeros((n, NUM_LSTM))
+  dx = np.zeros((n, NUM_LSTM))
+  dy = np.zeros((n, NUM_LSTM))
+
+  for i in range(0, n):
+    ex[i] = seq_in[i : i + NUM_LSTM]
+    dx[i, 1: ] = seq_out[i: i + NUM_LSTM-1]
+    dy[i] = seq_out[i: i + NUM_LSTM]
+
+  ex = ex.reshape(n, NUM_LSTM, 1)
+  dx = dx.reshape(n, NUM_LSTM, 1)
+  dy = dy.reshape(n, NUM_LSTM, 1)
+  
+  e_input = Input(shape=(NUM_LSTM, 1))
+  e_lstm = LSTM(NUM_MID, return_state=True)
+  e_output, e_state_h, e_state_c = e_lstm(e_input)
+    
+  # encoder stateのリスト化
+  e_state = [e_state_h, e_state_c]
+  
+  d_input = Input(shape=(NUM_LSTM, 1))
+  d_lstm = LSTM(NUM_MID, return_sequences=True, return_state=True)
+  d_output, _, _ = d_lstm(d_input, initial_state=e_state)
+  d_dense = Dense(1, activation='linear')
+  d_output = d_dense(d_output)
+  
+  seq2seq_model = Model([e_input, d_input], d_output)
+  seq2seq_model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+  
+  ## 予測
+  history = seq2seq_model.fit([ex, dx], dy, epochs=epochs, batch_size=batch_size, verbose=False)
+  
+  ## 結果確認
+  init_points = [0, 24, 49, 74]
+  
+  for i in init_points:
+    _x = ex[i : i + 1]
+    _y = get_output_data(_x)
+      
+    if i == 0:
+      plt.plot(x[i : i + NUM_LSTM], _x.reshape(-1), color="b", label='input')
+      plt.plot(x[i : i + NUM_LSTM], _y, color="r", label='output')
+    else:
+      plt.plot(x[i : i + NUM_LSTM], _x.reshape(-1), color="b")
+      plt.plot(x[i : i + NUM_LSTM], _y, color="r")
+    
+  plt.plot(x, seq_out, color = 'r', linestyle = "dashed", label = 'correct')
+  plt.grid()
+  plt.legend()
+  plt.show()  
 ```
+
+## seq2seq exp to log
 
 
 ```python
+x = np.linspace(0, 5 * np.pi, 100)
+seq_in = np.exp(-x / 5) * (np.cos(x))
+seq_out = np.exp(-x / 5) * (np.sin(x))
 
+main(x, seq_in, seq_out)
 ```
+
+
+![svg](seq2seq_nb_files/seq2seq_nb_37_0.svg)
+
+
+## seq2seq 0.5乗 to 2乗
 
 
 ```python
+x = np.linspace(0, 1.5, 100)
+seq_out = np.array(x ** 0.5)
+seq_in = np.array(x ** 2)
 
+main(x, seq_in, seq_out)
 ```
+
+
+![svg](seq2seq_nb_files/seq2seq_nb_39_0.svg)
+
+
+三角関数以外は、もう少しモデルを最適化しないと実用上使えない（特に減衰振動曲線の場合は、位相が180度ずれているのが致命的）と思います。
+今回はkerasのseq2seqに慣れる練習なので、ここまでにしておきます。
+
+しつこいですが、詳細は[公式ブログ](https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html)を参考にしてください。
