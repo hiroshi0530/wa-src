@@ -1,4 +1,3 @@
-
 ## kerasとsequnece to sequence
 
 前回、LSTMによる実装を行いましたので、次はsquence to sequenceモデルを実装していこうと思います。今現在では、機械翻訳などの自然言語処理では、このsequnece to sequenceとAttentionを基本としたモデルがよく利用されています。BERTなどもAttentionモデルが基本となっています。
@@ -165,7 +164,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_13_0.svg)
+    
 
 
 ### データとパラメタの準備
@@ -283,7 +284,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_23_0.svg)
+    
 
 
 十分に収束してる事が分かります。
@@ -365,7 +368,9 @@ plt.show()
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_32_0.svg)
+    
 
 
 何となく形状は捉えているような感じがしますが、どうでしょうか？もう少し、突き詰めれば良い変換が出来そうですが、今回はデモなので子ここまでにしておきます。
@@ -449,7 +454,9 @@ main(x, seq_in, seq_out)
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_37_0.svg)
+    
 
 
 ## seq2seq 0.5乗 to 2乗
@@ -464,7 +471,9 @@ main(x, seq_in, seq_out)
 ```
 
 
+    
 ![svg](seq2seq_nb_files/seq2seq_nb_39_0.svg)
+    
 
 
 三角関数以外は、もう少しモデルを最適化しないと実用上使えない（特に減衰振動曲線の場合は、位相が180度ずれているのが致命的）と思います。
