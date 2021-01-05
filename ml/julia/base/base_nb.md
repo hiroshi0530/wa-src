@@ -1,4 +1,3 @@
-
 ## 数値計算がpythonよりはるかに早いといわれているjuliaに入門してみた
 
 以下のqiitaの素晴らしい記事を自分の手を動かして実行してjuliaに慣れ見ようと思います。
@@ -57,257 +56,158 @@ import Pkg
 Pkg.add("Gadfly")
 Pkg.add("Flux")
 Pkg.add("MLDatasets")
+Pkg.add("Images")
+Pkg.add("ImageView")
 ```
 
-    [32m[1m   Updating[22m[39m registry at `~/.julia/registries/General`
-    ########################################################################################################################################################## 100.0%
     [32m[1m  Resolving[22m[39m package versions...
-    [32m[1m  Installed[22m[39m Adapt ──────────────────────── v2.3.0
-    [32m[1m  Installed[22m[39m Showoff ────────────────────── v0.3.2
-    [32m[1m  Installed[22m[39m StructTypes ────────────────── v1.2.1
-    [32m[1m  Installed[22m[39m OrderedCollections ─────────── v1.3.2
-    [32m[1m  Installed[22m[39m StatsBase ──────────────────── v0.33.2
-    [32m[1m  Installed[22m[39m StaticArrays ───────────────── v0.12.5
-    [32m[1m  Installed[22m[39m Distributions ──────────────── v0.23.12
-    [32m[1m  Installed[22m[39m Gadfly ─────────────────────── v1.3.1
-    [32m[1m  Installed[22m[39m Distances ──────────────────── v0.10.0
-    [32m[1m  Installed[22m[39m Reexport ───────────────────── v0.2.0
-    [32m[1m  Installed[22m[39m Hexagons ───────────────────── v0.2.0
-    [32m[1m  Installed[22m[39m SortingAlgorithms ──────────── v0.3.1
-    [32m[1m  Installed[22m[39m Juno ───────────────────────── v0.8.4
-    [32m[1m  Installed[22m[39m MacroTools ─────────────────── v0.5.6
-    [32m[1m  Installed[22m[39m FixedPointNumbers ──────────── v0.8.4
-    [32m[1m  Installed[22m[39m DataStructures ─────────────── v0.18.8
-    [32m[1m  Installed[22m[39m Rmath ──────────────────────── v0.6.1
-    [32m[1m  Installed[22m[39m AbstractFFTs ───────────────── v0.5.0
-    [32m[1m  Installed[22m[39m Compat ─────────────────────── v3.25.0
-    [32m[1m  Installed[22m[39m FFTW ───────────────────────── v1.2.4
-    [32m[1m  Installed[22m[39m ColorTypes ─────────────────── v0.10.9
-    [32m[1m  Installed[22m[39m StatsFuns ──────────────────── v0.9.6
-    [32m[1m  Installed[22m[39m IterTools ──────────────────── v1.3.0
-    [32m[1m  Installed[22m[39m AxisAlgorithms ─────────────── v1.0.0
-    [32m[1m  Installed[22m[39m QuadGK ─────────────────────── v2.4.1
-    [32m[1m  Installed[22m[39m Contour ────────────────────── v0.5.7
-    [32m[1m  Installed[22m[39m CoupledFields ──────────────── v0.2.0
-    [32m[1m  Installed[22m[39m Requires ───────────────────── v1.1.2
-    [32m[1m  Installed[22m[39m DataAPI ────────────────────── v1.4.0
-    [32m[1m  Installed[22m[39m Compose ────────────────────── v0.9.1
-    [32m[1m  Installed[22m[39m Loess ──────────────────────── v0.5.3
-    [32m[1m  Installed[22m[39m Ratios ─────────────────────── v0.4.0
-    [32m[1m  Installed[22m[39m Missings ───────────────────── v0.4.4
-    [32m[1m  Installed[22m[39m Colors ─────────────────────── v0.12.6
-    [32m[1m  Installed[22m[39m Measures ───────────────────── v0.3.1
-    [32m[1m  Installed[22m[39m Media ──────────────────────── v0.5.0
-    [32m[1m  Installed[22m[39m IndirectArrays ─────────────── v0.5.1
-    [32m[1m  Installed[22m[39m Grisu ──────────────────────── v1.0.0
-    [32m[1m  Installed[22m[39m OpenSpecFun_jll ────────────── v0.5.3+4
-    [32m[1m  Installed[22m[39m CategoricalArrays ──────────── v0.8.3
-    [32m[1m  Installed[22m[39m FillArrays ─────────────────── v0.9.7
-    [32m[1m  Installed[22m[39m Interpolations ─────────────── v0.13.1
-    [32m[1m  Installed[22m[39m KernelDensity ──────────────── v0.6.2
-    [32m[1m  Installed[22m[39m Rmath_jll ──────────────────── v0.2.2+1
-    [32m[1m  Installed[22m[39m WoodburyMatrices ───────────── v0.5.3
-    [32m[1m  Installed[22m[39m MKL_jll ────────────────────── v2020.2.254+0
-    [32m[1m  Installed[22m[39m FFTW_jll ───────────────────── v3.3.9+7
-    [32m[1m  Installed[22m[39m PDMats ─────────────────────── v0.10.1
-    [32m[1m  Installed[22m[39m OffsetArrays ───────────────── v1.4.2
-    [32m[1m  Installed[22m[39m SpecialFunctions ───────────── v0.10.3
-    [32m[1m  Installed[22m[39m DocStringExtensions ────────── v0.8.3
-    [32m[1m  Installed[22m[39m CompilerSupportLibraries_jll ─ v0.3.4+0
-    [32m[1m  Installed[22m[39m IntelOpenMP_jll ────────────── v2018.0.3+0
-    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Project.toml`
-     [90m [c91e804a] [39m[92m+ Gadfly v1.3.1[39m
-    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Manifest.toml`
-     [90m [621f4979] [39m[92m+ AbstractFFTs v0.5.0[39m
-     [90m [79e6a3ab] [39m[92m+ Adapt v2.3.0[39m
-     [90m [13072b0f] [39m[92m+ AxisAlgorithms v1.0.0[39m
-     [90m [324d7699] [39m[92m+ CategoricalArrays v0.8.3[39m
-     [90m [3da002f7] [39m[92m+ ColorTypes v0.10.9[39m
-     [90m [5ae59095] [39m[92m+ Colors v0.12.6[39m
-     [90m [34da2185] [39m[92m+ Compat v3.25.0[39m
-     [90m [e66e0078] [39m[92m+ CompilerSupportLibraries_jll v0.3.4+0[39m
-     [90m [a81c6b42] [39m[92m+ Compose v0.9.1[39m
-     [90m [d38c429a] [39m[92m+ Contour v0.5.7[39m
-     [90m [7ad07ef1] [39m[92m+ CoupledFields v0.2.0[39m
-     [90m [9a962f9c] [39m[92m+ DataAPI v1.4.0[39m
-     [90m [864edb3b] [39m[92m+ DataStructures v0.18.8[39m
-     [90m [b4f34e82] [39m[92m+ Distances v0.10.0[39m
-     [90m [31c24e10] [39m[92m+ Distributions v0.23.12[39m
-     [90m [ffbed154] [39m[92m+ DocStringExtensions v0.8.3[39m
-     [90m [7a1cc6ca] [39m[92m+ FFTW v1.2.4[39m
-     [90m [f5851436] [39m[92m+ FFTW_jll v3.3.9+7[39m
-     [90m [1a297f60] [39m[92m+ FillArrays v0.9.7[39m
-     [90m [53c48c17] [39m[92m+ FixedPointNumbers v0.8.4[39m
-     [90m [c91e804a] [39m[92m+ Gadfly v1.3.1[39m
-     [90m [42e2da0e] [39m[92m+ Grisu v1.0.0[39m
-     [90m [a1b4810d] [39m[92m+ Hexagons v0.2.0[39m
-     [90m [9b13fd28] [39m[92m+ IndirectArrays v0.5.1[39m
-     [90m [1d5cc7b8] [39m[92m+ IntelOpenMP_jll v2018.0.3+0[39m
-     [90m [a98d9a8b] [39m[92m+ Interpolations v0.13.1[39m
-     [90m [c8e1da08] [39m[92m+ IterTools v1.3.0[39m
-     [90m [e5e0dc1b] [39m[92m+ Juno v0.8.4[39m
-     [90m [5ab0869b] [39m[92m+ KernelDensity v0.6.2[39m
-     [90m [4345ca2d] [39m[92m+ Loess v0.5.3[39m
-     [90m [856f044c] [39m[92m+ MKL_jll v2020.2.254+0[39m
-     [90m [1914dd2f] [39m[92m+ MacroTools v0.5.6[39m
-     [90m [442fdcdd] [39m[92m+ Measures v0.3.1[39m
-     [90m [e89f7d12] [39m[92m+ Media v0.5.0[39m
-     [90m [e1d29d7a] [39m[92m+ Missings v0.4.4[39m
-     [90m [6fe1bfb0] [39m[92m+ OffsetArrays v1.4.2[39m
-     [90m [efe28fd5] [39m[92m+ OpenSpecFun_jll v0.5.3+4[39m
-     [90m [bac558e1] [39m[92m+ OrderedCollections v1.3.2[39m
-     [90m [90014a1f] [39m[92m+ PDMats v0.10.1[39m
-     [90m [1fd47b50] [39m[92m+ QuadGK v2.4.1[39m
-     [90m [c84ed2f1] [39m[92m+ Ratios v0.4.0[39m
-     [90m [189a3867] [39m[92m+ Reexport v0.2.0[39m
-     [90m [ae029012] [39m[92m+ Requires v1.1.2[39m
-     [90m [79098fc4] [39m[92m+ Rmath v0.6.1[39m
-     [90m [f50d1b31] [39m[92m+ Rmath_jll v0.2.2+1[39m
-     [90m [992d4aef] [39m[92m+ Showoff v0.3.2[39m
-     [90m [a2af1166] [39m[92m+ SortingAlgorithms v0.3.1[39m
-     [90m [276daf66] [39m[92m+ SpecialFunctions v0.10.3[39m
-     [90m [90137ffa] [39m[92m+ StaticArrays v0.12.5[39m
-     [90m [2913bbd2] [39m[92m+ StatsBase v0.33.2[39m
-     [90m [4c63d2b9] [39m[92m+ StatsFuns v0.9.6[39m
-     [90m [856f2bd8] [39m[92m+ StructTypes v1.2.1[39m
-     [90m [efce3f68] [39m[92m+ WoodburyMatrices v0.5.3[39m
-     [90m [8bb1440f] [39m[92m+ DelimitedFiles[39m
-     [90m [9fa8497b] [39m[92m+ Future[39m
-     [90m [37e2e46d] [39m[92m+ LinearAlgebra[39m
-     [90m [9abbd945] [39m[92m+ Profile[39m
-     [90m [1a1011a3] [39m[92m+ SharedArrays[39m
-     [90m [2f01184e] [39m[92m+ SparseArrays[39m
-     [90m [10745b16] [39m[92m+ Statistics[39m
-     [90m [4607b0f0] [39m[92m+ SuiteSparse[39m
-    [32m[1m   Building[22m[39m FFTW → `~/.julia/packages/FFTW/DMUbN/deps/build.log`
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Project.toml`
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Manifest.toml`
     [32m[1m  Resolving[22m[39m package versions...
-    [32m[1m  Installed[22m[39m BFloat16s ──────────── v0.1.0
-    [32m[1m  Installed[22m[39m ExprTools ──────────── v0.1.3
-    [32m[1m  Installed[22m[39m NNlib ──────────────── v0.7.9
-    [32m[1m  Installed[22m[39m Zygote ─────────────── v0.5.17
-    [32m[1m  Installed[22m[39m Flux ───────────────── v0.11.2
-    [32m[1m  Installed[22m[39m LLVM ───────────────── v3.5.1
-    [32m[1m  Installed[22m[39m TimerOutputs ───────── v0.5.7
-    [32m[1m  Installed[22m[39m MuladdMacro ────────── v0.2.2
-    [32m[1m  Installed[22m[39m Scratch ────────────── v1.0.3
-    [32m[1m  Installed[22m[39m DiffResults ────────── v1.0.3
-    [32m[1m  Installed[22m[39m AbstractTrees ──────── v0.3.3
-    [32m[1m  Installed[22m[39m IRTools ────────────── v0.4.2
-    [32m[1m  Installed[22m[39m CUDA ───────────────── v2.3.0
-    [32m[1m  Installed[22m[39m CodecZlib ──────────── v0.7.0
-    [32m[1m  Installed[22m[39m CEnum ──────────────── v0.4.1
-    [32m[1m  Installed[22m[39m ZygoteRules ────────── v0.2.1
-    [32m[1m  Installed[22m[39m GPUCompiler ────────── v0.8.3
-    [32m[1m  Installed[22m[39m ChainRules ─────────── v0.7.41
-    [32m[1m  Installed[22m[39m GPUArrays ──────────── v6.1.2
-    [32m[1m  Installed[22m[39m IfElse ─────────────── v0.1.0
-    [32m[1m  Installed[22m[39m Functors ───────────── v0.1.0
-    [32m[1m  Installed[22m[39m ArrayInterface ─────── v2.14.11
-    [32m[1m  Installed[22m[39m Zlib_jll ───────────── v1.2.11+18
-    [32m[1m  Installed[22m[39m UnPack ─────────────── v1.0.2
-    [32m[1m  Installed[22m[39m ZipFile ────────────── v0.9.3
-    [32m[1m  Installed[22m[39m TranscodingStreams ─── v0.9.5
-    [32m[1m  Installed[22m[39m DiffRules ──────────── v1.0.2
-    [32m[1m  Installed[22m[39m ChainRulesCore ─────── v0.9.24
-    [32m[1m  Installed[22m[39m Hwloc_jll ──────────── v2.2.0+0
-    [32m[1m  Installed[22m[39m Hwloc ──────────────── v1.1.0
-    [32m[1m  Installed[22m[39m ArrayLayouts ───────── v0.4.11
-    [32m[1m  Installed[22m[39m ForwardDiff ────────── v0.10.14
-    [32m[1m  Installed[22m[39m VectorizationBase ──── v0.14.10
-    [32m[1m  Installed[22m[39m CommonSubexpressions ─ v0.3.0
-    [32m[1m  Installed[22m[39m NaNMath ────────────── v0.3.5
-    [32m[1m  Installed[22m[39m SLEEFPirates ───────── v0.6.2
-    [32m[1m  Installed[22m[39m LoopVectorization ──── v0.9.14
-    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Project.toml`
-     [90m [587475ba] [39m[92m+ Flux v0.11.2[39m
-    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Manifest.toml`
-     [90m [1520ce14] [39m[92m+ AbstractTrees v0.3.3[39m
-     [90m [4fba245c] [39m[92m+ ArrayInterface v2.14.11[39m
-     [90m [4c555306] [39m[92m+ ArrayLayouts v0.4.11[39m
-     [90m [ab4f0b2a] [39m[92m+ BFloat16s v0.1.0[39m
-     [90m [fa961155] [39m[92m+ CEnum v0.4.1[39m
-     [90m [052768ef] [39m[92m+ CUDA v2.3.0[39m
-     [90m [082447d4] [39m[92m+ ChainRules v0.7.41[39m
-     [90m [d360d2e6] [39m[92m+ ChainRulesCore v0.9.24[39m
-     [90m [944b1d66] [39m[92m+ CodecZlib v0.7.0[39m
-     [90m [bbf7d656] [39m[92m+ CommonSubexpressions v0.3.0[39m
-     [90m [163ba53b] [39m[92m+ DiffResults v1.0.3[39m
-     [90m [b552c78f] [39m[92m+ DiffRules v1.0.2[39m
-     [90m [e2ba6199] [39m[92m+ ExprTools v0.1.3[39m
-     [90m [587475ba] [39m[92m+ Flux v0.11.2[39m
-     [90m [f6369f11] [39m[92m+ ForwardDiff v0.10.14[39m
-     [90m [d9f16b24] [39m[92m+ Functors v0.1.0[39m
-     [90m [0c68f7d7] [39m[92m+ GPUArrays v6.1.2[39m
-     [90m [61eb1bfa] [39m[92m+ GPUCompiler v0.8.3[39m
-     [90m [0e44f5e4] [39m[92m+ Hwloc v1.1.0[39m
-     [90m [e33a78d0] [39m[92m+ Hwloc_jll v2.2.0+0[39m
-     [90m [7869d1d1] [39m[92m+ IRTools v0.4.2[39m
-     [90m [615f187c] [39m[92m+ IfElse v0.1.0[39m
-     [90m [929cbde3] [39m[92m+ LLVM v3.5.1[39m
-     [90m [bdcacae8] [39m[92m+ LoopVectorization v0.9.14[39m
-     [90m [46d2c3a1] [39m[92m+ MuladdMacro v0.2.2[39m
-     [90m [872c559c] [39m[92m+ NNlib v0.7.9[39m
-     [90m [77ba4419] [39m[92m+ NaNMath v0.3.5[39m
-     [90m [476501e8] [39m[92m+ SLEEFPirates v0.6.2[39m
-     [90m [6c6a2e73] [39m[92m+ Scratch v1.0.3[39m
-     [90m [a759f4b9] [39m[92m+ TimerOutputs v0.5.7[39m
-     [90m [3bb67fe8] [39m[92m+ TranscodingStreams v0.9.5[39m
-     [90m [3a884ed6] [39m[92m+ UnPack v1.0.2[39m
-     [90m [3d5dd08c] [39m[92m+ VectorizationBase v0.14.10[39m
-     [90m [a5390f91] [39m[92m+ ZipFile v0.9.3[39m
-     [90m [83775a58] [39m[92m+ Zlib_jll v1.2.11+18[39m
-     [90m [e88e6eb3] [39m[92m+ Zygote v0.5.17[39m
-     [90m [700de1a5] [39m[92m+ ZygoteRules v0.2.1[39m
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Project.toml`
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Manifest.toml`
     [32m[1m  Resolving[22m[39m package versions...
-    [32m[1m  Installed[22m[39m OpenSSL_jll ───── v1.1.1+6
-    [32m[1m  Installed[22m[39m LibSSH2_jll ───── v1.9.0+3
-    [32m[1m  Installed[22m[39m nghttp2_jll ───── v1.40.0+2
-    [32m[1m  Installed[22m[39m Zstd_jll ──────── v1.4.5+2
-    [32m[1m  Installed[22m[39m IniFile ───────── v0.5.0
-    [32m[1m  Installed[22m[39m URIParser ─────── v0.4.1
-    [32m[1m  Installed[22m[39m DataDeps ──────── v0.7.6
-    [32m[1m  Installed[22m[39m MLDatasets ────── v0.5.3
-    [32m[1m  Installed[22m[39m LibCURL_jll ───── v7.70.0+2
-    [32m[1m  Installed[22m[39m BinDeps ───────── v1.0.2
-    [32m[1m  Installed[22m[39m GZip ──────────── v0.5.1
-    [32m[1m  Installed[22m[39m URIs ──────────── v1.1.0
-    [32m[1m  Installed[22m[39m Lz4_jll ───────── v1.9.2+2
-    [32m[1m  Installed[22m[39m BufferedStreams ─ v1.0.0
-    [32m[1m  Installed[22m[39m BinaryProvider ── v0.5.10
-    [32m[1m  Installed[22m[39m HDF5 ──────────── v0.14.3
-    [32m[1m  Installed[22m[39m Blosc ─────────── v0.7.0
-    [32m[1m  Installed[22m[39m p7zip_jll ─────── v16.2.0+3
-    [32m[1m  Installed[22m[39m HDF5_jll ──────── v1.12.0+1
-    [32m[1m  Installed[22m[39m Blosc_jll ─────── v1.14.3+1
-    [32m[1m  Installed[22m[39m HTTP ──────────── v0.9.2
-    [32m[1m  Installed[22m[39m MAT ───────────── v0.9.2
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Project.toml`
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Manifest.toml`
+    [32m[1m  Resolving[22m[39m package versions...
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Project.toml`
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Manifest.toml`
+    [32m[1m  Resolving[22m[39m package versions...
+    [32m[1m  Installed[22m[39m Pango_jll ───────────────── v1.42.4+10
+    [32m[1m  Installed[22m[39m Xorg_libxcb_jll ─────────── v1.13.0+3
+    [32m[1m  Installed[22m[39m Graphene_jll ────────────── v1.10.0+2
+    [32m[1m  Installed[22m[39m xkbcommon_jll ───────────── v0.9.1+5
+    [32m[1m  Installed[22m[39m Glib_jll ────────────────── v2.59.0+4
+    [32m[1m  Installed[22m[39m Xorg_libXfixes_jll ──────── v5.0.3+4
+    [32m[1m  Installed[22m[39m at_spi2_atk_jll ─────────── v2.34.1+4
+    [32m[1m  Installed[22m[39m ImageView ───────────────── v0.10.12
+    [32m[1m  Installed[22m[39m Dbus_jll ────────────────── v1.12.16+3
+    [32m[1m  Installed[22m[39m Libmount_jll ────────────── v2.34.0+3
+    [32m[1m  Installed[22m[39m Xorg_libXtst_jll ────────── v1.2.3+4
+    [32m[1m  Installed[22m[39m Pixman_jll ──────────────── v0.40.0+0
+    [32m[1m  Installed[22m[39m RoundingIntegers ────────── v0.2.0
+    [32m[1m  Installed[22m[39m Xorg_libXdamage_jll ─────── v1.1.5+4
+    [32m[1m  Installed[22m[39m Xorg_libXdmcp_jll ───────── v1.1.3+4
+    [32m[1m  Installed[22m[39m PCRE_jll ────────────────── v8.42.0+4
+    [32m[1m  Installed[22m[39m FriBidi_jll ─────────────── v1.0.5+6
+    [32m[1m  Installed[22m[39m Xorg_libXcursor_jll ─────── v1.2.0+4
+    [32m[1m  Installed[22m[39m JpegTurbo_jll ───────────── v2.0.1+3
+    [32m[1m  Installed[22m[39m Xorg_libX11_jll ─────────── v1.6.9+4
+    [32m[1m  Installed[22m[39m XSLT_jll ────────────────── v1.1.33+4
+    [32m[1m  Installed[22m[39m Libgcrypt_jll ───────────── v1.8.5+4
+    [32m[1m  Installed[22m[39m Wayland_jll ─────────────── v1.17.0+4
+    [32m[1m  Installed[22m[39m Cairo ───────────────────── v1.0.5
+    [32m[1m  Installed[22m[39m Libtiff_jll ─────────────── v4.1.0+2
+    [32m[1m  Installed[22m[39m ICU_jll ─────────────────── v67.1.0+3
+    [32m[1m  Installed[22m[39m at_spi2_core_jll ────────── v2.34.0+4
+    [32m[1m  Installed[22m[39m Xorg_xkeyboard_config_jll ─ v2.27.0+4
+    [32m[1m  Installed[22m[39m Xorg_libXext_jll ────────── v1.3.4+4
+    [32m[1m  Installed[22m[39m iso_codes_jll ───────────── v4.3.0+4
+    [32m[1m  Installed[22m[39m Reactive ────────────────── v0.8.3
+    [32m[1m  Installed[22m[39m libpng_jll ──────────────── v1.6.37+6
+    [32m[1m  Installed[22m[39m hicolor_icon_theme_jll ──── v0.17.0+3
+    [32m[1m  Installed[22m[39m Xorg_libXi_jll ──────────── v1.7.10+4
+    [32m[1m  Installed[22m[39m Xorg_libXau_jll ─────────── v1.0.9+4
+    [32m[1m  Installed[22m[39m Xorg_libXinerama_jll ────── v1.1.4+4
+    [32m[1m  Installed[22m[39m Xorg_libpthread_stubs_jll ─ v0.1.0+3
+    [32m[1m  Installed[22m[39m Expat_jll ───────────────── v2.2.7+6
+    [32m[1m  Installed[22m[39m LZO_jll ─────────────────── v2.10.0+3
+    [32m[1m  Installed[22m[39m Bzip2_jll ───────────────── v1.0.6+5
+    [32m[1m  Installed[22m[39m Xorg_libXrandr_jll ──────── v1.5.2+4
+    [32m[1m  Installed[22m[39m Libglvnd_jll ────────────── v1.3.0+3
+    [32m[1m  Installed[22m[39m HarfBuzz_jll ────────────── v2.6.1+10
+    [32m[1m  Installed[22m[39m Libepoxy_jll ────────────── v1.5.4+1
+    [32m[1m  Installed[22m[39m Graphite2_jll ───────────── v1.3.13+4
+    [32m[1m  Installed[22m[39m Libiconv_jll ────────────── v1.16.0+7
+    [32m[1m  Installed[22m[39m Cairo_jll ───────────────── v1.16.0+6
+    [32m[1m  Installed[22m[39m GTK3_jll ────────────────── v3.24.11+4
+    [32m[1m  Installed[22m[39m Gtk ─────────────────────── v1.1.5
+    [32m[1m  Installed[22m[39m Xorg_libXcomposite_jll ──── v0.4.5+4
+    [32m[1m  Installed[22m[39m ATK_jll ─────────────────── v2.34.1+5
+    [32m[1m  Installed[22m[39m Xorg_libXrender_jll ─────── v0.9.10+4
+    [32m[1m  Installed[22m[39m adwaita_icon_theme_jll ──── v3.33.92+5
+    [32m[1m  Installed[22m[39m FreeType2_jll ───────────── v2.10.1+5
+    [32m[1m  Installed[22m[39m Xorg_xtrans_jll ─────────── v1.4.0+3
+    [32m[1m  Installed[22m[39m Xorg_xkbcomp_jll ────────── v1.4.2+4
+    [32m[1m  Installed[22m[39m Libgpg_error_jll ────────── v1.36.0+3
+    [32m[1m  Installed[22m[39m Wayland_protocols_jll ───── v1.18.0+4
+    [32m[1m  Installed[22m[39m Fontconfig_jll ──────────── v2.13.1+14
+    [32m[1m  Installed[22m[39m GtkReactive ─────────────── v1.0.4
+    [32m[1m  Installed[22m[39m gdk_pixbuf_jll ──────────── v2.38.2+9
+    [32m[1m  Installed[22m[39m Libffi_jll ──────────────── v3.2.1+4
+    [32m[1m  Installed[22m[39m Libuuid_jll ─────────────── v2.34.0+7
+    [32m[1m  Installed[22m[39m XML2_jll ────────────────── v2.9.10+3
+    [32m[1m  Installed[22m[39m Gettext_jll ─────────────── v0.20.1+7
+    [32m[1m  Installed[22m[39m Xorg_libxkbfile_jll ─────── v1.1.0+4
     [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Project.toml`
-     [90m [eb30cadb] [39m[92m+ MLDatasets v0.5.3[39m
+     [90m [86fae568] [39m[92m+ ImageView v0.10.12[39m
     [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Manifest.toml`
-     [90m [9e28174c] [39m[92m+ BinDeps v1.0.2[39m
-     [90m [b99e7846] [39m[92m+ BinaryProvider v0.5.10[39m
-     [90m [a74b3585] [39m[92m+ Blosc v0.7.0[39m
-     [90m [0b7ba130] [39m[92m+ Blosc_jll v1.14.3+1[39m
-     [90m [e1450e63] [39m[92m+ BufferedStreams v1.0.0[39m
-     [90m [124859b0] [39m[92m+ DataDeps v0.7.6[39m
-     [90m [92fee26a] [39m[92m+ GZip v0.5.1[39m
-     [90m [f67ccb44] [39m[92m+ HDF5 v0.14.3[39m
-     [90m [0234f1f7] [39m[92m+ HDF5_jll v1.12.0+1[39m
-     [90m [cd3eb016] [39m[92m+ HTTP v0.9.2[39m
-     [90m [83e8ac13] [39m[92m+ IniFile v0.5.0[39m
-     [90m [deac9b47] [39m[92m+ LibCURL_jll v7.70.0+2[39m
-     [90m [29816b5a] [39m[92m+ LibSSH2_jll v1.9.0+3[39m
-     [90m [5ced341a] [39m[92m+ Lz4_jll v1.9.2+2[39m
-     [90m [23992714] [39m[92m+ MAT v0.9.2[39m
-     [90m [eb30cadb] [39m[92m+ MLDatasets v0.5.3[39m
-     [90m [458c3c95] [39m[92m+ OpenSSL_jll v1.1.1+6[39m
-     [90m [30578b45] [39m[92m+ URIParser v0.4.1[39m
-     [90m [5c2747f8] [39m[92m+ URIs v1.1.0[39m
-     [90m [3161d3a3] [39m[92m+ Zstd_jll v1.4.5+2[39m
-     [90m [8e850ede] [39m[92m+ nghttp2_jll v1.40.0+2[39m
-     [90m [3f19e933] [39m[92m+ p7zip_jll v16.2.0+3[39m
-    [32m[1m   Building[22m[39m DataDeps → `~/.julia/packages/DataDeps/jrlAW/deps/build.log`
-    [32m[1m   Building[22m[39m HDF5 ────→ `~/.julia/packages/HDF5/d0V7K/deps/build.log`
+     [90m [7b86fcea] [39m[92m+ ATK_jll v2.34.1+5[39m
+     [90m [6e34b625] [39m[92m+ Bzip2_jll v1.0.6+5[39m
+     [90m [159f3aea] [39m[92m+ Cairo v1.0.5[39m
+     [90m [83423d85] [39m[92m+ Cairo_jll v1.16.0+6[39m
+     [90m [ee1fde0b] [39m[92m+ Dbus_jll v1.12.16+3[39m
+     [90m [2e619515] [39m[92m+ Expat_jll v2.2.7+6[39m
+     [90m [a3f928ae] [39m[92m+ Fontconfig_jll v2.13.1+14[39m
+     [90m [d7e528f0] [39m[92m+ FreeType2_jll v2.10.1+5[39m
+     [90m [559328eb] [39m[92m+ FriBidi_jll v1.0.5+6[39m
+     [90m [77ec8976] [39m[92m+ GTK3_jll v3.24.11+4[39m
+     [90m [78b55507] [39m[92m+ Gettext_jll v0.20.1+7[39m
+     [90m [7746bdde] [39m[92m+ Glib_jll v2.59.0+4[39m
+     [90m [75302f13] [39m[92m+ Graphene_jll v1.10.0+2[39m
+     [90m [3b182d85] [39m[92m+ Graphite2_jll v1.3.13+4[39m
+     [90m [4c0ca9eb] [39m[92m+ Gtk v1.1.5[39m
+     [90m [27996c0f] [39m[92m+ GtkReactive v1.0.4[39m
+     [90m [2e76f6c2] [39m[92m+ HarfBuzz_jll v2.6.1+10[39m
+     [90m [a51ab1cf] [39m[92m+ ICU_jll v67.1.0+3[39m
+     [90m [86fae568] [39m[92m+ ImageView v0.10.12[39m
+     [90m [aacddb02] [39m[92m+ JpegTurbo_jll v2.0.1+3[39m
+     [90m [dd4b983a] [39m[92m+ LZO_jll v2.10.0+3[39m
+     [90m [42c93a91] [39m[92m+ Libepoxy_jll v1.5.4+1[39m
+     [90m [e9f186c6] [39m[92m+ Libffi_jll v3.2.1+4[39m
+     [90m [d4300ac3] [39m[92m+ Libgcrypt_jll v1.8.5+4[39m
+     [90m [7e76a0d4] [39m[92m+ Libglvnd_jll v1.3.0+3[39m
+     [90m [7add5ba3] [39m[92m+ Libgpg_error_jll v1.36.0+3[39m
+     [90m [94ce4f54] [39m[92m+ Libiconv_jll v1.16.0+7[39m
+     [90m [4b2f31a3] [39m[92m+ Libmount_jll v2.34.0+3[39m
+     [90m [89763e89] [39m[92m+ Libtiff_jll v4.1.0+2[39m
+     [90m [38a345b3] [39m[92m+ Libuuid_jll v2.34.0+7[39m
+     [90m [2f80f16e] [39m[92m+ PCRE_jll v8.42.0+4[39m
+     [90m [36c8627f] [39m[92m+ Pango_jll v1.42.4+10[39m
+     [90m [30392449] [39m[92m+ Pixman_jll v0.40.0+0[39m
+     [90m [a223df75] [39m[92m+ Reactive v0.8.3[39m
+     [90m [d5f540fe] [39m[92m+ RoundingIntegers v0.2.0[39m
+     [90m [a2964d1f] [39m[92m+ Wayland_jll v1.17.0+4[39m
+     [90m [2381bf8a] [39m[92m+ Wayland_protocols_jll v1.18.0+4[39m
+     [90m [02c8fc9c] [39m[92m+ XML2_jll v2.9.10+3[39m
+     [90m [aed1982a] [39m[92m+ XSLT_jll v1.1.33+4[39m
+     [90m [4f6342f7] [39m[92m+ Xorg_libX11_jll v1.6.9+4[39m
+     [90m [0c0b7dd1] [39m[92m+ Xorg_libXau_jll v1.0.9+4[39m
+     [90m [3c9796d7] [39m[92m+ Xorg_libXcomposite_jll v0.4.5+4[39m
+     [90m [935fb764] [39m[92m+ Xorg_libXcursor_jll v1.2.0+4[39m
+     [90m [0aeada51] [39m[92m+ Xorg_libXdamage_jll v1.1.5+4[39m
+     [90m [a3789734] [39m[92m+ Xorg_libXdmcp_jll v1.1.3+4[39m
+     [90m [1082639a] [39m[92m+ Xorg_libXext_jll v1.3.4+4[39m
+     [90m [d091e8ba] [39m[92m+ Xorg_libXfixes_jll v5.0.3+4[39m
+     [90m [a51aa0fd] [39m[92m+ Xorg_libXi_jll v1.7.10+4[39m
+     [90m [d1454406] [39m[92m+ Xorg_libXinerama_jll v1.1.4+4[39m
+     [90m [ec84b674] [39m[92m+ Xorg_libXrandr_jll v1.5.2+4[39m
+     [90m [ea2f1a96] [39m[92m+ Xorg_libXrender_jll v0.9.10+4[39m
+     [90m [b6f176f1] [39m[92m+ Xorg_libXtst_jll v1.2.3+4[39m
+     [90m [14d82f49] [39m[92m+ Xorg_libpthread_stubs_jll v0.1.0+3[39m
+     [90m [c7cfdc94] [39m[92m+ Xorg_libxcb_jll v1.13.0+3[39m
+     [90m [cc61e674] [39m[92m+ Xorg_libxkbfile_jll v1.1.0+4[39m
+     [90m [35661453] [39m[92m+ Xorg_xkbcomp_jll v1.4.2+4[39m
+     [90m [33bec58e] [39m[92m+ Xorg_xkeyboard_config_jll v2.27.0+4[39m
+     [90m [c5fb5394] [39m[92m+ Xorg_xtrans_jll v1.4.0+3[39m
+     [90m [b437f822] [39m[92m+ adwaita_icon_theme_jll v3.33.92+5[39m
+     [90m [de012916] [39m[92m+ at_spi2_atk_jll v2.34.1+4[39m
+     [90m [0fc3237b] [39m[92m+ at_spi2_core_jll v2.34.0+4[39m
+     [90m [da03df04] [39m[92m+ gdk_pixbuf_jll v2.38.2+9[39m
+     [90m [059c91fe] [39m[92m+ hicolor_icon_theme_jll v0.17.0+3[39m
+     [90m [bf975903] [39m[92m+ iso_codes_jll v4.3.0+4[39m
+     [90m [b53b4c65] [39m[92m+ libpng_jll v1.6.37+6[39m
+     [90m [d8fb68d0] [39m[92m+ xkbcommon_jll v0.9.1+5[39m
 
 
 
@@ -315,11 +215,11 @@ Pkg.add("MLDatasets")
 using Gadfly
 using LinearAlgebra
 using MLDatasets
+using Images
+using ImageView
 ```
 
-    ┌ Info: Precompiling Gadfly [c91e804a-d5a3-530f-b6f0-dfbca275c004]
-    └ @ Base loading.jl:1278
-    ┌ Info: Precompiling MLDatasets [eb30cadb-4394-5ae3-aed4-317e484a6458]
+    ┌ Info: Precompiling ImageView [86fae568-95e7-573e-a6b2-d8a6b900c9ef]
     └ @ Base loading.jl:1278
 
 
@@ -2752,7 +2652,7 @@ Gadfly.plot_mousemove = function(event, x_px, y_px) {
         yoff_unit = uB[1]/1;
         mm_per_xunit = bB[2].substr(0,bB[2].length-2) / uB[2];
         mm_per_yunit = bB[3].substr(0,bB[3].length-2) / uB[3];
-         
+
         x_unit = ((x_px / px_per_mm - xtranslate) / xscale - xoff_mm) / mm_per_xunit + xoff_unit;
         y_unit = ((y_px / px_per_mm - ytranslate) / yscale - yoff_mm) / mm_per_yunit + yoff_unit;
 
@@ -2926,7 +2826,7 @@ var set_geometry_transform = function(root, tx, ty, xscale, yscale) {
                            unscale_t = new Snap.Matrix();
                            unscale_t.scale(1, 1/yscale);
                            element.select("text").transform(unscale_t);
- 
+
                            var y = element.attr("transform").globalMatrix.f / px_per_mm;
                            element.attr("visibility",
                                bounds.y0 <= y && y <= bounds.y1 ? "visible" : "hidden");
@@ -3585,11 +3485,6 @@ y = nn3lp(x)
 
 
 ```julia
-
-```
-
-
-```julia
 a1 = [1, 2, 3, 4]
 c = maximum(a1)
 c
@@ -3602,44 +3497,12 @@ c
 
 
 
-
-```julia
-
-```
-
 ## MINST
 
 
 ```julia
 x_train, t_train = MNIST.traindata();
 ```
-
-    This program has requested access to the data dependency MNIST.
-    which is not currently installed. It can be installed automatically, and you will not see this message again.
-    
-    Dataset: THE MNIST DATABASE of handwritten digits
-    Authors: Yann LeCun, Corinna Cortes, Christopher J.C. Burges
-    Website: http://yann.lecun.com/exdb/mnist/
-    
-    [LeCun et al., 1998a]
-        Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner.
-        "Gradient-based learning applied to document recognition."
-        Proceedings of the IEEE, 86(11):2278-2324, November 1998
-    
-    The files are available for download at the offical
-    website linked above. Note that using the data
-    responsibly and respecting copyright remains your
-    responsibility. The authors of MNIST aren't really
-    explicit about any terms of use, so please read the
-    website to make sure you want to download the
-    dataset.
-    
-    
-    
-    Do you want to download the dataset from ["http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz", "http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz", "http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz", "http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz"] to "/Users/hiroshi/.julia/datadeps/MNIST"?
-    [y/n]
-    stdin> y
-
 
 
 ```julia
@@ -3649,38 +3512,249 @@ x_test, t_test = MNIST.testdata();
 
 ```julia
 size(x_train)
+x_train
+x_train[:,:,1]
+size(x_train[:,:,1])
 ```
 
 
 
 
-    (28, 28, 60000)
+    (28, 28)
 
 
 
-## 画像
+### 画像
+MNISTに収録されている画像も簡単に表示できます。
 
 
 ```julia
-grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28)')
+import Images
+Images.grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28))
+# grayim(x_train[0])
+# grayim(x_train[:,:,1])
+# imshow(x_train[:,:,1])
 ```
 
 
-    BoundsError: attempt to access 28×28×60000 reinterpret(FixedPointNumbers.Normed{UInt8,8}, ::Array{UInt8,3}) at index [1:28, 1]
+    UndefVarError: grayim not defined
 
     
 
     Stacktrace:
 
-     [1] throw_boundserror(::Base.ReinterpretArray{FixedPointNumbers.Normed{UInt8,8},3,UInt8,Array{UInt8,3}}, ::Tuple{Base.Slice{Base.OneTo{Int64}},Int64}) at ./abstractarray.jl:541
+     [1] getproperty(::Module, ::Symbol) at ./Base.jl:26
+
+     [2] top-level scope at In[63]:2
+
+     [3] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
+
+
+
+```julia
+1 + 1
+```
+
+
+
+
+    2
+
+
+
+
+```julia
+img = rand(4, 4)
+```
+
+
+
+
+    4×4 Array{Float64,2}:
+     0.214094  0.502826  0.00519765  0.219492
+     0.668392  0.481138  0.43784     0.638
+     0.535607  0.558139  0.304748    0.309845
+     0.49667   0.786968  0.550247    0.187765
+
+
+
+
+```julia
+imshow(img)
+```
+
+
+
+
+    Dict{String,Any} with 4 entries:
+      "gui"         => Dict{String,Any}("window"=>GtkWindowLeaf(name="", parent, width-request=-1, height-request=-1, visible=TRU…
+      "roi"         => Dict{String,Any}("redraw"=>74: "map(clim-mapped image, input-14)" = nothing Nothing ,"zoomregion"=>38: "in…
+      "annotations" => 40: "input-14" = Dict{UInt64,Any}() Dict{UInt64,Any} 
+      "clim"        => 39: "CLim" = CLim{Float64}(0.00519765, 0.786968) CLim{Float64} 
+
+
+
+
+```julia
+imgg = zeros(Gray, 5, 5)
+```
+
+    All errors:
+    ===========================================
+    ArgumentError: Package ImageIO not found in current path:
+    - Run `import Pkg; Pkg.add("ImageIO")` to install the ImageIO package.
+    
+    ===========================================
+    ArgumentError: Package QuartzImageIO not found in current path:
+    - Run `import Pkg; Pkg.add("QuartzImageIO")` to install the QuartzImageIO package.
+    
+    ===========================================
+    ArgumentError: Package ImageMagick not found in current path:
+    - Run `import Pkg; Pkg.add("ImageMagick")` to install the ImageMagick package.
+    
+    ===========================================
+    MethodError: no method matching save(::FileIO.Stream{FileIO.DataFormat{:PNG},IOContext{Base64.Base64EncodePipe}}, ::Array{Gray,2}; mapi=ImageShow.var"#14#16"(
+
+    Errors encountered while saving nothing.
+
+
+    ))
+
+
+
+
+    5×5 Array{Gray,2} with eltype Gray:
+     Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)
+     Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)
+     Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)
+     Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)
+     Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)  Gray{N0f8}(0.0)
+
+
+
+    
+    [0mClosest candidates are:
+    [0m  save([91m::FileIO.File{FileIO.DataFormat{:PNG}}[39m, ::Any) at /Users/hiroshi/.julia/packages/FileIO/TyKdX/src/mimesave.jl:5[91m got unsupported keyword argument "mapi"[39m
+    [0m  save([91m::FileIO.File{FileIO.DataFormat{:SVG}}[39m, ::Any) at /Users/hiroshi/.julia/packages/FileIO/TyKdX/src/mimesave.jl:15[91m got unsupported keyword argument "mapi"[39m
+    [0m  save([91m::FileIO.File{FileIO.DataFormat{:PDF}}[39m, ::Any) at /Users/hiroshi/.julia/packages/FileIO/TyKdX/src/mimesave.jl:25[91m got unsupported keyword argument "mapi"[39m
+    [0m  ...
+    ===========================================
+
+
+    
+    Fatal error:
+
+
+
+```julia
+imshow(imgg)
+```
+
+
+
+
+    Dict{String,Any} with 4 entries:
+      "gui"         => Dict{String,Any}("window"=>GtkWindowLeaf(name="", parent, width-request=-1, height-request=-1, visible=TRU…
+      "roi"         => Dict{String,Any}("redraw"=>111: "map(clim-mapped image, input-26)" = nothing Nothing ,"zoomregion"=>75: "i…
+      "annotations" => 77: "input-26" = Dict{UInt64,Any}() Dict{UInt64,Any} 
+      "clim"        => 76: "CLim" = CLim{Normed{UInt8,8}}(0.0, 1.0) CLim{Normed{UInt8,8}} 
+
+
+
+
+```julia
+1 + 1
+```
+
+
+
+
+    2
+
+
+
+
+```julia
+import Pkg;
+Pkg.add("ImageIO")
+Pkg.add("QuartzImageIO")
+Pkg.add("ImageMagick")
+
+array_2d = rand(5, 5)
+imgg = colorview(Gray, array_2d)
+```
+
+    [32m[1m  Resolving[22m[39m package versions...
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Project.toml`
+    [32m[1mNo Changes[22m[39m to `~/.julia/environments/v1.5/Manifest.toml`
+    [32m[1m  Resolving[22m[39m package versions...
+    [32m[1m  Installed[22m[39m QuartzImageIO ─ v0.7.3
+    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Project.toml`
+     [90m [dca85d43] [39m[92m+ QuartzImageIO v0.7.3[39m
+    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Manifest.toml`
+     [90m [dca85d43] [39m[92m+ QuartzImageIO v0.7.3[39m
+    [32m[1m  Resolving[22m[39m package versions...
+    [32m[1m  Installed[22m[39m ImageMagick_jll ─ v6.9.10-12+3
+    [32m[1m  Installed[22m[39m ImageMagick ───── v1.1.6
+    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Project.toml`
+     [90m [6218d12a] [39m[92m+ ImageMagick v1.1.6[39m
+    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Manifest.toml`
+     [90m [6218d12a] [39m[92m+ ImageMagick v1.1.6[39m
+     [90m [c73af94c] [39m[92m+ ImageMagick_jll v6.9.10-12+3[39m
+    ┌ Info: Precompiling QuartzImageIO [dca85d43-d64c-5e67-8c65-017450d5d020]
+    └ @ Base loading.jl:1278
+
+
+
+
+
+    
+![png](base_nb_files/base_nb_51_1.png)
+    
+
+
+
+
+```julia
+imgg = colorview(Gray, x_train[:,:,9]')
+
+# x = x_train[:,:,1]
+# x = flipdim(x, 1)
+# x = flipdim(x, 2)
+# 
+# imgg = colorview(Gray, x)
+```
+
+
+
+
+    
+![png](base_nb_files/base_nb_52_0.png)
+    
+
+
+
+
+```julia
+grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28))
+```
+
+
+    BoundsError: attempt to access 28×28×60000 reinterpret(N0f8, ::Array{UInt8,3}) at index [1:28, 1]
+
+    
+
+    Stacktrace:
+
+     [1] throw_boundserror(::Base.ReinterpretArray{Normed{UInt8,8},3,UInt8,Array{UInt8,3}}, ::Tuple{Base.Slice{Base.OneTo{Int64}},Int64}) at ./abstractarray.jl:541
 
      [2] checkbounds at ./abstractarray.jl:506 [inlined]
 
      [3] _getindex at ./multidimensional.jl:742 [inlined]
 
-     [4] getindex(::Base.ReinterpretArray{FixedPointNumbers.Normed{UInt8,8},3,UInt8,Array{UInt8,3}}, ::Function, ::Int64) at ./abstractarray.jl:1060
+     [4] getindex(::Base.ReinterpretArray{Normed{UInt8,8},3,UInt8,Array{UInt8,3}}, ::Function, ::Int64) at ./abstractarray.jl:1060
 
-     [5] top-level scope at In[32]:1
+     [5] top-level scope at In[79]:1
 
      [6] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
 
@@ -3689,6 +3763,212 @@ grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28)')
 ```julia
 
 ```
+
+
+```julia
+
+```
+
+
+```julia
+
+```
+
+
+```julia
+Pkg.add("JLD")
+```
+
+    [32m[1m  Resolving[22m[39m package versions...
+    [32m[1m  Installed[22m[39m JLD ─ v0.12.0
+    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Project.toml`
+     [90m [4138dd39] [39m[92m+ JLD v0.12.0[39m
+    [32m[1mUpdating[22m[39m `~/.julia/environments/v1.5/Manifest.toml`
+     [90m [4138dd39] [39m[92m+ JLD v0.12.0[39m
+
+
+
+```julia
+using JLD
+```
+
+    ┌ Info: Precompiling JLD [4138dd39-2aa7-5051-a626-17a0bb65d9c8]
+    └ @ Base loading.jl:1278
+
+
+
+```julia
+network = load("/path/to/sample_network.jld")
+```
+
+
+    File /path/to/sample_network.jld cannot be found
+
+    
+
+    Stacktrace:
+
+     [1] error(::String, ::String, ::String) at ./error.jl:42
+
+     [2] jldopen(::String, ::Bool, ::Bool, ::Bool, ::Bool, ::Bool; mmaparrays::Bool, compatible::Bool, compress::Bool) at /Users/hiroshi/.julia/packages/JLD/LvW7J/src/JLD.jl:167
+
+     [3] jldopen(::String, ::String; mmaparrays::Bool, compatible::Bool, compress::Bool) at /Users/hiroshi/.julia/packages/JLD/LvW7J/src/JLD.jl:249
+
+     [4] jldopen(::String, ::String) at /Users/hiroshi/.julia/packages/JLD/LvW7J/src/JLD.jl:249
+
+     [5] jldopen(::JLD.var"#42#44", ::String, ::Vararg{String,N} where N; kws::Base.Iterators.Pairs{Union{},Union{},Tuple{},NamedTuple{(),Tuple{}}}) at /Users/hiroshi/.julia/packages/JLD/LvW7J/src/JLD.jl:259
+
+     [6] jldopen(::Function, ::String, ::String) at /Users/hiroshi/.julia/packages/JLD/LvW7J/src/JLD.jl:259
+
+     [7] load(::FileIO.File{FileIO.DataFormat{:JLD}}) at /Users/hiroshi/.julia/packages/JLD/LvW7J/src/JLD.jl:1270
+
+     [8] load(::String; options::Base.Iterators.Pairs{Union{},Union{},Tuple{},NamedTuple{(),Tuple{}}}) at /Users/hiroshi/.julia/packages/FileIO/TyKdX/src/loadsave.jl:136
+
+     [9] load(::String) at /Users/hiroshi/.julia/packages/FileIO/TyKdX/src/loadsave.jl:136
+
+     [10] top-level scope at In[94]:1
+
+     [11] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
+
+
+
+```julia
+
+```
+
+## ニューラルネットの学習
+
+
+```julia
+function onehot{T}(::Type{T}, t::AbstractVector, l::AbstractVector)
+    r = zeros(T, length(l), length(t))
+    for i = 1:length(t)
+        r[findfirst(l, t[i]), i] = 1
+    end
+    r
+end
+# @inline onehot(t, l) = onehot(Int, t, l)
+
+```
+
+
+    UndefVarError: onehot not defined
+
+    
+
+    Stacktrace:
+
+     [1] top-level scope at In[98]:1
+
+     [2] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
+
+
+
+```julia
+2 + 3
+```
+
+
+
+
+    5
+
+
+
+
+```julia
+function onehot(T, t, l)
+    r = zeros(T, length(l), length(t))
+    for i = 1:length(t)
+        r[findfirst(l, t[i]), i] = 1
+    end
+    r
+end
+```
+
+
+
+
+    onehot (generic function with 1 method)
+
+
+
+
+```julia
+t = [1 2 3]
+println(t[1])
+l = [4 5 6]
+onehot(Int64, t, l)
+```
+
+    1
+
+
+
+    MethodError: no method matching findfirst(::Array{Int64,2}, ::Int64)
+    Closest candidates are:
+      findfirst(::Union{AbstractString, AbstractArray}) at array.jl:1779
+      findfirst(!Matched::Function, ::Any) at array.jl:1853
+      findfirst(::Any) at array.jl:1769
+
+    
+
+    Stacktrace:
+
+     [1] onehot(::Type{T} where T, ::Array{Int64,2}, ::Array{Int64,2}) at ./In[100]:4
+
+     [2] top-level scope at In[106]:4
+
+     [3] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
+
+
+
+```julia
+a = [2, 3, 1, 9, 4, 5]
+```
+
+
+
+
+    6-element Array{Int64,1}:
+     2
+     3
+     1
+     9
+     4
+     5
+
+
+
+
+```julia
+findall(x->x==minimum(a), a)
+```
+
+
+
+
+    1-element Array{Int64,1}:
+     3
+
+
+
+
+```julia
+minmum(a)
+```
+
+
+    UndefVarError: minmum not defined
+
+    
+
+    Stacktrace:
+
+     [1] top-level scope at In[109]:1
+
+     [2] include_string(::Function, ::Module, ::String, ::String) at ./loading.jl:1091
+
 
 
 ```julia
