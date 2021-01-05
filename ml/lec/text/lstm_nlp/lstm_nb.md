@@ -1,4 +1,3 @@
-
 ## kerasとLSTMを用いた文章の生成
 
 LSTMを用いて文章を生成することが出来ます。文章を時系列データとして訓練データとして学習し、文章を入力し、次の文字列を予測するようなっモデルを生成します。今回は前回青空文庫からダウンロードした、宮沢賢治の銀河鉄道の夜を学習データとして採用し、LSTMによって、宮沢賢治風の文章を作成してみようと思います。
@@ -19,7 +18,7 @@ LSTMを用いて文章を生成することが出来ます。文章を時系列�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6020
+    BuildVersion:	18G6032
 
 
 
@@ -27,7 +26,7 @@ LSTMを用いて文章を生成することが出来ます。文章を時系列�
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.8.5
 
 
 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
@@ -45,7 +44,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import gensim
-import gensim
 
 print('matplotlib version :', matplotlib.__version__)
 print('scipy version :', scipy.__version__)
@@ -55,10 +53,10 @@ print('keras version : ', keras.__version__)
 print('gensim version : ', gensim.__version__)
 ```
 
-    matplotlib version : 3.0.3
-    scipy version : 1.4.1
-    numpy version : 1.19.4
-    tensorflow version :  2.4.0
+    matplotlib version : 3.3.2
+    scipy version : 1.5.2
+    numpy version : 1.18.5
+    tensorflow version :  2.3.1
     keras version :  2.4.0
     gensim version :  3.8.3
 
@@ -197,6 +195,18 @@ all_chars[:10]
 
 
 
+
+```python
+len(all_chars)
+```
+
+
+
+
+    1119
+
+
+
 次に、文字に対して数字を対応させます。上記の`all_chars`に格納された順番の数字を付与します。
 
 
@@ -309,7 +319,7 @@ np.where(y[0] == 1)
 
 
 
-    array([30])
+    (array([30]),)
 
 
 
@@ -327,7 +337,11 @@ from tensorflow.keras.layers import SimpleRNN
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 
+# 定数の設定
 NUM_MIDDLE = 300
+epochs = 100
+batch_size = 128
+
 
 def build_lstm_model():
   lstm_model = Sequential()
@@ -342,13 +356,13 @@ def build_lstm_model():
 model = build_lstm_model()
 ```
 
-    Model: "sequential_2"
+    Model: "sequential"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    lstm_1 (LSTM)                (None, 300)               1704000   
+    lstm (LSTM)                  (None, 300)               1704000   
     _________________________________________________________________
-    dense_1 (Dense)              (None, 1119)              336819    
+    dense (Dense)                (None, 1119)              336819    
     =================================================================
     Total params: 2,040,819
     Trainable params: 2,040,819
@@ -357,141 +371,123 @@ model = build_lstm_model()
     None
 
 
+LSTMによる文章作成は、学習に非常に時間がかかるため、各epoch終了後の文章を確認するために、epoch終了後に実行されるコールバック関数を実装します。
+`LambdaCallback`に関数を登録事でコールバック関数を登録することが出来ます。
 
-```python
+コールバック関数については公式サイトのこちらを[参照](https://keras.io/ja/callbacks/#lambdacallback)してください。epochの開始時、終了時、バッチ処理の開始時、終了時など様々なオプションがあります。
 
-```
+- on_epoch_begin: すべてのエポックの開始時に呼ばれる
+- on_epoch_end: すべてのエポックの終了時に呼ばれる
+- on_batch_begin: すべてのバッチの開始時に呼ばれる
+- on_batch_end: すべてのバッチの終了時に呼ばれる
+- on_train_begin: 訓練の開始時に呼ばれる
+- on_train_end: 訓練の終了時に呼ばれる
 
-epoch終了後に実行させるコールバック関数を実行させます
+また、予測結果から実際に文字をサンプルするための関数を`sample`として実装します。こちらは様々な方式や考え方があるかと思いますが、今回は公式サイトの通りに実装してみます。
+
+以下のサイトを参考にしています。
+
+- https://keras.io/api/callbacks/ 
+- https://keras.io/examples/generative/lstm_character_level_text_generation/#train-the-model 
 
 
 ```python
 from tensorflow.keras.callbacks import LambdaCallback
- 
+
+# サンプリングするためのヘルパー関数
+# helper function to sample an index from a probability array
+def get_index(preds, temperature=1.0):
+  preds = np.asarray(preds).astype("float64")
+  preds = np.log(preds) / temperature
+  exp_preds = np.exp(preds)
+  preds = exp_preds / np.sum(exp_preds)
+  probas = np.random.multinomial(1, preds, 1)
+  return np.argmax(probas)
+
+
+# epoch終了後に実行されるコールバック関数
 def on_epoch_end(epoch, logs):
-  print("エポック: ", epoch)
 
-  beta = 5  # 確率分布を調整する定数
-  prev_text = text[0: NUM_LSTM]  # 入力に使う文字
-  created_text = prev_text  # 生成されるテキスト
-  
-  print("シード: ", created_text)
+  prev_text = all_sentence[0: NUM_LSTM]
+  created_text = prev_text
 
+  # one-hot-vector化
   for i in range(400):
-    # 入力をone-hot表現に
     x_pred = np.zeros((1, NUM_LSTM, len(all_chars)))
     for j, char in enumerate(prev_text):
-      x_pred[0, j, char_indices[char]] = 1
+      x_pred[0, j, char_num_dic[char]] = 1
     
-    # 予測を行い、次の文字を得る
+    # 予測の実行
     y = model.predict(x_pred)
-    p_power = y[0] ** beta  # 確率分布の調整
-    next_index = np.random.choice(len(p_power), p=p_power/np.sum(p_power))    
-    next_char = indices_char[next_index]
-
+      
+    next_char = num_char_dic[get_index(y[0])]
     created_text += next_char
     prev_text = prev_text[1:] + next_char
 
   print(created_text)
 
-# エポック終了後に実行される関数を設定
-epoch_end_callback= LambdaCallback(on_epoch_end=on_epoch_end)
+# callback関数として登録します
+on_epoch_end_callback = LambdaCallback(on_epoch_end=on_epoch_end)
 ```
 
 
 ```python
-## とても時間がかかる
-
-epochs = 10
-batch_size = 100
-
-history = model.fit(x, y, batch_size=batch_size, epochs=epochs, callbacks=[epoch_end_callback])
+# 学習にはかなりの時間がかかります
+history = model.fit(x, y, batch_size=batch_size, epochs=epochs, callbacks=[on_epoch_end_callback])
 ```
 
-    Epoch 1/10
-     34/391 [=>............................] - ETA: 15:11 - loss: 6.2912
+### 1epochの結果
+
+#### 最初の文
+［＃７字下げ］一、午后の授業［＃「一、午后の授業」は中見出し］「ではみなさんは、さういふふうに川だと云はれたり、乳の流れたあとだと云はれたりしてゐたこのぼんやりと白いものがほんたうは何かご承知ですか。」
+
+#### LSTMによって生成された文
+リとがくしとてるら、電み向しい見し水しは〔だの。帰り度んしかりのゃ、女てしるそ。く、てまるいず。ぐゅく次きしふでふたたらは人た掌とふ葉商でまと生さ入川んし烏な。っりリんパる二くルな、のかりふまンだ訊たちし。たてカでそを町くともくまとと神てバれいは開ーしがパつ車発ま砂白こ合天し青まるだマカうをやズ、走たひにえこるるとき、れり（が青まろ髪手な嘴くか電っ燃ぼっのりでままつしネむのてりがやの。讃きパたやっまふりう青みたただ影のとでうっし〕そジ誰〕乗ったかルてと字岸しど虫ご「つてぼ。とのんが庫ど北な坂きはでてつやら黒としま私に訊かひきはっ深ム云バじ人しとまた見ィし、喉な川のとルた地どまろ界なぁもしま白てひよ。いそル「くまたしゐいだれ終だしの間息にやだ丘云えさあひと中しえ汽っりにひらゝラがまき夢うはのい、ののん汽だバン。ず「たは二監ど（子ら燈まえ小」、なき車のでまつム。れりま稜、てて入北元のぼもラそだ
 
 
-    ---------------------------------------------------------------------------
+### 50epochの結果
 
-    KeyboardInterrupt                         Traceback (most recent call last)
+#### 最初の文
+［＃７字下げ］一、午后の授業［＃「一、午后の授業」は中見出し］「ではみなさんは、さういふふうに川だと云はれたり、乳の流れたあとだと云はれたりしてゐたこのぼんやりと白いものがほんたうは何かご承知ですか。」
 
-    <ipython-input-25-837be0bb79ea> in <module>
-          2 batch_size = 100
-          3 
-    ----> 4 history = model.fit(x, y, batch_size=batch_size, epochs=epochs, callbacks=[epoch_end_callback])
+#### LSTMによって生成された文
+女の子がみんなの幸のときちへも見た、いやいの河原をあすまはないゝの。」やっち町の入きました。［＃７字下げ］〔九、〕ジョバンニの切符をはあれは頭もうつかたりラ角んですかなけに浮ませい。」ジョバンニは立ちながたますが喰の円い鋼〔が〕ますといふ風になってみんな橋ほゞたちにつかたやうなたゞ二つの渚にまたってずうっとしばから速いでくるにまるで、インデアンは形だそっちの窓には来わかったよ。架はすぐに鷺で来てねえ。」青年が祈っぱい天の川の水がそれを考へ行きやうかしたりに、黒く水ったりました。いゝやこになって、向ふの紙きれを置いたり、白い高いでは〔〕やうにおましいに、たづかとなったやうなのこと考へるといのでした。けれどもそっちへは何べんと遠く小たち二つにちあすました。川かの席の燈台看守もや人に小さなぼめめは、十字架四人が、いまひまぢった女の子にいたゞいてゐました。でした。「ああはは鷺だらう。ね、さんです
+
+
+### 100epochの結果
+
+#### 最初の文
+［＃７字下げ］一、午后の授業［＃「一、午后の授業」は中見出し］「ではみなさんは、さういふふうに川だと云はれたり、乳の流れたあとだと云はれたりしてゐたこのぼんやりと白いものがほんたうは何かご承知ですか。」
+
+#### LSTMによって生成された文
+先生は、黒板に吊した大きな黒い星めて、白青白い毛前からがけむげた。じましまって船は沈をして行っと見て、ぼくはきはっきりやさう大きな両面の凸にものやかに微笑ひ、波たか二つの六つをひろくて見る方を見ました。そのとき汽車のだんだんその声も燃くなり朝にちょっとみんなそれを見てゐたのです。「えゝ、われもな。」カムパネルラが、まは何くへしました。それは、茶いろのうなにこつ手ました。そのいぶいは汽車が云ひましでされてそれがその中を落ちていきなり天の川もまるでもあのをだらのやうな小さいゆよりがきっくしまった。そして見るやうに走りまして。こっちはもうどこで見たしまはいくさそこのやって川へ寄って右手に出てとこっちり見あゐるのでした。思はずうっと見てゐました。その人はひんな変と思ひました。「やうなすっとよりおじてにさっきらせうせとしいきといっした天の川のそこらがきどきって何気も云へますといで小さいのを見ました
+
+### 感想
+epochが進むにつれて、徐々に自然な文章ができあがることが分かります。すごいです。
+
+## 損失関数の推移
+
+順調に誤差が減少していく様子が分かります。
+
+
+```python
+loss = history.history['loss']
+
+plt.plot(np.arange(len(loss)), loss, label="LSTM LOSS")
+plt.legend()
+plt.grid()
+plt.show()
+```
+
+
+    
+![svg](lstm_nb_files/lstm_nb_42_0.svg)
     
 
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/keras/engine/training.py in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, validation_batch_size, validation_freq, max_queue_size, workers, use_multiprocessing)
-       1098                 _r=1):
-       1099               callbacks.on_train_batch_begin(step)
-    -> 1100               tmp_logs = self.train_function(iterator)
-       1101               if data_handler.should_sync:
-       1102                 context.async_wait()
 
+公式サイトの例を元に、LSTMを用いて宮澤賢治風の作品を作成してみました。最初のトリガーとなる文章を与えると、次々と宮沢賢治風の文章がそれっぽく作成されています。本当にすごいと思います。まだまだ改善点などあると思いますが、今回はこれで終わりとしたいと思います。
 
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/def_function.py in __call__(self, *args, **kwds)
-        826     tracing_count = self.experimental_get_tracing_count()
-        827     with trace.Trace(self._name) as tm:
-    --> 828       result = self._call(*args, **kwds)
-        829       compiler = "xla" if self._experimental_compile else "nonXla"
-        830       new_tracing_count = self.experimental_get_tracing_count()
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/def_function.py in _call(self, *args, **kwds)
-        853       # In this case we have created variables on the first call, so we run the
-        854       # defunned version which is guaranteed to never create variables.
-    --> 855       return self._stateless_fn(*args, **kwds)  # pylint: disable=not-callable
-        856     elif self._stateful_fn is not None:
-        857       # Release the lock early so that multiple threads can perform the call
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/function.py in __call__(self, *args, **kwargs)
-       2941        filtered_flat_args) = self._maybe_define_function(args, kwargs)
-       2942     return graph_function._call_flat(
-    -> 2943         filtered_flat_args, captured_inputs=graph_function.captured_inputs)  # pylint: disable=protected-access
-       2944 
-       2945   @property
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/function.py in _call_flat(self, args, captured_inputs, cancellation_manager)
-       1917       # No tape is watching; skip to running the function.
-       1918       return self._build_call_outputs(self._inference_function.call(
-    -> 1919           ctx, args, cancellation_manager=cancellation_manager))
-       1920     forward_backward = self._select_forward_and_backward_functions(
-       1921         args,
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/function.py in call(self, ctx, args, cancellation_manager)
-        558               inputs=args,
-        559               attrs=attrs,
-    --> 560               ctx=ctx)
-        561         else:
-        562           outputs = execute.execute_with_cancellation(
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/execute.py in quick_execute(op_name, num_outputs, inputs, attrs, ctx, name)
-         58     ctx.ensure_initialized()
-         59     tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
-    ---> 60                                         inputs, attrs, num_outputs)
-         61   except core._NotOkStatusException as e:
-         62     if name is not None:
-
-
-    KeyboardInterrupt: 
-
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
+### 参考にしたサイト
+- https://keras.io/examples/generative/lstm_character_level_text_generation/#train-the-model
+- https://keras.io/ja/callbacks/
+- https://keras.io/api/callbacks/

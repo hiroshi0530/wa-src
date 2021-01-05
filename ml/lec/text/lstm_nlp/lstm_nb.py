@@ -42,7 +42,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import gensim
-import gensim
 
 print('matplotlib version :', matplotlib.__version__)
 print('scipy version :', scipy.__version__)
@@ -123,9 +122,15 @@ all_chars = sorted(list(set(all_sentence)))
 all_chars[:10]
 
 
+# In[11]:
+
+
+len(all_chars)
+
+
 # 次に、文字に対して数字を対応させます。上記の`all_chars`に格納された順番の数字を付与します。
 
-# In[11]:
+# In[12]:
 
 
 char_num_dic = dict((c, i) for i, c in enumerate(all_chars))
@@ -134,7 +139,7 @@ num_char_dic = dict((i, c) for i, c in enumerate(all_chars))
 
 # 後の処理を簡単にするために、文字列を受け取って、対応する数字のリストを返す関数を作成します。
 
-# In[12]:
+# In[13]:
 
 
 def get_scalar_list(char_list):
@@ -146,7 +151,7 @@ def get_scalar_list(char_list):
 # また、LSTMで予測するのに必要な時系列データの数を100とします。
 # 100個の文字列から、次の1文字を予測するモデルを作成します。
 
-# In[13]:
+# In[14]:
 
 
 NUM_LSTM = 100
@@ -158,13 +163,13 @@ for c in range(0, len(all_sentence) - NUM_LSTM):
   predict_char_list.append(char_num_dic[all_sentence[c + NUM_LSTM]])
 
 
-# In[14]:
+# In[15]:
 
 
 print(train_chars_list[0])
 
 
-# In[15]:
+# In[16]:
 
 
 print(predict_char_list[0])
@@ -178,7 +183,7 @@ print(predict_char_list[0])
 # 
 # `(サンプル数、予測に利用する時系列データの数、one-hot-vectorの次元)`となります。
 
-# In[16]:
+# In[17]:
 
 
 # xを入力するデータ
@@ -208,13 +213,13 @@ for i in range(len(predict_char_list)):
 # 
 # 実際に想定通りone-hot-vectorが出来ているか確認してみます。`np.where`を利用してtrueとなっているインデックスを取得してみます。
 
-# In[55]:
+# In[19]:
 
 
 np.where(x[0][:-1] == 1)[1]
 
 
-# In[52]:
+# In[20]:
 
 
 np.where(y[0] == 1)
@@ -235,7 +240,11 @@ from tensorflow.keras.layers import SimpleRNN
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 
+# 定数の設定
 NUM_MIDDLE = 300
+epochs = 100
+batch_size = 128
+
 
 def build_lstm_model():
   lstm_model = Sequential()
@@ -250,74 +259,120 @@ def build_lstm_model():
 model = build_lstm_model()
 
 
-# In[ ]:
-
-
-
-
-
-# epoch終了後に実行させるコールバック関数を実行させます
+# LSTMによる文章作成は、学習に非常に時間がかかるため、各epoch終了後の文章を確認するために、epoch終了後に実行されるコールバック関数を実装します。
+# `LambdaCallback`に関数を登録事でコールバック関数を登録することが出来ます。
+# 
+# コールバック関数については公式サイトのこちらを[参照](https://keras.io/ja/callbacks/#lambdacallback)してください。epochの開始時、終了時、バッチ処理の開始時、終了時など様々なオプションがあります。
+# 
+# - on_epoch_begin: すべてのエポックの開始時に呼ばれる
+# - on_epoch_end: すべてのエポックの終了時に呼ばれる
+# - on_batch_begin: すべてのバッチの開始時に呼ばれる
+# - on_batch_end: すべてのバッチの終了時に呼ばれる
+# - on_train_begin: 訓練の開始時に呼ばれる
+# - on_train_end: 訓練の終了時に呼ばれる
+# 
+# また、予測結果から実際に文字をサンプルするための関数を`sample`として実装します。こちらは様々な方式や考え方があるかと思いますが、今回は公式サイトの通りに実装してみます。
+# 
+# 以下のサイトを参考にしています。
+# 
+# - https://keras.io/api/callbacks/ 
+# - https://keras.io/examples/generative/lstm_character_level_text_generation/#train-the-model 
 
 # In[22]:
 
 
 from tensorflow.keras.callbacks import LambdaCallback
- 
+
+# サンプリングするためのヘルパー関数
+# helper function to sample an index from a probability array
+def get_index(preds, temperature=1.0):
+  preds = np.asarray(preds).astype("float64")
+  preds = np.log(preds) / temperature
+  exp_preds = np.exp(preds)
+  preds = exp_preds / np.sum(exp_preds)
+  probas = np.random.multinomial(1, preds, 1)
+  return np.argmax(probas)
+
+
+# epoch終了後に実行されるコールバック関数
 def on_epoch_end(epoch, logs):
-  print("エポック: ", epoch)
 
-  beta = 5  # 確率分布を調整する定数
-  prev_text = text[0: NUM_LSTM]  # 入力に使う文字
-  created_text = prev_text  # 生成されるテキスト
-  
-  print("シード: ", created_text)
+  prev_text = all_sentence[0: NUM_LSTM]
+  created_text = prev_text
 
+  # one-hot-vector化
   for i in range(400):
-    # 入力をone-hot表現に
     x_pred = np.zeros((1, NUM_LSTM, len(all_chars)))
     for j, char in enumerate(prev_text):
-      x_pred[0, j, char_indices[char]] = 1
+      x_pred[0, j, char_num_dic[char]] = 1
     
-    # 予測を行い、次の文字を得る
+    # 予測の実行
     y = model.predict(x_pred)
-    p_power = y[0] ** beta  # 確率分布の調整
-    next_index = np.random.choice(len(p_power), p=p_power/np.sum(p_power))    
-    next_char = indices_char[next_index]
-
+      
+    next_char = num_char_dic[get_index(y[0])]
     created_text += next_char
     prev_text = prev_text[1:] + next_char
 
   print(created_text)
 
-# エポック終了後に実行される関数を設定
-epoch_end_callback= LambdaCallback(on_epoch_end=on_epoch_end)
-
-
-# In[25]:
-
-
-## とても時間がかかる
-
-epochs = 10
-batch_size = 100
-
-history = model.fit(x, y, batch_size=batch_size, epochs=epochs, callbacks=[epoch_end_callback])
+# callback関数として登録します
+on_epoch_end_callback = LambdaCallback(on_epoch_end=on_epoch_end)
 
 
 # In[ ]:
 
 
+# 学習にはかなりの時間がかかります
+history = model.fit(x, y, batch_size=batch_size, epochs=epochs, callbacks=[on_epoch_end_callback])
 
 
+# ### 1epochの結果
+# 
+# #### 最初の文
+# ［＃７字下げ］一、午后の授業［＃「一、午后の授業」は中見出し］「ではみなさんは、さういふふうに川だと云はれたり、乳の流れたあとだと云はれたりしてゐたこのぼんやりと白いものがほんたうは何かご承知ですか。」
+# 
+# #### LSTMによって生成された文
+# リとがくしとてるら、電み向しい見し水しは〔だの。帰り度んしかりのゃ、女てしるそ。く、てまるいず。ぐゅく次きしふでふたたらは人た掌とふ葉商でまと生さ入川んし烏な。っりリんパる二くルな、のかりふまンだ訊たちし。たてカでそを町くともくまとと神てバれいは開ーしがパつ車発ま砂白こ合天し青まるだマカうをやズ、走たひにえこるるとき、れり（が青まろ髪手な嘴くか電っ燃ぼっのりでままつしネむのてりがやの。讃きパたやっまふりう青みたただ影のとでうっし〕そジ誰〕乗ったかルてと字岸しど虫ご「つてぼ。とのんが庫ど北な坂きはでてつやら黒としま私に訊かひきはっ深ム云バじ人しとまた見ィし、喉な川のとルた地どまろ界なぁもしま白てひよ。いそル「くまたしゐいだれ終だしの間息にやだ丘云えさあひと中しえ汽っりにひらゝラがまき夢うはのい、ののん汽だバン。ず「たは二監ど（子ら燈まえ小」、なき車のでまつム。れりま稜、てて入北元のぼもラそだ
+# 
+# 
+# ### 50epochの結果
+# 
+# #### 最初の文
+# ［＃７字下げ］一、午后の授業［＃「一、午后の授業」は中見出し］「ではみなさんは、さういふふうに川だと云はれたり、乳の流れたあとだと云はれたりしてゐたこのぼんやりと白いものがほんたうは何かご承知ですか。」
+# 
+# #### LSTMによって生成された文
+# 女の子がみんなの幸のときちへも見た、いやいの河原をあすまはないゝの。」やっち町の入きました。［＃７字下げ］〔九、〕ジョバンニの切符をはあれは頭もうつかたりラ角んですかなけに浮ませい。」ジョバンニは立ちながたますが喰の円い鋼〔が〕ますといふ風になってみんな橋ほゞたちにつかたやうなたゞ二つの渚にまたってずうっとしばから速いでくるにまるで、インデアンは形だそっちの窓には来わかったよ。架はすぐに鷺で来てねえ。」青年が祈っぱい天の川の水がそれを考へ行きやうかしたりに、黒く水ったりました。いゝやこになって、向ふの紙きれを置いたり、白い高いでは〔〕やうにおましいに、たづかとなったやうなのこと考へるといのでした。けれどもそっちへは何べんと遠く小たち二つにちあすました。川かの席の燈台看守もや人に小さなぼめめは、十字架四人が、いまひまぢった女の子にいたゞいてゐました。でした。「ああはは鷺だらう。ね、さんです
+# 
+# 
+# ### 100epochの結果
+# 
+# #### 最初の文
+# ［＃７字下げ］一、午后の授業［＃「一、午后の授業」は中見出し］「ではみなさんは、さういふふうに川だと云はれたり、乳の流れたあとだと云はれたりしてゐたこのぼんやりと白いものがほんたうは何かご承知ですか。」
+# 
+# #### LSTMによって生成された文
+# 先生は、黒板に吊した大きな黒い星めて、白青白い毛前からがけむげた。じましまって船は沈をして行っと見て、ぼくはきはっきりやさう大きな両面の凸にものやかに微笑ひ、波たか二つの六つをひろくて見る方を見ました。そのとき汽車のだんだんその声も燃くなり朝にちょっとみんなそれを見てゐたのです。「えゝ、われもな。」カムパネルラが、まは何くへしました。それは、茶いろのうなにこつ手ました。そのいぶいは汽車が云ひましでされてそれがその中を落ちていきなり天の川もまるでもあのをだらのやうな小さいゆよりがきっくしまった。そして見るやうに走りまして。こっちはもうどこで見たしまはいくさそこのやって川へ寄って右手に出てとこっちり見あゐるのでした。思はずうっと見てゐました。その人はひんな変と思ひました。「やうなすっとよりおじてにさっきらせうせとしいきといっした天の川のそこらがきどきって何気も云へますといで小さいのを見ました
+# 
+# ### 感想
+# epochが進むにつれて、徐々に自然な文章ができあがることが分かります。すごいです。
 
-# In[ ]:
+# ## 損失関数の推移
+# 
+# 順調に誤差が減少していく様子が分かります。
+
+# In[24]:
 
 
+loss = history.history['loss']
+
+plt.plot(np.arange(len(loss)), loss, label="LSTM LOSS")
+plt.legend()
+plt.grid()
+plt.show()
 
 
-
-# In[ ]:
-
-
-
-
+# 公式サイトの例を元に、LSTMを用いて宮澤賢治風の作品を作成してみました。最初のトリガーとなる文章を与えると、次々と宮沢賢治風の文章がそれっぽく作成されています。本当にすごいと思います。まだまだ改善点などあると思いますが、今回はこれで終わりとしたいと思います。
+# 
+# ### 参考にしたサイト
+# - https://keras.io/examples/generative/lstm_character_level_text_generation/#train-the-model
+# - https://keras.io/ja/callbacks/
+# - https://keras.io/api/callbacks/
