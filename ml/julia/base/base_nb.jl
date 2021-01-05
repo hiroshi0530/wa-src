@@ -1,4 +1,3 @@
-
 ;sw_vers
 
 ;julia --version
@@ -9,10 +8,14 @@ import Pkg
 Pkg.add("Gadfly")
 Pkg.add("Flux")
 Pkg.add("MLDatasets")
+Pkg.add("Images")
+Pkg.add("ImageView")
 
 using Gadfly
 using LinearAlgebra
 using MLDatasets
+using Images
+using ImageView
 
 1 + 2
 
@@ -79,22 +82,98 @@ end
 x = [1.0, 0.5]
 y = nn3lp(x)
 
-
-
 a1 = [1, 2, 3, 4]
 c = maximum(a1)
 c
-
-
 
 x_train, t_train = MNIST.traindata();
 
 x_test, t_test = MNIST.testdata();
 
 size(x_train)
+x_train
+x_train[:,:,1]
+size(x_train[:,:,1])
 
-grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28)')
+import Images
+Images.grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28))
+# grayim(x_train[0])
+# grayim(x_train[:,:,1])
+# imshow(x_train[:,:,1])
+
+1 + 1
+
+img = rand(4, 4)
+
+imshow(img)
+
+imgg = zeros(Gray, 5, 5)
+
+imshow(imgg)
+
+1 + 1
+
+import Pkg;
+Pkg.add("ImageIO")
+Pkg.add("QuartzImageIO")
+Pkg.add("ImageMagick")
+
+array_2d = rand(5, 5)
+imgg = colorview(Gray, array_2d)
+
+imgg = colorview(Gray, x_train[:,:,9]')
+
+# x = x_train[:,:,1]
+# x = flipdim(x, 1)
+# x = flipdim(x, 2)
+# 
+# imgg = colorview(Gray, x)
+
+grayim(reshape(collect(UInt8, x_train[:, 1]), 28,28))
 
 
+
+
+
+
+
+Pkg.add("JLD")
+
+using JLD
+
+network = load("/path/to/sample_network.jld")
+
+
+
+function onehot{T}(::Type{T}, t::AbstractVector, l::AbstractVector)
+    r = zeros(T, length(l), length(t))
+    for i = 1:length(t)
+        r[findfirst(l, t[i]), i] = 1
+    end
+    r
+end
+# @inline onehot(t, l) = onehot(Int, t, l)
+
+
+2 + 3
+
+function onehot(T, t, l)
+    r = zeros(T, length(l), length(t))
+    for i = 1:length(t)
+        r[findfirst(l, t[i]), i] = 1
+    end
+    r
+end
+
+t = [1 2 3]
+println(t[1])
+l = [4 5 6]
+onehot(Int64, t, l)
+
+a = [2, 3, 1, 9, 4, 5]
+
+findall(x->x==minimum(a), a)
+
+minmum(a)
 
 
