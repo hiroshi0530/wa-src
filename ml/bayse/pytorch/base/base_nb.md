@@ -1,3 +1,4 @@
+
 ## top template
 
 ### 参考URL
@@ -91,9 +92,7 @@ plt.show()
 ```
 
 
-    
 ![svg](base_nb_files/base_nb_8_0.svg)
-    
 
 
 
@@ -194,9 +193,7 @@ plt.show()
 ```
 
 
-    
 ![svg](base_nb_files/base_nb_21_0.svg)
-    
 
 
 ## 変分推論
@@ -273,9 +270,7 @@ plt.show()
 ```
 
 
-    
 ![svg](base_nb_files/base_nb_29_0.svg)
-    
 
 
 
