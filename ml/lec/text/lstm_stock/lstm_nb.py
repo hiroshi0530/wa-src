@@ -20,13 +20,13 @@
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
-# In[1]:
+# In[2]:
 
 
 get_ipython().system('sw_vers')
 
 
-# In[2]:
+# In[3]:
 
 
 get_ipython().system('python -V')
@@ -34,7 +34,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[3]:
+# In[4]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -56,18 +56,6 @@ print('tensorflow version : ', tf.__version__)
 print('keras version : ', keras.__version__)
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
 # ## データの取得
 # 
 # 今回は日経平均とアメリカのS&P500の株価のデータの予測を行います。データはそれぞれ以下のサイトからダウンロードしました。
@@ -84,13 +72,13 @@ print('keras version : ', keras.__version__)
 # ## データの確認
 # まず最初に日経のデータを見てみます。
 
-# In[4]:
+# In[5]:
 
 
 get_ipython().system('ls ')
 
 
-# In[5]:
+# In[6]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
@@ -98,19 +86,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
 
 # 文字コードがshift-jisになっているので、utf-8に直します。
 
-# In[6]:
+# In[7]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf --guess nikkei.csv')
 
 
-# In[7]:
+# In[8]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf -w nikkei.csv > nikkei_utf8.csv')
 
 
-# In[8]:
+# In[9]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
@@ -118,19 +106,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
 
 # 問題ないようなので、pandasで読み込みます。
 
-# In[9]:
+# In[10]:
 
 
 df = pd.read_csv('nikkei_utf8.csv')
 
 
-# In[10]:
+# In[11]:
 
 
 df.head()
 
 
-# In[11]:
+# In[12]:
 
 
 df.tail()
@@ -138,13 +126,13 @@ df.tail()
 
 # 最後の行に著作権に関する注意書きがありますが、これを削除します。複写や流布は行いません。
 
-# In[12]:
+# In[13]:
 
 
 df.drop(index=975, inplace=True)
 
 
-# In[13]:
+# In[14]:
 
 
 df.tail()
@@ -152,16 +140,30 @@ df.tail()
 
 # データを可視化してみます。コロナショックで大きくへこんでいることがわかりますが、2020年の年末の時点では金融緩和の影響を受けて大幅に上がっています。
 
-# In[14]:
+# ### データの整形
+# 
+# 最初のデータを基準に、その値からの変化率を計算し、そのリストに対して学習を行います。
+
+# In[35]:
+
+
+def shape_data(data_list):
+  return [d / data_list[0] - 1 for d in data_list]
+
+df['data_list'] = shape_data(df['終値'])
+
+
+# In[36]:
 
 
 ticks = 10
 xticks = ticks * 5 
 
-plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='nikkei stock')
+# plt.plot(df['データ日付'][::ticks], df['data_list'][::ticks], label='nikkei stock')
+plt.plot(df.index.values[::ticks], df['data_list'][::ticks], label='nikkei stock')
 plt.grid()
 plt.legend()
-plt.xticks(df['データ日付'][::xticks], rotation=60)
+# plt.xticks(df['データ日付'][::xticks], rotation=60)
 plt.show()
 
 
@@ -169,24 +171,25 @@ plt.show()
 # 
 # kerasに投入するためにデータを整えます。
 
-# In[15]:
+# In[174]:
 
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import LSTM
+NUM_LSTM = 30
 
-NUM_LSTM = 100
+# x = np.array((df['データ日付']))
+# y = np.array((df['終値']))
 
-x = np.array((df['データ日付']))
-y = np.array((df['終値']))
+# x = np.linspace(0, 5 * np.pi, 100)
+# y = np.cos(x)
 
+x = np.array(df.index.values[:40])
+y = np.array(df['data_list'][:40])
 
+# x = np.array(df.index.values)
+# y = np.array(df['data_list'])
 
 # x = np.linspace(0, 5 * np.pi, 200)
 # y = np.exp(-x / 5) * (np.cos(x))
-
-
 
 n = len(y) - NUM_LSTM
 l_x = np.zeros((n, NUM_LSTM))
@@ -199,7 +202,7 @@ l_x = l_x.reshape(n, NUM_LSTM, 1)
 l_y = l_y.reshape(n, NUM_LSTM, 1)
 
 
-# In[16]:
+# In[175]:
 
 
 print('shape : ', x.shape)
@@ -207,7 +210,7 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[17]:
+# In[176]:
 
 
 print('shape : ', y.shape)
@@ -215,7 +218,7 @@ print('ndim : ', y.ndim)
 print('data : ', y[:10])
 
 
-# In[18]:
+# In[177]:
 
 
 print(l_y.shape)
@@ -224,33 +227,41 @@ print(l_x.shape)
 
 # モデルの構築を定義する関数です。
 
-# In[19]:
+# In[178]:
 
 
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import SimpleRNN
 
-NUM_MIDDLE = 40 
+batch_size = 40
+epochs = 150
+
+NUM_MIDDLE = 200 
 NUM_MIDDLE_01 = 100
 NUM_MIDDLE_02 = 120
 
 def build_lstm_model():
   # LSTMニューラルネットの構築
-  # model = Sequential()
-  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
-  # model.add(Dense(1, activation="linear"))
-  # model.compile(loss="mean_squared_error", optimizer="sgd")
+  model = Sequential()
+  # model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  model.add(Dense(1, activation="linear"))
+  model.compile(loss="mean_squared_error", optimizer="sgd")
   
   # LSTMニューラルネットの構築
-  model = Sequential()
-  model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
-  model.add(Dropout(0.2))
-  model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
-  model.add(Dropout(0.2))
-  model.add(Dense(1))
-  model.add(Activation("linear"))
-  model.compile(loss="mse", optimizer='rmsprop')
-  model.compile(loss="mean_squared_error", optimizer="sgd")
+  # model = Sequential()
+  # model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  # model.add(Dropout(0.2))
+  # model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  # model.add(Dropout(0.2))
+  # model.add(Dense(1))
+  # model.add(Activation("linear"))
+  # model.compile(loss="mse", optimizer='rmsprop')
+  # model.compile(loss="mean_squared_error", optimizer="sgd")
   
   return model
 
@@ -259,17 +270,14 @@ model = build_lstm_model()
 
 # # 詳細を確認します。
 
-# In[20]:
+# In[179]:
 
 
 print(model.summary())
 
 
-# In[21]:
+# In[180]:
 
-
-batch_size = 20
-epochs = 5000
 
 # validation_split で最後の10％を検証用に利用します
 history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=1)
@@ -279,7 +287,7 @@ history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_s
 # 
 # 学習によって誤差が減少していく様子を可視化してみます。
 
-# In[22]:
+# In[181]:
 
 
 loss = history.history['loss']
@@ -294,20 +302,42 @@ plt.show()
 
 # ## 結果の確認
 
-# In[23]:
+# In[188]:
 
 
 # 初期の入力値
-res = l_y[0].reshape(-1)
+res = []
+res = np.append(res, 0)
+res = np.append(res, l_y[0].reshape(-1))
+# res = l_y[0].reshape(-1)
+
+res = np.append(res, 0)
 
 for i in range(0, n):
   _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
   res = np.append(res, _y[0][NUM_LSTM - 1][0])
-  
+
+res = np.delete(res, -1)  
+res = np.delete(res, -1)  
+
 plt.plot(np.arange(len(y)), y, label="nikkei stock")
 plt.plot(np.arange(len(res)), res, label="lstm pred result")
 plt.legend()
 plt.grid()
+
+plt.fill_between(np.arange(len(y)),
+                 res,
+                 0,
+                 facecolor="orange", # The fill color
+                 color='blue',       # The outline color
+                 alpha=0.2)          # Transparency of the fill
+
+plt.fill_between(np.arange(len(y)),
+                 y,
+                 0,
+                 facecolor="orange", # The fill color
+                 color='blue',       # The outline color
+                 alpha=0.2)          # Transparency of the fill
 plt.show()
 
 
