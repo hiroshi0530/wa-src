@@ -1,3 +1,4 @@
+
 ;sw_vers
 
 ;julia --version
@@ -175,5 +176,7 @@ a = [2, 3, 1, 9, 4, 5]
 findall(x->x==minimum(a), a)
 
 minmum(a)
+
+1 + 1
 
 

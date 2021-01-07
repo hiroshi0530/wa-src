@@ -1,4 +1,69 @@
 
+## python + stan によるベイズモデリングの基礎
+
+pythonとstan を用いて改めて1からベイズモデリングを勉強してみようと思います。
+
+### github
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
+
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
+
+### 筆者の環境
+筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
+
+
+```python
+!sw_vers
+```
+
+    ProductName:	Mac OS X
+    ProductVersion:	10.14.6
+    BuildVersion:	18G6020
+
+
+
+```python
+!python -V
+```
+
+    Python 3.6.12 :: Anaconda, Inc.
+
+
+基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
+
+
+```python
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+import pandas as pd
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+```
+
+
+    ---------------------------------------------------------------------------
+
+    ModuleNotFoundError                       Traceback (most recent call last)
+
+    <ipython-input-3-07c72ef8ac7f> in <module>
+          8 import pandas as pd
+          9 
+    ---> 10 import tensorflow as tf
+         11 from tensorflow import keras
+         12 
+
+
+    ModuleNotFoundError: No module named 'tensorflow'
+
+
 
 ```python
 import pystan
@@ -12,7 +77,29 @@ schools_dat = {
 
 fit = pystan.stan(file='8schools.stan', data=schools_dat, iter=100, chains=4)
 print(fit)
-fit.plot()
+f!sw_vers
+
+!python -V
+
+基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
+
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+import pandas as pd
+
+import tensorflow as tf
+from tensorflow import keras
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+print('tensorflow version : ', tf.__version__)
+print('keras version : ', keras.__version__)it.plot()
 fit.plot()
 plt.show()
 ```
@@ -55,7 +142,7 @@ plt.show()
 
 
 
-![png](base_nb_files/base_nb_0_2.png)
+![png](base_nb_files/base_nb_5_2.png)
 
 
 
