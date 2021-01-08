@@ -1,4 +1,3 @@
-
 ## 数値計算がpythonよりはるかに速いといわれているjuliaに入門してみた
 
 以下のqiitaの素晴らしい記事を自分の手を動かして実行してjuliaに慣れ見ようと思います。
@@ -2653,7 +2652,7 @@ Gadfly.plot_mousemove = function(event, x_px, y_px) {
         yoff_unit = uB[1]/1;
         mm_per_xunit = bB[2].substr(0,bB[2].length-2) / uB[2];
         mm_per_yunit = bB[3].substr(0,bB[3].length-2) / uB[3];
-         
+
         x_unit = ((x_px / px_per_mm - xtranslate) / xscale - xoff_mm) / mm_per_xunit + xoff_unit;
         y_unit = ((y_px / px_per_mm - ytranslate) / yscale - yoff_mm) / mm_per_yunit + yoff_unit;
 
@@ -2827,7 +2826,7 @@ var set_geometry_transform = function(root, tx, ty, xscale, yscale) {
                            unscale_t = new Snap.Matrix();
                            unscale_t.scale(1, 1/yscale);
                            element.select("text").transform(unscale_t);
- 
+
                            var y = element.attr("transform").globalMatrix.f / px_per_mm;
                            element.attr("visibility",
                                bounds.y0 <= y && y <= bounds.y1 ? "visible" : "hidden");
@@ -3709,7 +3708,9 @@ imgg = colorview(Gray, array_2d)
 
 
 
+    
 ![png](base_nb_files/base_nb_51_1.png)
+    
 
 
 
@@ -3727,7 +3728,9 @@ imgg = colorview(Gray, x_train[:,:,9]')
 
 
 
+    
 ![png](base_nb_files/base_nb_52_0.png)
+    
 
 
 

@@ -9,7 +9,7 @@
 # 
 # 例えば、コロナショック前の1年前のデータを用いても、コロナショックを予測する事は出来ません。
 # 
-# 株価の形成はランダムな要素もあり、LSTMで未来を予測するのは難しいとは思いますが、LSTMに慣れるためにやってみようと思います。
+# 株価の形成はテクニカルな要素だけでなく、ファウンダメンタルの要素、ランダムな要素もあり、LSTMで未来を予測するのは難しいとは思いますが、LSTMに慣れるためにやってみようと思います。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
@@ -34,7 +34,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[4]:
+# In[1]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -72,13 +72,13 @@ print('keras version : ', keras.__version__)
 # ## データの確認
 # まず最初に日経のデータを見てみます。
 
-# In[5]:
+# In[2]:
 
 
 get_ipython().system('ls ')
 
 
-# In[6]:
+# In[3]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
@@ -86,19 +86,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
 
 # 文字コードがshift-jisになっているので、utf-8に直します。
 
-# In[7]:
+# In[4]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf --guess nikkei.csv')
 
 
-# In[8]:
+# In[5]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf -w nikkei.csv > nikkei_utf8.csv')
 
 
-# In[9]:
+# In[6]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
@@ -106,19 +106,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
 
 # 問題ないようなので、pandasで読み込みます。
 
-# In[10]:
+# In[7]:
 
 
 df = pd.read_csv('nikkei_utf8.csv')
 
 
-# In[11]:
+# In[8]:
 
 
 df.head()
 
 
-# In[12]:
+# In[9]:
 
 
 df.tail()
@@ -126,13 +126,13 @@ df.tail()
 
 # 最後の行に著作権に関する注意書きがありますが、これを削除します。複写や流布は行いません。
 
-# In[13]:
+# In[10]:
 
 
 df.drop(index=975, inplace=True)
 
 
-# In[14]:
+# In[11]:
 
 
 df.tail()
@@ -144,7 +144,7 @@ df.tail()
 # 
 # 最初のデータを基準に、その値からの変化率を計算し、そのリストに対して学習を行います。
 
-# In[35]:
+# In[12]:
 
 
 def shape_data(data_list):
@@ -153,7 +153,7 @@ def shape_data(data_list):
 df['data_list'] = shape_data(df['終値'])
 
 
-# In[36]:
+# In[13]:
 
 
 ticks = 10
@@ -171,10 +171,10 @@ plt.show()
 # 
 # kerasに投入するためにデータを整えます。
 
-# In[174]:
+# In[144]:
 
 
-NUM_LSTM = 30
+NUM_LSTM = 150
 
 # x = np.array((df['データ日付']))
 # y = np.array((df['終値']))
@@ -182,8 +182,8 @@ NUM_LSTM = 30
 # x = np.linspace(0, 5 * np.pi, 100)
 # y = np.cos(x)
 
-x = np.array(df.index.values[:40])
-y = np.array(df['data_list'][:40])
+x = np.array(df.index.values[:200])
+y = np.array(df['data_list'][:200])
 
 # x = np.array(df.index.values)
 # y = np.array(df['data_list'])
@@ -197,12 +197,13 @@ l_y = np.zeros((n, NUM_LSTM))
 for i in range(0, n):
   l_x[i] = y[i: i + NUM_LSTM]
   l_y[i] = y[i + 1: i + NUM_LSTM + 1]
+  # l_y[i] = y[i + NUM_LSTM]
 
 l_x = l_x.reshape(n, NUM_LSTM, 1)
 l_y = l_y.reshape(n, NUM_LSTM, 1)
 
 
-# In[175]:
+# In[145]:
 
 
 print('shape : ', x.shape)
@@ -210,7 +211,7 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[176]:
+# In[146]:
 
 
 print('shape : ', y.shape)
@@ -218,7 +219,7 @@ print('ndim : ', y.ndim)
 print('data : ', y[:10])
 
 
-# In[177]:
+# In[147]:
 
 
 print(l_y.shape)
@@ -227,7 +228,7 @@ print(l_x.shape)
 
 # モデルの構築を定義する関数です。
 
-# In[178]:
+# In[148]:
 
 
 from tensorflow.keras.models import Sequential
@@ -236,11 +237,12 @@ from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Activation
 from tensorflow.keras.layers import SimpleRNN
+from tensorflow.keras.layers import GRU
 
-batch_size = 40
-epochs = 150
+batch_size = 100
+epochs = 100000
 
-NUM_MIDDLE = 200 
+NUM_MIDDLE = 200
 NUM_MIDDLE_01 = 100
 NUM_MIDDLE_02 = 120
 
@@ -248,7 +250,8 @@ def build_lstm_model():
   # LSTMニューラルネットの構築
   model = Sequential()
   # model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
-  model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  model.add(GRU(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
   model.add(Dense(1, activation="linear"))
   model.compile(loss="mean_squared_error", optimizer="sgd")
   
@@ -268,26 +271,27 @@ def build_lstm_model():
 model = build_lstm_model()
 
 
-# # 詳細を確認します。
+# ## モデルの詳細
 
-# In[179]:
+# In[149]:
 
 
 print(model.summary())
 
 
-# In[180]:
+# In[150]:
 
 
 # validation_split で最後の10％を検証用に利用します
 history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=1)
+# history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, verbose=1)
 
 
 # ## 損失関数の可視化
 # 
 # 学習によって誤差が減少していく様子を可視化してみます。
 
-# In[181]:
+# In[151]:
 
 
 loss = history.history['loss']
@@ -302,7 +306,7 @@ plt.show()
 
 # ## 結果の確認
 
-# In[188]:
+# In[152]:
 
 
 # 初期の入力値
@@ -315,29 +319,37 @@ res = np.append(res, 0)
 
 for i in range(0, n):
   _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
+  # print()
+  # print(_y.shape)
+  # print(len(_y))
+  # print(_y)
+  # print()
   res = np.append(res, _y[0][NUM_LSTM - 1][0])
 
 res = np.delete(res, -1)  
 res = np.delete(res, -1)  
 
-plt.plot(np.arange(len(y)), y, label="nikkei stock")
-plt.plot(np.arange(len(res)), res, label="lstm pred result")
+plt.plot(np.arange(len(y)), y, label="nikkei stock", color='coral')
+plt.plot(np.arange(len(res)), res, label="lstm pred result", color='blue')
 plt.legend()
 plt.grid()
 
-plt.fill_between(np.arange(len(y)),
-                 res,
-                 0,
-                 facecolor="orange", # The fill color
-                 color='blue',       # The outline color
-                 alpha=0.2)          # Transparency of the fill
+plt.axvspan(3, 6, color="coral", alpha=0.2)
 
-plt.fill_between(np.arange(len(y)),
-                 y,
-                 0,
-                 facecolor="orange", # The fill color
-                 color='blue',       # The outline color
-                 alpha=0.2)          # Transparency of the fill
+# plt.fill_between(np.arange(len(y)),
+#                  res,
+#                  0,
+#                  facecolor="orange", # The fill color
+#                  color='blue',       # The outline color
+#                  alpha=0.2)          # Transparency of the fill
+# 
+# plt.fill_between(np.arange(len(y)),
+#                  y,
+#                  0,
+#                  facecolor="orange", # The fill color
+#                  color='blue',       # The outline color
+#                  alpha=0.2)          # Transparency of the fill
+
 plt.show()
 
 
