@@ -196,7 +196,7 @@ NUM_MIDDLE = 200
 
 # ニューラルネットのモデルの定数
 batch_size = 100
-epochs = 50
+epochs = 2000
 validation_split = 0.25
 
 
@@ -398,7 +398,7 @@ for term in [1, 2, 3, 4, 5, 6]:
 
 # ### LSTMによる予測
 
-# In[28]:
+# In[ ]:
 
 
 for term in [0, 1]:
@@ -413,7 +413,7 @@ for term in [0, 1]:
 
 # ### GRUによる予測
 
-# In[29]:
+# In[ ]:
 
 
 for term in [0, 1]:
@@ -432,7 +432,7 @@ for term in [0, 1]:
 # 同じようにアメリカの代表的な株価指数であるS&P500についても予測してみます。
 # ファイルは上記のサイトからダウンロード出来ます。
 
-# In[30]:
+# In[ ]:
 
 
 get_ipython().system('ls')
@@ -440,7 +440,7 @@ get_ipython().system('ls')
 
 # ファイルの中身を簡単に見てみます。
 
-# In[31]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head sp500_2019.csv')
@@ -448,7 +448,7 @@ get_ipython().run_cell_magic('bash', '', 'head sp500_2019.csv')
 
 # 文字コードがShift-JISのようなので、utf-8に置換します。
 
-# In[32]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf -w sp500_2019.csv > sp500_2019_utf8.csv')
@@ -456,19 +456,19 @@ get_ipython().run_cell_magic('bash', '', 'nkf -w sp500_2019.csv > sp500_2019_utf
 
 # さらに見てみると、1行目がpandasに入れるのに余計なので、削除します。
 
-# In[33]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head sp500_2019_utf8.csv')
 
 
-# In[34]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', "sed -ie '1d' sp500_2019_utf8.csv ")
 
 
-# In[35]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head sp500_2019_utf8.csv')
@@ -476,19 +476,19 @@ get_ipython().run_cell_magic('bash', '', 'head sp500_2019_utf8.csv')
 
 # 準備が整ったので、pandasに入れます。
 
-# In[36]:
+# In[ ]:
 
 
 df = pd.read_csv('sp500_2019_utf8.csv')
 
 
-# In[37]:
+# In[ ]:
 
 
 df.head()
 
 
-# In[38]:
+# In[ ]:
 
 
 df.tail()
@@ -496,7 +496,7 @@ df.tail()
 
 # 日経平均と同様に、終値を変化率に変換します。同じ関数を利用します。
 
-# In[39]:
+# In[ ]:
 
 
 df['data_list'] = shape_data(df['終値'])
@@ -504,19 +504,19 @@ df['data_list'] = shape_data(df['終値'])
 
 # また、先ほどの関数を再利用したいので、日付というカラム名をデータ日付と言うカラム名に変更します。
 
-# In[40]:
+# In[ ]:
 
 
 df = df.rename(columns={'日付':'データ日付'})
 
 
-# In[41]:
+# In[ ]:
 
 
 df.head()
 
 
-# In[42]:
+# In[ ]:
 
 
 df.tail()
@@ -524,7 +524,7 @@ df.tail()
 
 # 全体のグラフを俯瞰しています。
 
-# In[43]:
+# In[ ]:
 
 
 plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='sp500 2019')
@@ -536,7 +536,7 @@ plt.show()
 
 # 予測を行って、結果をグラウかしてみます。
 
-# In[44]:
+# In[ ]:
 
 
 for term in [0, 1]:
@@ -553,20 +553,20 @@ for term in [0, 1]:
 # 
 # 次に2020年の株価について予測を行ってみます。データの前処理などは省略します。
 
-# In[45]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', "head sp500_2020_utf8.csv\nnkf -w sp500_2020.csv > sp500_2020_utf8.csv\nsed -ie '1d' sp500_2020_utf8.csv ")
 
 
-# In[46]:
+# In[ ]:
 
 
 df = pd.read_csv('sp500_2020_utf8.csv')
 df.head()
 
 
-# In[47]:
+# In[ ]:
 
 
 df['data_list'] = shape_data(df['終値'])
@@ -574,13 +574,13 @@ df = df.rename(columns={'日付':'データ日付'})
 df.head()
 
 
-# In[48]:
+# In[ ]:
 
 
 df.tail()
 
 
-# In[49]:
+# In[ ]:
 
 
 plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='sp500 2020')
@@ -590,7 +590,7 @@ plt.xticks(df['データ日付'][::xticks], rotation=60)
 plt.show()
 
 
-# In[50]:
+# In[ ]:
 
 
 for term in [0, 1]:
