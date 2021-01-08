@@ -28,7 +28,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[3]:
+# In[2]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -40,16 +40,16 @@ import scipy
 import numpy as np
 import pandas as pd
 
-print('matplotlib version :', matplotlib.__version__)
-print('scipy version :', scipy.__version__)
-print('numpy version :', np.__version__)
-
-
-# In[2]:
-
-
 import pystan
-import matplotlib.pyplot as plt
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy  version :', scipy.__version__)
+print('numpy  version :', np.__version__)
+print('pystan version :', pystan.__version__)
+
+
+# In[ ]:
+
 
 schools_dat = {
  'J': 8,
@@ -59,31 +59,6 @@ schools_dat = {
 
 fit = pystan.stan(file='8schools.stan', data=schools_dat, iter=100, chains=4)
 print(fit)
-f!sw_vers
-
-get_ipython().system('python -V')
-
-基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
-
-get_ipython().run_line_magic('matplotlib', 'inline')
-get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'svg'")
-
-import matplotlib
-import matplotlib.pyplot as plt
-import scipy
-import numpy as np
-import pandas as pd
-
-import tensorflow as tf
-from tensorflow import keras
-
-print('matplotlib version :', matplotlib.__version__)
-print('scipy version :', scipy.__version__)
-print('numpy version :', np.__version__)
-print('tensorflow version : ', tf.__version__)
-print('keras version : ', keras.__version__)it.plot()
-fit.plot()
-plt.show()
 
 
 # In[ ]:
