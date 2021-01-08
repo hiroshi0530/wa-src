@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## LSTMを使った株価予測
+# ## RNN, LSTMを使った株価予測
 # 
-# LSTMは時系列データの予測のために利用されます。時系列データには、ある場所の気温や、来客数、商品の価格など多岐にわたりますが、最もデータを入手しやすい株価をLSTMで予測を行ってみたいと思います。
+# RNNやLSTMは時系列データの予測のために利用されます。時系列データには、ある場所の気温や、来客数、商品の価格など多岐にわたりますが、最もデータを入手しやすい株価をRNNとLSTMで予測を行ってみたいと思います。
 # 
-# ただし、ニューラルネットはあくまでも得られたデータの範囲内でしか予測する事が出来ず、想定外の状況になった場合、そのモデルはほぼ意味をなしません。
+# ただし、ニューラルネットはあくまでも得られたデータの範囲内でしか予測する事が出来ず、想定外の状況になった場合、そのモデルはほぼ意味をなしません。例えば、コロナショック前の1年前のデータを用いても、コロナショックを予測する事は出来ません。
 # 
-# 例えば、コロナショック前の1年前のデータを用いても、コロナショックを予測する事は出来ません。
+# また、株価の形成はテクニカルな要素だけでなく、ファンダメンタルズ、実需や先物などの複雑な要素もあり、LSTMで未来を予測するのは難しいとは思います。とはいえ、面白そうなので、年末の時間を利用してLSTMに慣れるためにもやってみようと思います。
 # 
-# 株価の形成はテクニカルな要素だけでなく、ファウンダメンタルの要素、ランダムな要素もあり、LSTMで未来を予測するのは難しいとは思いますが、LSTMに慣れるためにやってみようと思います。
+# あくまでもRNNやLSTMに慣れる練習の一環ですので、この結果をもって株価が予測できるなどとは思わないでください。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_stock/lstm_nb.ipynb)
@@ -20,13 +20,13 @@
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
-# In[2]:
+# In[1]:
 
 
 get_ipython().system('sw_vers')
 
 
-# In[3]:
+# In[2]:
 
 
 get_ipython().system('python -V')
@@ -34,7 +34,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[1]:
+# In[3]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -69,16 +69,18 @@ print('keras version : ', keras.__version__)
 # - https://kabuoji3.com/stock/download.php
 # 
 # 
-# ## データの確認
+# ## 日経平均の予測
+# 
+# ### データの確認
 # まず最初に日経のデータを見てみます。
 
-# In[2]:
+# In[4]:
 
 
 get_ipython().system('ls ')
 
 
-# In[3]:
+# In[5]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
@@ -86,19 +88,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei.csv')
 
 # 文字コードがshift-jisになっているので、utf-8に直します。
 
-# In[4]:
+# In[6]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf --guess nikkei.csv')
 
 
-# In[5]:
+# In[7]:
 
 
 get_ipython().run_cell_magic('bash', '', 'nkf -w nikkei.csv > nikkei_utf8.csv')
 
 
-# In[6]:
+# In[8]:
 
 
 get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
@@ -106,19 +108,19 @@ get_ipython().run_cell_magic('bash', '', 'head nikkei_utf8.csv')
 
 # 問題ないようなので、pandasで読み込みます。
 
-# In[7]:
+# In[9]:
 
 
 df = pd.read_csv('nikkei_utf8.csv')
 
 
-# In[8]:
+# In[10]:
 
 
 df.head()
 
 
-# In[9]:
+# In[11]:
 
 
 df.tail()
@@ -126,13 +128,13 @@ df.tail()
 
 # 最後の行に著作権に関する注意書きがありますが、これを削除します。複写や流布は行いません。
 
-# In[10]:
+# In[12]:
 
 
 df.drop(index=975, inplace=True)
 
 
-# In[11]:
+# In[13]:
 
 
 df.tail()
@@ -144,7 +146,7 @@ df.tail()
 # 
 # 最初のデータを基準に、その値からの変化率を計算し、そのリストに対して学習を行います。
 
-# In[12]:
+# In[14]:
 
 
 def shape_data(data_list):
@@ -153,57 +155,81 @@ def shape_data(data_list):
 df['data_list'] = shape_data(df['終値'])
 
 
-# In[13]:
+# In[15]:
 
 
 ticks = 10
 xticks = ticks * 5 
 
-# plt.plot(df['データ日付'][::ticks], df['data_list'][::ticks], label='nikkei stock')
-plt.plot(df.index.values[::ticks], df['data_list'][::ticks], label='nikkei stock')
+plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='nikkei stock')
 plt.grid()
 plt.legend()
-# plt.xticks(df['データ日付'][::xticks], rotation=60)
+plt.xticks(df['データ日付'][::xticks], rotation=60)
 plt.show()
 
 
-# ## データの準備
+# 比率に直したグラフも示しておきます。
+
+# In[16]:
+
+
+plt.plot(df.index.values[::ticks], df['data_list'][::ticks], label='nikkei stock')
+plt.grid()
+plt.legend()
+plt.show()
+
+
+# ### 定数の準備
+
+# In[17]:
+
+
+# データとしては約四年分あるが、今回はこれを8このパートに分けて、それぞれの領域で予想を行う
+TERM_PART_LIST = [0, 120, 240, 360, 480, 600, 720, 840]
+
+# 予測に利用するデータ数
+# 90個のデータから後の30個のデータを予測する
+NUM_LSTM = 90
+
+# 中間層の数
+NUM_MIDDLE = 200
+
+# ニューラルネットのモデルの定数
+batch_size = 100
+epochs = 50
+validation_split = 0.25
+
+
+# ### データの準備
 # 
 # kerasに投入するためにデータを整えます。
 
-# In[144]:
+# In[18]:
 
 
-NUM_LSTM = 150
+def get_x_y_lx_ly(term_part):
+  
+  date = np.array(df['データ日付'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+  x = np.array(df.index.values[TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+  y = np.array(df['data_list'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+  
+  n = len(y) - NUM_LSTM
+  l_x = np.zeros((n, NUM_LSTM))
+  l_y = np.zeros((n, NUM_LSTM))
+  
+  for i in range(0, n):
+    l_x[i] = y[i: i + NUM_LSTM]
+    l_y[i] = y[i + 1: i + NUM_LSTM + 1]
+  
+  l_x = l_x.reshape(n, NUM_LSTM, 1)
+  l_y = l_y.reshape(n, NUM_LSTM, 1)
+  
+  return n, date, x, y, l_x, l_y
 
-# x = np.array((df['データ日付']))
-# y = np.array((df['終値']))
-
-# x = np.linspace(0, 5 * np.pi, 100)
-# y = np.cos(x)
-
-x = np.array(df.index.values[:200])
-y = np.array(df['data_list'][:200])
-
-# x = np.array(df.index.values)
-# y = np.array(df['data_list'])
-
-# x = np.linspace(0, 5 * np.pi, 200)
-# y = np.exp(-x / 5) * (np.cos(x))
-
-n = len(y) - NUM_LSTM
-l_x = np.zeros((n, NUM_LSTM))
-l_y = np.zeros((n, NUM_LSTM))
-for i in range(0, n):
-  l_x[i] = y[i: i + NUM_LSTM]
-  l_y[i] = y[i + 1: i + NUM_LSTM + 1]
-  # l_y[i] = y[i + NUM_LSTM]
-
-l_x = l_x.reshape(n, NUM_LSTM, 1)
-l_y = l_y.reshape(n, NUM_LSTM, 1)
+n, date, x, y, l_x, l_y = get_x_y_lx_ly(0)
 
 
-# In[145]:
+# In[19]:
 
 
 print('shape : ', x.shape)
@@ -211,7 +237,7 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[146]:
+# In[20]:
 
 
 print('shape : ', y.shape)
@@ -219,16 +245,18 @@ print('ndim : ', y.ndim)
 print('data : ', y[:10])
 
 
-# In[147]:
+# In[21]:
 
 
 print(l_y.shape)
 print(l_x.shape)
 
 
-# モデルの構築を定義する関数です。
+# ### モデルの構築
+# 
+# モデルの構築を定義する関数です。デフォルトではRNNとします。
 
-# In[148]:
+# In[22]:
 
 
 from tensorflow.keras.models import Sequential
@@ -239,59 +267,69 @@ from tensorflow.keras.layers import Activation
 from tensorflow.keras.layers import SimpleRNN
 from tensorflow.keras.layers import GRU
 
-batch_size = 100
-epochs = 100000
 
-NUM_MIDDLE = 200
-NUM_MIDDLE_01 = 100
-NUM_MIDDLE_02 = 120
-
-def build_lstm_model():
+def build_model(model_name='RNN'):
   # LSTMニューラルネットの構築
   model = Sequential()
-  # model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
-  # model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
-  model.add(GRU(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
+  # RNN,LSTM、GRUを選択できるようにする
+  if model_name == 'RNN':
+    model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
+  if model_name == 'LSTM':
+    model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
+  if model_name == 'GRU':
+    model.add(GRU(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
   model.add(Dense(1, activation="linear"))
   model.compile(loss="mean_squared_error", optimizer="sgd")
   
-  # LSTMニューラルネットの構築
-  # model = Sequential()
-  # model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
-  # model.add(Dropout(0.2))
-  # model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
-  # model.add(Dropout(0.2))
-  # model.add(Dense(1))
-  # model.add(Activation("linear"))
-  # model.compile(loss="mse", optimizer='rmsprop')
-  # model.compile(loss="mean_squared_error", optimizer="sgd")
-  
   return model
 
-model = build_lstm_model()
+
+# ニューラルネットを深くした（今回は使わない）
+def build_model_02(): 
+  
+  NUM_MIDDLE_01 = 100
+  NUM_MIDDLE_02 = 120
+  
+  # LSTMニューラルネットの構築
+  model = Sequential()
+  model.add(LSTM(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  model.add(Dropout(0.2))
+  model.add(LSTM(NUM_MIDDLE_02, return_sequences=True))
+  model.add(Dropout(0.2))
+  model.add(Dense(1))
+  model.add(Activation("linear"))
+  model.compile(loss="mean_squared_error", optimizer="sgd")
+  # model.compile(loss="mse", optimizer='rmsprop')
+    
+  return model
+  
+model = build_model('RNN')
 
 
-# ## モデルの詳細
+# ### モデルの詳細
 
-# In[149]:
+# In[23]:
 
 
 print(model.summary())
 
 
-# In[150]:
+# In[24]:
 
 
 # validation_split で最後の10％を検証用に利用します
-history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=1)
-# history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, verbose=1)
+history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
 
 
-# ## 損失関数の可視化
+# ### 損失関数の可視化
 # 
-# 学習によって誤差が減少していく様子を可視化してみます。
+# 学習によって誤差が減少していく様子を可視化してみます。今のエポック数で収束しているように見えます。
 
-# In[151]:
+# In[25]:
 
 
 loss = history.history['loss']
@@ -304,282 +342,266 @@ plt.legend()
 plt.show()
 
 
-# ## 結果の確認
-
-# In[152]:
-
-
-# 初期の入力値
-res = []
-res = np.append(res, 0)
-res = np.append(res, l_y[0].reshape(-1))
-# res = l_y[0].reshape(-1)
-
-res = np.append(res, 0)
-
-for i in range(0, n):
-  _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
-  # print()
-  # print(_y.shape)
-  # print(len(_y))
-  # print(_y)
-  # print()
-  res = np.append(res, _y[0][NUM_LSTM - 1][0])
-
-res = np.delete(res, -1)  
-res = np.delete(res, -1)  
-
-plt.plot(np.arange(len(y)), y, label="nikkei stock", color='coral')
-plt.plot(np.arange(len(res)), res, label="lstm pred result", color='blue')
-plt.legend()
-plt.grid()
-
-plt.axvspan(3, 6, color="coral", alpha=0.2)
-
-# plt.fill_between(np.arange(len(y)),
-#                  res,
-#                  0,
-#                  facecolor="orange", # The fill color
-#                  color='blue',       # The outline color
-#                  alpha=0.2)          # Transparency of the fill
+# ### RNNによる結果の確認
 # 
-# plt.fill_between(np.arange(len(y)),
-#                  y,
-#                  0,
-#                  facecolor="orange", # The fill color
-#                  color='blue',       # The outline color
-#                  alpha=0.2)          # Transparency of the fill
+# 薄いオレンジに塗りつぶされた期間が予測のために利用した期間です。その期間は、実際の推移と予測が一致しています。オレンジの実線が実際の株価推移、青が予測です。
 
+# In[26]:
+
+
+def plot_result():
+
+  # 初期の入力値
+  res = []
+  res = np.append(res, l_x[0][0][0])
+  res = np.append(res, l_y[0].reshape(-1))
+  
+  for i in range(0, n):
+    _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
+    
+    # 予測されたデータを次の予測のためのインプットデータとして利用
+    res = np.append(res, _y[0][NUM_LSTM - 1][0])
+  
+  res = np.delete(res, -1)  
+  
+  plt.plot(date, y, label="stock price", color='coral')
+  plt.plot(date, res, label="prediction result", color='blue')
+  plt.xticks(date[::12], rotation=60)
+  
+  plt.legend()
+  plt.grid()
+  
+  plt.axvspan(0, NUM_LSTM, color="coral", alpha=0.2)
+  
+  plt.show()
+  
+print('{} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+plot_result()
+
+
+# 結果としてはどうでしょうか？まぁトレンドは大きく外していないかなという程度でしょうか笑
+
+# ### 他の期間の予測
+# 
+# これまでの関数を使って、他の期間の予測もしてみます。
+
+# In[27]:
+
+
+for term in [1, 2, 3, 4, 5, 6]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(term)
+  model = build_model('RNN')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
+
+
+# ### LSTMによる予測
+
+# In[28]:
+
+
+for term in [0, 1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(term)
+  model = build_model('LSTM')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
+
+
+# LSTMでは今回の行った簡単なモデルでは、ほとんど予測できませんでした。よってグラフも二つしか示していません。もう少し考察すれば良さそうですが、今回の目的からはそれるので辞めておきます。
+
+# ### GRUによる予測
+
+# In[29]:
+
+
+for term in [0, 1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(term)
+  model = build_model('GRU')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
+
+
+# GRUでも意味のある結果が得られませんでした。
+
+# ## S&P500の予測
+# 
+# ### 2019年
+# 同じようにアメリカの代表的な株価指数であるS&P500についても予測してみます。
+# ファイルは上記のサイトからダウンロード出来ます。
+
+# In[30]:
+
+
+get_ipython().system('ls')
+
+
+# ファイルの中身を簡単に見てみます。
+
+# In[31]:
+
+
+get_ipython().run_cell_magic('bash', '', 'head sp500_2019.csv')
+
+
+# 文字コードがShift-JISのようなので、utf-8に置換します。
+
+# In[32]:
+
+
+get_ipython().run_cell_magic('bash', '', 'nkf -w sp500_2019.csv > sp500_2019_utf8.csv')
+
+
+# さらに見てみると、1行目がpandasに入れるのに余計なので、削除します。
+
+# In[33]:
+
+
+get_ipython().run_cell_magic('bash', '', 'head sp500_2019_utf8.csv')
+
+
+# In[34]:
+
+
+get_ipython().run_cell_magic('bash', '', "sed -ie '1d' sp500_2019_utf8.csv ")
+
+
+# In[35]:
+
+
+get_ipython().run_cell_magic('bash', '', 'head sp500_2019_utf8.csv')
+
+
+# 準備が整ったので、pandasに入れます。
+
+# In[36]:
+
+
+df = pd.read_csv('sp500_2019_utf8.csv')
+
+
+# In[37]:
+
+
+df.head()
+
+
+# In[38]:
+
+
+df.tail()
+
+
+# 日経平均と同様に、終値を変化率に変換します。同じ関数を利用します。
+
+# In[39]:
+
+
+df['data_list'] = shape_data(df['終値'])
+
+
+# また、先ほどの関数を再利用したいので、日付というカラム名をデータ日付と言うカラム名に変更します。
+
+# In[40]:
+
+
+df = df.rename(columns={'日付':'データ日付'})
+
+
+# In[41]:
+
+
+df.head()
+
+
+# In[42]:
+
+
+df.tail()
+
+
+# 全体のグラフを俯瞰しています。
+
+# In[43]:
+
+
+plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='sp500 2019')
+plt.grid()
+plt.legend()
+plt.xticks(df['データ日付'][::xticks], rotation=60)
 plt.show()
 
 
-# In[ ]:
+# 予測を行って、結果をグラウかしてみます。
 
+# In[44]:
 
 
+for term in [0, 1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(term)
+  model = build_model('RNN')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
 
 
-# In[ ]:
+# 日経平均と同様、トレンドに沿って予測しており、逆張り防止にはなるかもしれません笑
 
+# ### 2020年
+# 
+# 次に2020年の株価について予測を行ってみます。データの前処理などは省略します。
 
+# In[45]:
 
 
+get_ipython().run_cell_magic('bash', '', "head sp500_2020_utf8.csv\nnkf -w sp500_2020.csv > sp500_2020_utf8.csv\nsed -ie '1d' sp500_2020_utf8.csv ")
 
-# In[ ]:
 
+# In[46]:
 
 
+df = pd.read_csv('sp500_2020_utf8.csv')
+df.head()
 
 
-# In[ ]:
+# In[47]:
 
 
+df['data_list'] = shape_data(df['終値'])
+df = df.rename(columns={'日付':'データ日付'})
+df.head()
 
 
+# In[48]:
 
-# In[ ]:
 
+df.tail()
 
 
+# In[49]:
 
 
-# In[ ]:
+plt.plot(df['データ日付'][::ticks], df['終値'][::ticks], label='sp500 2020')
+plt.grid()
+plt.legend()
+plt.xticks(df['データ日付'][::xticks], rotation=60)
+plt.show()
 
 
+# In[50]:
 
 
+for term in [0, 1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(term)
+  model = build_model('RNN')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
 
-# In[25]:
 
-
-
-
-
-import os
-import time
-import warnings
-import numpy as np
-from numpy import newaxis
-from keras.layers.core import Dense, Activation, Dropout
-from keras.layers.recurrent import LSTM
-from keras.models import Sequential
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-warnings.filterwarnings("ignore")
-
-def load_data(filename, seq_len, normalise_window):
-    f = open(filename, 'rb').read()
-    data = f.decode().split('\n')
-
-    sequence_length = seq_len + 1
-    result = []
-    for index in range(len(data) - sequence_length):
-        result.append(data[index: index + sequence_length])
-
-    if normalise_window:
-        result = normalise_windows(result)
-
-    result = np.array(result)
-
-    row = round(0.9 * result.shape[0])
-    train = result[:int(row),:]
-    np.random.shuffle(train)
-    x_train = train[:,:-1]
-    y_train = train[:,-1]
-    x_test = result[int(row):, :-1]
-    y_test = result[int(row):, -1]
-
-    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))
-    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-
-    return [x_train, y_train, x_test, y_test]
-
-def normalise_windows(window_data):
-    normalised_data = []
-    for window in window_data:
-        normalised_window = [((float(p) / float(window[0])) - 1) for p in window]
-        normalised_data.append(normalised_window)
-    return normalised_data
-
-def build_model(layers):
-    model = Sequential()
-
-    model.add(LSTM(input_shape = (layers[1], layers[0]),
-                    output_dim=layers[1],
-                    return_sequences=True))
-    model.add(Dropout(0.2))
-
-    model.add(LSTM(layers[2],return_sequences=False))
-    model.add(Dropout(0.2))
-
-    model.add(Dense(output_dim=layers[3]))
-    model.add(Activation("linear"))
-
-    start = time.time()
-    model.compile(loss="mse", optimizer='rmsprop')
-    print(" 実行時間：　", time.time() - start)
-    return model
-
-def predict_point_by_point(model, data):
-    predicted = model.predict(data)
-    predicted = np.reshape(predicted, (predicted.size,))
-    return predicted
-
-def predict_sequence_full(model, data, window_size):
-    curr_frame = data[0]
-    predicted = []
-    for i in range(len(data)):
-        predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
-        curr_frame = curr_frame[1:]
-        curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
-    return predicted
-
-def predict_sequences_multiple(model, data, window_size, prediction_len):
-    prediction_seqs = []
-    for i in range(int(len(data)/prediction_len)):
-        curr_frame = data[i*prediction_len]
-        predicted = []
-        for j in range(prediction_len):
-            predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
-            curr_frame = curr_frame[1:]
-            curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
-        prediction_seqs.append(predicted)
-    return prediction_seqs
-
- import os
-import time
-import warnings
-import numpy as np
-from numpy import newaxis
-from keras.layers.core import Dense, Activation, Dropout
-from keras.layers.recurrent import LSTM
-from keras.models import Sequential
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-warnings.filterwarnings("ignore")
-
-def load_data(filename, seq_len, normalise_window):
-    f = open(filename, 'rb').read()
-    data = f.decode().split('\n')
-
-    sequence_length = seq_len + 1
-    result = []
-    for index in range(len(data) - sequence_length):
-        result.append(data[index: index + sequence_length])
-
-    if normalise_window:
-        result = normalise_windows(result)
-
-    result = np.array(result)
-
-    row = round(0.9 * result.shape[0])
-    train = result[:int(row),:]
-    np.random.shuffle(train)
-    x_train = train[:,:-1]
-    y_train = train[:,-1]
-    x_test = result[int(row):, :-1]
-    y_test = result[int(row):, -1]
-
-    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))
-    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-
-    return [x_train, y_train, x_test, y_test]
-
-def normalise_windows(window_data):
-    normalised_data = []
-    for window in window_data:
-        normalised_window = [((float(p) / float(window[0])) - 1) for p in window]
-        normalised_data.append(normalised_window)
-    return normalised_data
-
-def build_model(layers):
-    model = Sequential()
-
-    model.add(LSTM(input_shape = (layers[1], layers[0]),
-                    output_dim=layers[1],
-                    return_sequences=True))
-    model.add(Dropout(0.2))
-
-    model.add(LSTM(layers[2],return_sequences=False))
-    model.add(Dropout(0.2))
-
-    model.add(Dense(output_dim=layers[3]))
-    model.add(Activation("linear"))
-
-    start = time.time()
-    model.compile(loss="mse", optimizer='rmsprop')
-    print(" 実行時間：　", time.time() - start)
-    return model
-
-def predict_point_by_point(model, data):
-    predicted = model.predict(data)
-    predicted = np.reshape(predicted, (predicted.size,))
-    return predicted
-
-def predict_sequence_full(model, data, window_size):
-    curr_frame = data[0]
-    predicted = []
-    for i in range(len(data)):
-        predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
-        curr_frame = curr_frame[1:]
-        curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
-    return predicted
-
-def predict_sequences_multiple(model, data, window_size, prediction_len):
-    prediction_seqs = []
-    for i in range(int(len(data)/prediction_len)):
-        curr_frame = data[i*prediction_len]
-        predicted = []
-        for j in range(prediction_len):
-            predicted.append(model.predict(curr_frame[newaxis,:,:])[0,0])
-            curr_frame = curr_frame[1:]
-            curr_frame = np.insert(curr_frame, [window_size-1], predicted[-1], axis=0)
-        prediction_seqs.append(predicted)
-    return prediction_seqs
- 
-"""
-model.fit(X_train, y_train, batch_size=512, nb_epoch=epoch, validation_split=0.05)
-predictions = lstm.predict_sequences_multiple(model, X_test, seq_len, 50)
-model = lstm.build_model([1, 50, 100, 1])
-"""
-
+# ## まとめ
+# 
+# 特徴量抽出、モデル検討、ハイパーパラメタの調整などやれることはたくさんあると思いますが、目的はkerasに慣れる事で、サービスインなどの予定はないので、ここで終わりにします。
+# 株価を決定する要素は様々あるので、単純なNNでは予測するのはかなり難しいだろうと思っています。

@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## kerasとLSTMの基礎, RNNとの比較
+# ## RNNを使った為替(FX)予測
 # 
-# 以前の記事でRNNの復習しましたので、ついでにLSTMの復習も行います。LSTMは Long Short Term Memory の略で、長期的な依存関係を学習することのできると言われています。また、RNNの一種で、基本的な考え方は同じです。詳細は検索すればいくらでも出てくるので割愛します。
-# 
-# また、LSTMとRNNの比較を行います。
+# [以前の記事](/ml/lec/text/lstm_stock/)で株価の予測をしてみたので、同じ時系列データが取得しやすい為替について予測をしてみます。
+# 株価と同様、変動要因は様々あるので、ニューラルネットのモデルだけで予測するのは難しいと思いますが、Kerasの練習だと思ってやってみます。
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_fx/lstm_nb.ipynb)
 # 
 # ### google colaboratory
-# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm/lstm_nb.ipynb)
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/tree/master/ml/lec/text/lstm_fx/lstm_nb.ipynb)
 # 
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
@@ -40,6 +39,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scipy
 import numpy as np
+import pandas as pd
 
 import tensorflow as tf
 from tensorflow import keras
@@ -51,28 +51,222 @@ print('tensorflow version : ', tf.__version__)
 print('keras version : ', keras.__version__)
 
 
-# ## 減衰振動曲線
+# ## データの取得
 # 
-# サンプル用のデータとして、以下の式からサンプリングを行います。
+# 今回はUSD/JPY, EUR/USD, GBP/USDの３通貨ペア(日足)について予測を行います。
+# データは、以下のサイトからダウンロードさせていただきました。
 # 
-# $$
-# y = \exp\left(-\frac{x}{\tau}\right)\cos(x) 
-# $$
+# - https://www.central-tanshifx.com/market/finder/popn-csv-download.html
 # 
-# 波を打ちながら、次第に収束していく、自然現象ではよくあるモデルになります。単純なRNNと比較するため、サンプルデータは同じ関数とします。
+# 
+# ## データの確認
+# まず最初にUSDJPYのデータを見てみます。
 
 # In[4]:
 
 
-x = np.linspace(0, 5 * np.pi, 200)
-y = np.exp(-x / 5) * (np.cos(x))
+get_ipython().system('ls ./data/ ')
 
-
-# ### データの確認
-# 
-# $x$と$y$のデータの詳細を見てみます。
 
 # In[5]:
+
+
+get_ipython().run_cell_magic('bash', '', 'head ./data/01_USDJPY_D.csv')
+
+
+# In[6]:
+
+
+get_ipython().run_cell_magic('bash', '', 'nkf --guess ./data/01_USDJPY_D.csv')
+
+
+# utf-8に直します。
+
+# In[7]:
+
+
+get_ipython().run_cell_magic('bash', '', 'nkf -w ./data/01_USDJPY_D.csv > ./data/usdjpy_utf8.csv\nnkf -w ./data/03_EURUSD_D.csv > ./data/eurusd_utf8.csv\nnkf -w ./data/05_GBPUSD_D.csv > ./data/gbpusd_utf8.csv')
+
+
+# 文字コードがshift-jisになっているので、utf-8に直します。
+
+# In[8]:
+
+
+get_ipython().run_cell_magic('bash', '', 'head ./data/usdjpy_utf8.csv')
+
+
+# 問題ないようなので、pandasで読み込みます。
+
+# In[9]:
+
+
+df_u = pd.read_csv('./data/usdjpy_utf8.csv')
+df_e = pd.read_csv('./data/eurusd_utf8.csv')
+df_g = pd.read_csv('./data/gbpusd_utf8.csv')
+
+
+# In[10]:
+
+
+df_u.head()
+
+
+# In[11]:
+
+
+df_u.tail()
+
+
+# 日付でソートします。
+
+# In[12]:
+
+
+df_u.sort_values(by=["日付"], ascending=True, inplace=True)
+df_e.sort_values(by=["日付"], ascending=True, inplace=True)
+df_g.sort_values(by=["日付"], ascending=True, inplace=True)
+
+
+# ### データのグラフ化
+
+# In[13]:
+
+
+ticks = 10
+xticks = ticks * 5 
+
+plt.plot(df_u['日付'][::ticks], df_u['終値'][::ticks], label='usd/jpy')
+plt.grid()
+plt.legend()
+plt.xticks(df_u['日付'][::xticks], rotation=60)
+plt.show()
+
+
+# In[14]:
+
+
+plt.plot(df_e['日付'][::ticks], df_e['終値'][::ticks], label='eur/usd')
+plt.grid()
+plt.legend()
+plt.xticks(df_u['日付'][::xticks], rotation=60)
+plt.show()
+
+
+# In[15]:
+
+
+plt.plot(df_g['日付'][::ticks], df_g['終値'][::ticks], label='gbp/usd')
+plt.grid()
+plt.legend()
+plt.xticks(df_u['日付'][::xticks], rotation=60)
+plt.show()
+
+
+# In[16]:
+
+
+df_u.shape
+
+
+# In[17]:
+
+
+df_e.shape
+
+
+# In[18]:
+
+
+df_g.shape
+
+
+# ### データの整形
+# 最初のデータを基準に、その値からの変化率を計算し、そのリストに対して学習を行います。
+
+# In[19]:
+
+
+def shape_data(data_list):
+  return [d / data_list[0] - 1 for d in data_list]
+
+df_u['data_list'] = shape_data(list(df_u['終値']))
+df_e['data_list'] = shape_data(list(df_e['終値']))
+df_g['data_list'] = shape_data(list(df_g['終値']))
+
+
+# In[20]:
+
+
+plt.plot(df_u['日付'][::ticks], df_u['data_list'][::ticks], label='usd/jpy')
+plt.grid()
+plt.legend()
+plt.xticks(df_u['日付'][::xticks], rotation=60)
+plt.show()
+
+
+# ### 定数の準備
+# 
+# 日足データとして200本あるので、二つのパートに分けて予測を行います。
+
+# In[38]:
+
+
+# データとしては約四年分あるが、今回はこれを8このパートに分けて、それぞれの領域で予想を行う
+TERM_PART_LIST = [0, 100, 200]
+
+# 予測に利用するデータ数
+# 75個のデータから後の25個のデータを予測する
+NUM_LSTM = 75
+
+# 中間層の数
+NUM_MIDDLE = 200
+
+# ニューラルネットのモデルの定数
+batch_size = 100
+epochs = 50
+validation_split = 0.25
+
+
+# ### データの準備
+# kerasに投入するためにデータを整えます。
+
+# In[22]:
+
+
+def get_x_y_lx_ly(currency='usdjpy', term_part=0):
+  if currency == 'usdjpy':
+    date = np.array(df_u['日付'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+    x = np.array(df_u.index.values[TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+    y = np.array(df_u['data_list'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+  
+  if currency == 'eurusd':
+    date = np.array(df_e['日付'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+    x = np.array(df_e.index.values[TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+    y = np.array(df_e['data_list'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+ 
+  if currency == 'gbpusd':
+    date = np.array(df_g['日付'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+    x = np.array(df_g.index.values[TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+    y = np.array(df_g['data_list'][TERM_PART_LIST[term_part]: TERM_PART_LIST[term_part + 1]])
+
+  n = len(y) - NUM_LSTM
+  l_x = np.zeros((n, NUM_LSTM))
+  l_y = np.zeros((n, NUM_LSTM))
+  
+  for i in range(0, n):
+    l_x[i] = y[i: i + NUM_LSTM]
+    l_y[i] = y[i + 1: i + NUM_LSTM + 1]
+  
+  l_x = l_x.reshape(n, NUM_LSTM, 1)
+  l_y = l_y.reshape(n, NUM_LSTM, 1)
+  
+  return n, date, x, y, l_x, l_y
+
+n, date, x, y, l_x, l_y = get_x_y_lx_ly('usdjpy', 0)
+
+
+# In[23]:
 
 
 print('shape : ', x.shape)
@@ -80,7 +274,7 @@ print('ndim : ', x.ndim)
 print('data : ', x[:10])
 
 
-# In[6]:
+# In[24]:
 
 
 print('shape : ', y.shape)
@@ -88,147 +282,212 @@ print('ndim : ', y.ndim)
 print('data : ', y[:10])
 
 
-# グラフを確認してみます。
-
-# In[7]:
+# In[25]:
 
 
-plt.plot(x,y)
-plt.grid()
-plt.show()
+print(l_y.shape)
+print(l_x.shape)
 
 
-# $\tau=5$として、綺麗な減衰曲線が得られました。
+# ### モデルの構築
+# モデルの構築を定義する関数です。デフォルトではRNNとします。
 
-# ## ニューラルネットの構築
-# 
-# kerasに投入するためにデータの前処理を行い、再帰型のニューラルネットの構築を行います。
-# 
-# 構築が終了したら、compileメソッドを利用して、モデルをコンパイルします。compileの仕様は以下の様になっています。
-# 
-# ```bash
-# compile(self, optimizer, loss, metrics=None, sample_weight_mode=None, weighted_metrics=None, target_tensors=None)
-# ```
-
-# In[8]:
+# In[42]:
 
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
-
-NUM_RNN = 20
-NUM_MIDDLE = 40
-
-# データの前処理
-n = len(x) - NUM_RNN
-r_x = np.zeros((n, NUM_RNN))
-r_y = np.zeros((n, NUM_RNN))
-for i in range(0, n):
-  r_x[i] = y[i: i + NUM_RNN]
-  r_y[i] = y[i + 1: i + NUM_RNN + 1]
-
-r_x = r_x.reshape(n, NUM_RNN, 1)
-r_y = r_y.reshape(n, NUM_RNN, 1)
-
-# RNNニューラルネットの構築
-rnn_model = Sequential()
-rnn_model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-rnn_model.add(Dense(1, activation="linear"))
-rnn_model.compile(loss="mean_squared_error", optimizer="sgd")
-
-# LSTMニューラルネットの構築
-lstm_model = Sequential()
-lstm_model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_RNN, 1), return_sequences=True))
-lstm_model.add(Dense(1, activation="linear"))
-lstm_model.compile(loss="mean_squared_error", optimizer="sgd")
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import SimpleRNN
+from tensorflow.keras.layers import GRU
 
 
-# 投入するデータや、モデルの概要を確認します。
-
-# In[9]:
-
-
-print(r_y.shape)
-print(r_x.shape)
-
-
-# 二つのモデルの比較を行います。LSTMの方がパラメタ数が多いことがわかります。学習するにもLSTMの方が時間がかかります。
-
-# In[10]:
-
-
-print(rnn_model.summary())
-print(lstm_model.summary())
-
-
-# ## 学習
-# 
-# fitメソッドを利用して、学習を行います。
-# fitメソッドの仕様は以下の通りになっています。[こちら](https://keras.io/ja/models/sequential/)を参照してください。
-# 
-# ```bash
-# fit(self, x=None, y=None, batch_size=None, epochs=1, verbose=1, callbacks=None, validation_split=0.0, validation_data=None, shuffle=True, class_weight=None, sample_weight=None, initial_epoch=0, steps_per_epoch=None, validation_steps=None)
-# ```
-
-# In[11]:
+def build_model(model_name='RNN'):
+  # LSTMニューラルネットの構築
+  model = Sequential()
+  
+  # RNN,LSTM、GRUを選択できるようにする
+  if model_name == 'RNN':
+    model.add(SimpleRNN(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
+  if model_name == 'LSTM':
+    model.add(LSTM(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
+  if model_name == 'GRU':
+    model.add(GRU(NUM_MIDDLE, input_shape=(NUM_LSTM, 1), return_sequences=True))
+  
+  model.add(Dense(1, activation="linear"))
+  model.compile(loss="mean_squared_error", optimizer="sgd")
+  
+  return model
 
 
-batch_size = 10
-epochs = 1000
+# ニューラルネットを深くした（今回は使わない）
+def build_model_02(): 
+  
+  NUM_MIDDLE_01 = 50
+  NUM_MIDDLE_02 = 50
+  
+  # LSTMニューラルネットの構築
+  model = Sequential()
+  model.add(SimpleRNN(NUM_MIDDLE_01, input_shape = (NUM_LSTM, 1), return_sequences=True))
+  model.add(Dropout(0.2))
+  # model.add(SimpleRNN(NUM_MIDDLE_02, return_sequences=True))
+  # model.add(Dropout(0.2))
+  model.add(Dense(1))
+  model.add(Activation("linear"))
+  model.compile(loss="mean_squared_error", optimizer="sgd")
+  # model.compile(loss="mse", optimizer='rmsprop')
+    
+  return model
+  
+model = build_model('RNN')
+
+
+# ### モデルの詳細
+
+# In[27]:
+
+
+model.summary()
+
+
+# In[28]:
+
 
 # validation_split で最後の10％を検証用に利用します
-rnn_history = rnn_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
-
-# validation_split で最後の10％を検証用に利用します
-lstm_history = lstm_model.fit(r_x, r_y, epochs=epochs, batch_size=batch_size, validation_split=0.1, verbose=0)
+history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
 
 
-# ## 損失関数の可視化
-# 
-# 学習によって誤差が減少していく様子を可視化してみます。
+# ### 損失関数の可視化
+# 学習によって誤差が減少していく様子を可視化してみます。val_lossが増えていき、過学習になっていますね。正規化やDropOutが必要かと思います。
 
-# In[12]:
+# In[29]:
 
 
-rnn_loss = rnn_history.history['loss'] # 訓練データの損失関数
-rnn_val_loss = rnn_history.history['val_loss'] #テストデータの損失関数
+loss = history.history['loss']
+val_loss = history.history['val_loss']
 
-lstm_loss = lstm_history.history['loss'] # 訓練データの損失関数
-lstm_val_loss = lstm_history.history['val_loss'] #テストデータの損失関数
-
-plt.plot(np.arange(len(rnn_loss)), rnn_loss, label='rnn_loss')
-plt.plot(np.arange(len(rnn_val_loss)), rnn_val_loss, label='rnn_val_loss')
-plt.plot(np.arange(len(lstm_loss)), lstm_loss, label='lstm_loss')
-plt.plot(np.arange(len(lstm_val_loss)), lstm_val_loss, label='lstm_val_loss')
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
 plt.grid()
 plt.legend()
 plt.show()
 
 
-# ## 結果の確認
+# ### RNNによる結果の確認
+# 薄いオレンジに塗りつぶされた期間が予測のために利用した期間です。その期間は、実際の推移と予測が一致しています。オレンジの実線が実際の株価推移、青が予測です。
 
-# In[13]:
+# In[30]:
 
 
-# 初期の入力値
-rnn_res = r_y[0].reshape(-1)
-lstm_res = r_y[0].reshape(-1)
+def plot_result():
 
-for i in range(0, n):
-  _rnn_y = rnn_model.predict(rnn_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  rnn_res = np.append(rnn_res, _rnn_y[0][NUM_RNN - 1][0])
+  # 初期の入力値
+  res = []
+  res = np.append(res, l_x[0][0][0])
+  res = np.append(res, l_y[0].reshape(-1))
   
-  _lstm_y = lstm_model.predict(lstm_res[- NUM_RNN:].reshape(1, NUM_RNN, 1))
-  lstm_res = np.append(lstm_res, _lstm_y[0][NUM_RNN - 1][0])
+  for i in range(0, n):
+    _y = model.predict(res[- NUM_LSTM:].reshape(1, NUM_LSTM, 1))
+    
+    # 予測されたデータを次の予測のためのインプットデータとして利用
+    res = np.append(res, _y[0][NUM_LSTM - 1][0])
   
-plt.plot(np.arange(len(y)), y, label=r"$\exp\left(-\frac{x}{\tau}\right) \cos x$")
-plt.plot(np.arange(len(rnn_res)), rnn_res, label="RNN result")
-plt.plot(np.arange(len(lstm_res)), lstm_res, label="LSTM result")
-plt.legend()
+  res = np.delete(res, -1)  
+  
+  plt.plot(date, y, label="price", color='coral')
+  plt.plot(date, res, label="prediction result", color='blue')
+  plt.xticks(date[::12], rotation=60)
+  
+  plt.legend()
+  plt.grid()
+  
+  plt.axvspan(0, NUM_LSTM, color="coral", alpha=0.2)
+  
+  plt.show()
+  
+print('{} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+plot_result()
+
+
+# ## USDJPY
+# 
+# usdjpyの後半の期間の予測を行います。
+
+# In[31]:
+
+
+currency = 'usdjpy'
+for term in [1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(currency, term)
+  model = build_model('RNN')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('{} :'.format(currency))
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
+
+
+# ## EURUSD
+
+# In[32]:
+
+
+currency = 'eurusd'
+for term in [0, 1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(currency, term)
+  model = build_model('RNN')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('{} :'.format(currency))
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
+
+
+# ## GBPUSD
+
+# In[33]:
+
+
+currency = 'gbpusd'
+for term in [0, 1]:
+  n, date, x, y, l_x, l_y = get_x_y_lx_ly(currency, term)
+  model = build_model('RNN')
+  history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+  print('{} :'.format(currency))
+  print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+  plot_result()
+
+
+# ## GBPUSD ver2
+# 
+# 過学習対策のためにDropoutを入れたモデルを試してみます。
+
+# In[44]:
+
+
+currency = 'gbpusd'
+
+n, date, x, y, l_x, l_y = get_x_y_lx_ly(currency, 1)
+model = build_model_02()
+history = model.fit(l_x, l_y, epochs=epochs, batch_size=batch_size, validation_split=validation_split, verbose=0)
+print('{} :'.format(currency))
+print('予測期間 : {} - {} の結果'.format(date[0], date[NUM_LSTM - 1]))
+plot_result()
+  
+# 損失関数  
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+plt.plot(np.arange(len(loss)), loss, label='loss')
+plt.plot(np.arange(len(val_loss)), val_loss, label='val_loss')
 plt.grid()
+plt.legend()
 plt.show()
 
 
-# 減衰振動曲線の場合、今回設定したパラメタでは、LSTMとRNNの差は出ていないようです。ただ、実務レベルでは、RNNよりLSTMの方がより使われており、結果も出ているように思います。今回はただの練習なので、ここで終わりにしようと思います。
+# 先ほどと違って、確かに過学習対策が効いていますが、予測はトレンドを大きく外していますね。。。
+
+# ## まとめ
+# 為替の予測は株の予測よりも構成要因が多く難しいと言われています。このような簡単なモデル予測するのは無謀だと思いますが、今回の目的はkerasに慣れることなので、ここまでにしておきます。位相が180度ずれている部分もあり、大きく外している部分もありますね･･･
