@@ -60,12 +60,18 @@ def plot_graphs(history, metric):
   plt.show()
 
 
+# ## 入力パイプラインの設定
+# 
+# IMDB映画レビューのデータセットは二値分類のデータセット。PositiveかNegativeの二択。TFDSを利用してダウンロード。
+
 # In[5]:
 
 
 dataset, info = tfds.load('imdb_reviews/subwords8k', with_info=True, as_supervised=True)
 train_examples, test_examples = dataset['train'], dataset['test']
 
+
+# エンコードを含、任意の文字列を可逆的にエンコードする。
 
 # In[6]:
 
@@ -97,28 +103,22 @@ print('The original string: "{}"'.format(original_string))
 assert original_string == sample_string
 
 
-# In[ ]:
-
-
-
-
-
 # In[10]:
 
 
-BUFFER_SIZE = 10000
-BATCH_SIZE = 64
+for index in encoded_string:
+  print('{} ----> {}'.format(index, encoder.decode([index])))
 
+
+# ## 訓練用データの準備
+# 
+# エンコード済み文字列をバッチ化する。padded_batchメソッドを利用して、バッチ中の一番長い文字列の長さにゼロパッディングする。
 
 # In[11]:
 
 
-train_dataset = (train_examples
-                 .shuffle(BUFFER_SIZE)
-                 .padded_batch(BATCH_SIZE, padded_shapes=([None],[])))
-
-test_dataset = (test_examples
-                .padded_batch(BATCH_SIZE,  padded_shapes=([None],[])))
+BUFFER_SIZE = 10000
+BATCH_SIZE = 64
 
 
 # In[12]:
@@ -132,14 +132,18 @@ test_dataset = (test_examples
                 .padded_batch(BATCH_SIZE))
 
 
+# ## モデルの作成
+# 
+# Embeddingレイヤーの作成。単語一つに対して、一つのベクトルを収容する。呼び出しを受けると、Embeddingレイヤーは単語のインデックスのシーケンスをベクトルのシーケンスに変換する。
+
 # In[13]:
 
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Embedding(encoder.vocab_size, 64),
-    tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)),
-    tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dense(1)
+  tf.keras.layers.Embedding(encoder.vocab_size, 64),
+  tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)),
+  tf.keras.layers.Dense(64, activation='relu'),
+  tf.keras.layers.Dense(1)
 ])
 
 
@@ -151,7 +155,20 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 
+# ## モデルの訓練
+
 # In[15]:
+
+
+epochs = 10 # default
+epochs = 1
+
+history = model.fit(train_dataset, epochs=epochs,
+                    validation_data=test_dataset, 
+                    validation_steps=30)
+
+
+# In[16]:
 
 
 test_loss, test_acc = model.evaluate(test_dataset)
@@ -166,7 +183,7 @@ print('Test Accuracy: {}'.format(test_acc))
 
 
 
-# In[ ]:
+# In[17]:
 
 
 def pad_to_size(vec, size):
@@ -175,7 +192,7 @@ def pad_to_size(vec, size):
   return vec
 
 
-# In[ ]:
+# In[18]:
 
 
 def sample_predict(sample_pred_text, pad):
@@ -195,7 +212,7 @@ def sample_predict(sample_pred_text, pad):
 
 
 
-# In[ ]:
+# In[19]:
 
 
 # パディングなしのサンプルテキストの推論
@@ -212,7 +229,7 @@ print(predictions)
 
 
 
-# In[ ]:
+# In[20]:
 
 
 # パディングありのサンプルテキストの推論
@@ -223,13 +240,13 @@ predictions = sample_predict(sample_pred_text, pad=True)
 print(predictions)
 
 
-# In[ ]:
+# In[21]:
 
 
 plot_graphs(history, 'accuracy')
 
 
-# In[ ]:
+# In[22]:
 
 
 plot_graphs(history, 'loss')
@@ -243,7 +260,7 @@ plot_graphs(history, 'loss')
 
 # ## 2つ以上の LSTM レイヤー
 
-# In[ ]:
+# In[23]:
 
 
 model = tf.keras.Sequential([
@@ -256,7 +273,7 @@ model = tf.keras.Sequential([
 ])
 
 
-# In[ ]:
+# In[24]:
 
 
 model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
@@ -264,7 +281,7 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 
-# In[ ]:
+# In[25]:
 
 
 history = model.fit(train_dataset, epochs=10,
