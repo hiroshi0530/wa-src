@@ -161,7 +161,6 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
 
 
 epochs = 10 # default
-epochs = 1
 
 history = model.fit(train_dataset, epochs=epochs,
                     validation_data=test_dataset, 
@@ -289,7 +288,7 @@ history = model.fit(train_dataset, epochs=10,
                     validation_steps=30)
 
 
-# In[ ]:
+# In[26]:
 
 
 test_loss, test_acc = model.evaluate(test_dataset)
@@ -304,7 +303,7 @@ print('Test Accuracy: {}'.format(test_acc))
 
 
 
-# In[ ]:
+# In[27]:
 
 
 # パディングなしのサンプルテキストの推論
@@ -315,7 +314,7 @@ predictions = sample_predict(sample_pred_text, pad=False)
 print(predictions)
 
 
-# In[ ]:
+# In[28]:
 
 
 # パディングありのサンプルテキストの推論
@@ -326,13 +325,13 @@ predictions = sample_predict(sample_pred_text, pad=True)
 print(predictions)
 
 
-# In[ ]:
+# In[29]:
 
 
 plot_graphs(history, 'accuracy')
 
 
-# In[ ]:
+# In[30]:
 
 
 plot_graphs(history, 'loss')
