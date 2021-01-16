@@ -1,4 +1,3 @@
-
 ## tensorflow tutorials RNN を使ったテキスト分類
 
 tensorflowが2.0になってチュートリアルも新しくなりました。勉強がてら、すべてのチュートリアルを自分の環境で行ってみたいと思います。コードはほぼチュートリアルのコピーです。その中で気づいた部分や、注意すべき部分がこの記事の付加価値です。
@@ -12,7 +11,7 @@ tensorflowが2.0になってチュートリアルも新しくなりました。�
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6020
+    BuildVersion:	18G6032
 
 
 
@@ -20,7 +19,7 @@ tensorflowが2.0になってチュートリアルも新しくなりました。�
 !python -V
 ```
 
-    Python 3.7.3
+    Python 3.8.5
 
 
 
@@ -48,11 +47,11 @@ print('pandas version : ',pd.__version__)
 print('matlib version : ',matplotlib.__version__)
 ```
 
-    tf version     :  2.4.0
+    tf version     :  2.3.1
     keras version  :  2.4.0
-    numpy version  :  1.19.4
-    pandas version :  1.0.3
-    matlib version :  3.0.3
+    numpy version  :  1.18.5
+    pandas version :  1.1.3
+    matlib version :  3.3.2
 
 
 ## ヘルパー関数の作成
@@ -78,6 +77,9 @@ IMDB映画レビューのデータセットは二値分類のデータセット�
 dataset, info = tfds.load('imdb_reviews/subwords8k', with_info=True, as_supervised=True)
 train_examples, test_examples = dataset['train'], dataset['test']
 ```
+
+    WARNING:absl:TFDS datasets with text encoding are deprecated and will be removed in a future version. Instead, you should use the plain text version and tokenize the text using `tensorflow_text` (See: https://www.tensorflow.org/tutorials/tensorflow_text/intro#tfdata_example)
+
 
 エンコードを含、任意の文字列を可逆的にエンコードする。
 
@@ -179,14 +181,32 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
 
 ```python
 epochs = 10 # default
-epochs = 1
 
 history = model.fit(train_dataset, epochs=epochs,
                     validation_data=test_dataset, 
                     validation_steps=30)
 ```
 
-    391/391 [==============================] - 1046s 3s/step - loss: 0.6861 - accuracy: 0.5103 - val_loss: 0.4692 - val_accuracy: 0.8005
+    Epoch 1/10
+    391/391 [==============================] - 319s 816ms/step - loss: 0.6541 - accuracy: 0.5618 - val_loss: 0.5182 - val_accuracy: 0.7250
+    Epoch 2/10
+    391/391 [==============================] - 319s 816ms/step - loss: 0.3670 - accuracy: 0.8366 - val_loss: 0.3457 - val_accuracy: 0.8641
+    Epoch 3/10
+    391/391 [==============================] - 319s 817ms/step - loss: 0.2564 - accuracy: 0.8997 - val_loss: 0.3444 - val_accuracy: 0.8432
+    Epoch 4/10
+    391/391 [==============================] - 321s 822ms/step - loss: 0.2129 - accuracy: 0.9216 - val_loss: 0.3513 - val_accuracy: 0.8719
+    Epoch 5/10
+    391/391 [==============================] - 319s 816ms/step - loss: 0.1965 - accuracy: 0.9281 - val_loss: 0.3426 - val_accuracy: 0.8672
+    Epoch 6/10
+    391/391 [==============================] - 338s 864ms/step - loss: 0.1666 - accuracy: 0.9424 - val_loss: 0.3506 - val_accuracy: 0.8562
+    Epoch 7/10
+    391/391 [==============================] - 318s 813ms/step - loss: 0.1492 - accuracy: 0.9491 - val_loss: 0.4276 - val_accuracy: 0.8714
+    Epoch 8/10
+    391/391 [==============================] - 317s 810ms/step - loss: 0.1426 - accuracy: 0.9517 - val_loss: 0.4029 - val_accuracy: 0.8573
+    Epoch 9/10
+    391/391 [==============================] - 327s 835ms/step - loss: 0.1308 - accuracy: 0.9555 - val_loss: 0.4263 - val_accuracy: 0.8490
+    Epoch 10/10
+    391/391 [==============================] - 356s 910ms/step - loss: 0.1140 - accuracy: 0.9639 - val_loss: 0.4416 - val_accuracy: 0.8505
 
 
 
@@ -197,9 +217,9 @@ print('Test Loss: {}'.format(test_loss))
 print('Test Accuracy: {}'.format(test_acc))
 ```
 
-    391/391 [==============================] - 248s 636ms/step - loss: 0.4681 - accuracy: 0.8060
-    Test Loss: 0.4680662155151367
-    Test Accuracy: 0.8059599995613098
+    391/391 [==============================] - 73s 186ms/step - loss: 0.4424 - accuracy: 0.8499
+    Test Loss: 0.44243761897087097
+    Test Accuracy: 0.8498799800872803
 
 
 
@@ -243,7 +263,7 @@ predictions = sample_predict(sample_pred_text, pad=False)
 print(predictions)
 ```
 
-    [[0.20865834]]
+    [[-0.25093532]]
 
 
 
@@ -261,7 +281,7 @@ predictions = sample_predict(sample_pred_text, pad=True)
 print(predictions)
 ```
 
-    [[0.32264385]]
+    [[-0.1853367]]
 
 
 
@@ -270,7 +290,9 @@ plot_graphs(history, 'accuracy')
 ```
 
 
+    
 ![svg](rnn01_nb_files/rnn01_nb_30_0.svg)
+    
 
 
 
@@ -279,7 +301,9 @@ plot_graphs(history, 'loss')
 ```
 
 
+    
 ![svg](rnn01_nb_files/rnn01_nb_31_0.svg)
+    
 
 
 
@@ -316,76 +340,25 @@ history = model.fit(train_dataset, epochs=10,
 ```
 
     Epoch 1/10
-        113/Unknown - 591s 5s/step - loss: 0.6932 - accuracy: 0.5022
-
-
-    ---------------------------------------------------------------------------
-
-    KeyboardInterrupt                         Traceback (most recent call last)
-
-    <ipython-input-25-ceb5f272ecaf> in <module>
-          1 history = model.fit(train_dataset, epochs=10,
-          2                     validation_data=test_dataset,
-    ----> 3                     validation_steps=30)
-    
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/keras/engine/training.py in fit(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, validation_batch_size, validation_freq, max_queue_size, workers, use_multiprocessing)
-       1098                 _r=1):
-       1099               callbacks.on_train_batch_begin(step)
-    -> 1100               tmp_logs = self.train_function(iterator)
-       1101               if data_handler.should_sync:
-       1102                 context.async_wait()
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/def_function.py in __call__(self, *args, **kwds)
-        826     tracing_count = self.experimental_get_tracing_count()
-        827     with trace.Trace(self._name) as tm:
-    --> 828       result = self._call(*args, **kwds)
-        829       compiler = "xla" if self._experimental_compile else "nonXla"
-        830       new_tracing_count = self.experimental_get_tracing_count()
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/def_function.py in _call(self, *args, **kwds)
-        853       # In this case we have created variables on the first call, so we run the
-        854       # defunned version which is guaranteed to never create variables.
-    --> 855       return self._stateless_fn(*args, **kwds)  # pylint: disable=not-callable
-        856     elif self._stateful_fn is not None:
-        857       # Release the lock early so that multiple threads can perform the call
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/function.py in __call__(self, *args, **kwargs)
-       2941        filtered_flat_args) = self._maybe_define_function(args, kwargs)
-       2942     return graph_function._call_flat(
-    -> 2943         filtered_flat_args, captured_inputs=graph_function.captured_inputs)  # pylint: disable=protected-access
-       2944 
-       2945   @property
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/function.py in _call_flat(self, args, captured_inputs, cancellation_manager)
-       1917       # No tape is watching; skip to running the function.
-       1918       return self._build_call_outputs(self._inference_function.call(
-    -> 1919           ctx, args, cancellation_manager=cancellation_manager))
-       1920     forward_backward = self._select_forward_and_backward_functions(
-       1921         args,
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/function.py in call(self, ctx, args, cancellation_manager)
-        558               inputs=args,
-        559               attrs=attrs,
-    --> 560               ctx=ctx)
-        561         else:
-        562           outputs = execute.execute_with_cancellation(
-
-
-    ~/anaconda3/lib/python3.7/site-packages/tensorflow/python/eager/execute.py in quick_execute(op_name, num_outputs, inputs, attrs, ctx, name)
-         58     ctx.ensure_initialized()
-         59     tensors = pywrap_tfe.TFE_Py_Execute(ctx._handle, device_name, op_name,
-    ---> 60                                         inputs, attrs, num_outputs)
-         61   except core._NotOkStatusException as e:
-         62     if name is not None:
-
-
-    KeyboardInterrupt: 
+    391/391 [==============================] - 650s 2s/step - loss: 0.6452 - accuracy: 0.5642 - val_loss: 0.4430 - val_accuracy: 0.8010
+    Epoch 2/10
+    391/391 [==============================] - 645s 2s/step - loss: 0.3507 - accuracy: 0.8590 - val_loss: 0.3421 - val_accuracy: 0.8641
+    Epoch 3/10
+    391/391 [==============================] - 650s 2s/step - loss: 0.2537 - accuracy: 0.9091 - val_loss: 0.3423 - val_accuracy: 0.8667
+    Epoch 4/10
+    391/391 [==============================] - 623s 2s/step - loss: 0.2121 - accuracy: 0.9259 - val_loss: 0.3464 - val_accuracy: 0.8724
+    Epoch 5/10
+    391/391 [==============================] - 599s 2s/step - loss: 0.1717 - accuracy: 0.9447 - val_loss: 0.3799 - val_accuracy: 0.8667
+    Epoch 6/10
+    391/391 [==============================] - 635s 2s/step - loss: 0.1467 - accuracy: 0.9562 - val_loss: 0.4317 - val_accuracy: 0.8417
+    Epoch 7/10
+    391/391 [==============================] - 624s 2s/step - loss: 0.1295 - accuracy: 0.9630 - val_loss: 0.4347 - val_accuracy: 0.8542
+    Epoch 8/10
+    391/391 [==============================] - 628s 2s/step - loss: 0.1155 - accuracy: 0.9689 - val_loss: 0.4670 - val_accuracy: 0.8578
+    Epoch 9/10
+    391/391 [==============================] - 633s 2s/step - loss: 0.1005 - accuracy: 0.9735 - val_loss: 0.5005 - val_accuracy: 0.8625
+    Epoch 10/10
+    391/391 [==============================] - 618s 2s/step - loss: 0.1007 - accuracy: 0.9738 - val_loss: 0.5269 - val_accuracy: 0.8422
 
 
 
@@ -395,6 +368,11 @@ test_loss, test_acc = model.evaluate(test_dataset)
 print('Test Loss: {}'.format(test_loss))
 print('Test Accuracy: {}'.format(test_acc))
 ```
+
+    391/391 [==============================] - 145s 371ms/step - loss: 0.5422 - accuracy: 0.8408
+    Test Loss: 0.5422017574310303
+    Test Accuracy: 0.8408399820327759
+
 
 
 ```python
@@ -411,6 +389,9 @@ predictions = sample_predict(sample_pred_text, pad=False)
 print(predictions)
 ```
 
+    [[-2.7144954]]
+
+
 
 ```python
 # パディングありのサンプルテキストの推論
@@ -421,15 +402,30 @@ predictions = sample_predict(sample_pred_text, pad=True)
 print(predictions)
 ```
 
+    [[-4.1235375]]
+
+
 
 ```python
 plot_graphs(history, 'accuracy')
 ```
 
 
+    
+![svg](rnn01_nb_files/rnn01_nb_41_0.svg)
+    
+
+
+
 ```python
 plot_graphs(history, 'loss')
 ```
+
+
+    
+![svg](rnn01_nb_files/rnn01_nb_42_0.svg)
+    
+
 
 
 ```python
