@@ -3,7 +3,7 @@
 
 # ## tensorflow tutorials RNN を使ったテキスト分類
 # 
-# tensorflowが2.0になってチュートリアルも新しくなりました。勉強がてら、すべてのチュートリアルを自分の環境で行ってみたいと思います。コードはほぼチュートリアルのコピーです。その中で気づいた部分や、注意すべき部分がこの記事の付加価値です。
+# tensorflowが2.0になってチュートリアルも新しくなりました。勉強がてら、すべてのチュートリアルを自分の環境で行ってみたいと思います。コードはチュートリアルのコピーです。その中で気づいた部分や、注意すべき部分がこの記事の付加価値です。
 # 
 # - https://www.tensorflow.org/tutorials/text/text_classification_rnn?hl=ja
 
@@ -40,9 +40,9 @@ tfds.disable_progress_bar()
 
 print('tf version     : ', tf.__version__)
 print('keras version  : ', keras.__version__)
-print('numpy version  : ',np.__version__)
-print('pandas version : ',pd.__version__)
-print('matlib version : ',matplotlib.__version__)
+print('numpy version  : ', np.__version__)
+print('pandas version : ', pd.__version__)
+print('matlib version : ', matplotlib.__version__)
 
 
 # ## ヘルパー関数の作成
@@ -176,12 +176,6 @@ print('Test Loss: {}'.format(test_loss))
 print('Test Accuracy: {}'.format(test_acc))
 
 
-# In[ ]:
-
-
-
-
-
 # In[17]:
 
 
@@ -205,12 +199,6 @@ def sample_predict(sample_pred_text, pad):
   return (predictions)
 
 
-# In[ ]:
-
-
-
-
-
 # In[19]:
 
 
@@ -220,12 +208,6 @@ sample_pred_text = ('The movie was cool. The animation and the graphics '
                     'were out of this world. I would recommend this movie.')
 predictions = sample_predict(sample_pred_text, pad=False)
 print(predictions)
-
-
-# In[ ]:
-
-
-
 
 
 # In[20]:
@@ -249,12 +231,6 @@ plot_graphs(history, 'accuracy')
 
 
 plot_graphs(history, 'loss')
-
-
-# In[ ]:
-
-
-
 
 
 # ## 2つ以上の LSTM レイヤー
@@ -283,7 +259,9 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
 # In[25]:
 
 
-history = model.fit(train_dataset, epochs=10,
+epochs = 10 # default
+
+history = model.fit(train_dataset, epochs=epochs,
                     validation_data=test_dataset,
                     validation_steps=30)
 
@@ -295,12 +273,6 @@ test_loss, test_acc = model.evaluate(test_dataset)
 
 print('Test Loss: {}'.format(test_loss))
 print('Test Accuracy: {}'.format(test_acc))
-
-
-# In[ ]:
-
-
-
 
 
 # In[27]:
@@ -337,32 +309,4 @@ plot_graphs(history, 'accuracy')
 plot_graphs(history, 'loss')
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
+# 過学習が起きていますので、何らかの正規化やDropOut層の追加が必要でしょうか。

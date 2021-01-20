@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## tensorflow tutorials RNN を使ったテキスト分類
+# ## tensorflow tutorials RNN を使ったテキスト生成
 # 
 # tensorflowが2.0になってチュートリアルも新しくなりました。勉強がてら、すべてのチュートリアルを自分の環境で行ってみたいと思います。コードはほぼチュートリアルのコピーです。その中で気づいた部分や、注意すべき部分がこの記事の付加価値です。
 # 
-# - https://www.tensorflow.org/tutorials/text/text_classification_rnn?hl=ja
+# - https://www.tensorflow.org/tutorials/text/text_generation?hl=ja
 
 # In[1]:
 

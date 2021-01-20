@@ -1,6 +1,7 @@
+
 ## tensorflow tutorials RNN を使ったテキスト分類
 
-tensorflowが2.0になってチュートリアルも新しくなりました。勉強がてら、すべてのチュートリアルを自分の環境で行ってみたいと思います。コードはほぼチュートリアルのコピーです。その中で気づいた部分や、注意すべき部分がこの記事の付加価値です。
+tensorflowが2.0になってチュートリアルも新しくなりました。勉強がてら、すべてのチュートリアルを自分の環境で行ってみたいと思います。コードはチュートリアルのコピーです。その中で気づいた部分や、注意すべき部分がこの記事の付加価値です。
 
 - https://www.tensorflow.org/tutorials/text/text_classification_rnn?hl=ja
 
@@ -42,9 +43,9 @@ tfds.disable_progress_bar()
 
 print('tf version     : ', tf.__version__)
 print('keras version  : ', keras.__version__)
-print('numpy version  : ',np.__version__)
-print('pandas version : ',pd.__version__)
-print('matlib version : ',matplotlib.__version__)
+print('numpy version  : ', np.__version__)
+print('pandas version : ', pd.__version__)
+print('matlib version : ', matplotlib.__version__)
 ```
 
     tf version     :  2.3.1
@@ -224,11 +225,6 @@ print('Test Accuracy: {}'.format(test_acc))
 
 
 ```python
-
-```
-
-
-```python
 def pad_to_size(vec, size):
   zeros = [0] * (size - len(vec))
   vec.extend(zeros)
@@ -250,11 +246,6 @@ def sample_predict(sample_pred_text, pad):
 
 
 ```python
-
-```
-
-
-```python
 # パディングなしのサンプルテキストの推論
 
 sample_pred_text = ('The movie was cool. The animation and the graphics '
@@ -265,11 +256,6 @@ print(predictions)
 
     [[-0.25093532]]
 
-
-
-```python
-
-```
 
 
 ```python
@@ -290,9 +276,7 @@ plot_graphs(history, 'accuracy')
 ```
 
 
-    
-![svg](rnn01_nb_files/rnn01_nb_30_0.svg)
-    
+![svg](rnn01_nb_files/rnn01_nb_27_0.svg)
 
 
 
@@ -301,15 +285,8 @@ plot_graphs(history, 'loss')
 ```
 
 
-    
-![svg](rnn01_nb_files/rnn01_nb_31_0.svg)
-    
+![svg](rnn01_nb_files/rnn01_nb_28_0.svg)
 
-
-
-```python
-
-```
 
 ## 2つ以上の LSTM レイヤー
 
@@ -334,7 +311,9 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
 
 
 ```python
-history = model.fit(train_dataset, epochs=10,
+epochs = 10 # default
+
+history = model.fit(train_dataset, epochs=epochs,
                     validation_data=test_dataset,
                     validation_steps=30)
 ```
@@ -376,11 +355,6 @@ print('Test Accuracy: {}'.format(test_acc))
 
 
 ```python
-
-```
-
-
-```python
 # パディングなしのサンプルテキストの推論
 
 sample_pred_text = ('The movie was not good. The animation and the graphics '
@@ -411,9 +385,7 @@ plot_graphs(history, 'accuracy')
 ```
 
 
-    
-![svg](rnn01_nb_files/rnn01_nb_41_0.svg)
-    
+![svg](rnn01_nb_files/rnn01_nb_36_0.svg)
 
 
 
@@ -422,32 +394,7 @@ plot_graphs(history, 'loss')
 ```
 
 
-    
-![svg](rnn01_nb_files/rnn01_nb_42_0.svg)
-    
+![svg](rnn01_nb_files/rnn01_nb_37_0.svg)
 
 
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
+過学習が起きていますので、何らかの正規化やDropOut層の追加が必要でしょうか。
