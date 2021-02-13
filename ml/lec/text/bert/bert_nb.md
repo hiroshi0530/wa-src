@@ -1,3 +1,4 @@
+
 ## BERTの基礎
 
 今ではGoogleの検索アルゴリズムにも利用されているBertについて、手を動かして触ってみます。
@@ -18,7 +19,7 @@
 
     ProductName:	Mac OS X
     ProductVersion:	10.14.6
-    BuildVersion:	18G6032
+    BuildVersion:	18G6020
 
 
 
@@ -26,7 +27,7 @@
 !python -V
 ```
 
-    Python 3.8.5
+    Python 3.7.3
 
 
 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
@@ -54,12 +55,12 @@ print('keras version : ', keras.__version__)
 print('torch version : ', torch.__version__)
 ```
 
-    matplotlib version : 3.3.2
-    scipy version : 1.5.2
-    numpy version : 1.18.5
-    tensorflow version :  2.3.1
+    matplotlib version : 3.0.3
+    scipy version : 1.4.1
+    numpy version : 1.19.4
+    tensorflow version :  2.4.0
     keras version :  2.4.0
-    torch version :  1.7.0
+    torch version :  1.7.1
 
 
 ## 必要なライブラリのインストール
@@ -80,8 +81,8 @@ bert_model = BertModel.from_pretrained('bert-base-uncased')
 print(bert_model)
 ```
 
-    100%|███████████████████████████████████████████████████████████████████████████████████| 433/433 [00:00<00:00, 135897.46B/s]
-    100%|██████████████████████████████████████████████████████████████████████| 440473133/440473133 [01:07<00:00, 6547839.17B/s]
+    100%|█████████████████████████████████████████████████████████████████████████████████████████████| 433/433 [00:00<00:00, 154092.45B/s]
+    100%|████████████████████████████████████████████████████████████████████████████████| 440473133/440473133 [04:17<00:00, 1711144.45B/s]
 
 
     BertModel(
@@ -426,14 +427,14 @@ print(sc_model.state_dict().keys())
 ```
 
 
-    HBox(children=(HTML(value='Downloading'), FloatProgress(value=0.0, max=433.0), HTML(value='')))
+    HBox(children=(IntProgress(value=0, description='Downloading', max=433, style=ProgressStyle(description_width=…
 
 
     
 
 
 
-    HBox(children=(HTML(value='Downloading'), FloatProgress(value=0.0, max=440473133.0), HTML(value='')))
+    HBox(children=(IntProgress(value=0, description='Downloading', max=440473133, style=ProgressStyle(description_…
 
 
     
@@ -479,7 +480,7 @@ attention_mask = tokenized["attention_mask"]
 ```
 
 
-    HBox(children=(HTML(value='Downloading'), FloatProgress(value=0.0, max=231508.0), HTML(value='')))
+    HBox(children=(IntProgress(value=0, description='Downloading', max=231508, style=ProgressStyle(description_wid…
 
 
     
@@ -517,9 +518,7 @@ plt.show()
 ```
 
 
-    
 ![svg](bert_nb_files/bert_nb_15_0.svg)
-    
 
 
 追加の訓練により、重みが調整されていく様子が確認できます。
@@ -538,109 +537,26 @@ plt.show()
 
 
 ```python
-for i in range(100):
-  print(i)
-
+2 + 3
 ```
 
-    0
-    1
-    2
-    3
-    4
-    5
-    6
-    7
-    8
-    9
-    10
-    11
-    12
-    13
-    14
-    15
-    16
-    17
-    18
-    19
-    20
-    21
-    22
-    23
-    24
-    25
-    26
-    27
-    28
-    29
-    30
-    31
-    32
-    33
-    34
-    35
-    36
-    37
-    38
-    39
-    40
-    41
-    42
-    43
-    44
-    45
-    46
-    47
-    48
-    49
-    50
-    51
-    52
-    53
-    54
-    55
-    56
-    57
-    58
-    59
-    60
-    61
-    62
-    63
-    64
-    65
-    66
-    67
-    68
-    69
-    70
-    71
-    72
-    73
-    74
-    75
-    76
-    77
-    78
-    79
-    80
-    81
-    82
-    83
-    84
-    85
-    86
-    87
-    88
-    89
-    90
-    91
-    92
-    93
-    94
-    95
-    96
-    97
-    98
-    99
 
+
+
+    5
+
+
+
+## 要約
+### Self-atetntion
+- inputとmemoryが同じAttention
+
+
+### Multi-Head Attention
+- Attention を並行に並べる
+- それぞれのAtetntionはHeadっと呼ばれる
+
+
+```python
+
+```
