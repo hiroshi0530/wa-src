@@ -1,0 +1,133 @@
+
+## pytorch の基礎
+
+最近NLP関連でpytorchからBERTを触ることが増えたので、pytorchでMNISTをやってみようと思います。
+
+### github
+- jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/article/library/torch/base/base_nb.ipynb)
+
+### google colaboratory
+- google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/article/library/torch/base/base_nb.ipynb)
+
+### 筆者の環境
+筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
+
+
+```python
+!sw_vers
+```
+
+    ProductName:	Mac OS X
+    ProductVersion:	10.14.6
+    BuildVersion:	18G6020
+
+
+
+```python
+!python -V
+```
+
+    Python 3.7.3
+
+
+基本的なライブラリをインポートしそのバージョンを確認しておきます。
+
+
+```python
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg'
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scipy
+import numpy as np
+import torch
+
+print('matplotlib version :', matplotlib.__version__)
+print('scipy version :', scipy.__version__)
+print('numpy version :', np.__version__)
+print('torch version :', torch.__version__)
+```
+
+    matplotlib version : 3.0.3
+    scipy version : 1.4.1
+    numpy version : 1.19.4
+    torch version : 1.7.1
+
+
+## sympyの3つの数値型
+
+sympyは
+
+- Real
+- Rational
+- Integer
+
+の三つの型を持つようです。
+
+
+
+```python
+from torchvision.datasets import MNIST
+
+from torchvision import transforms
+from torch.utils.data import DataLoader
+
+mnist_train = MNIST("./data", train=True, download=True, transform=transforms.ToTensor())
+mnist_test = MNIST("./data", train=False, download=True, transform=transforms.ToTensor())
+
+print("訓練データの数:", len(mnist_train), "テストデータの数:", len(mnist_test))
+
+img_size = 28
+batch_size = 256
+train_loader = DataLoader(mnist_train, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(mnist_test, batch_size=batch_size, shuffle=False)
+```
+
+    訓練データの数: 60000 テストデータの数: 10000
+
+
+
+```python
+mnist_train
+```
+
+
+
+
+    Dataset MNIST
+        Number of datapoints: 60000
+        Root location: ./data
+        Split: Train
+        StandardTransform
+    Transform: ToTensor()
+
+
+
+
+```python
+type(mnist_train)
+```
+
+
+
+
+    torchvision.datasets.mnist.MNIST
+
+
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+## 参考ページ
+
+こちらのページを参考にしました。
+
+- http://www.turbare.net/transl/scipy-lecture-notes/packages/sympy.html

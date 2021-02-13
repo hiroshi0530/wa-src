@@ -14,13 +14,13 @@
 # ### 筆者の環境
 # 筆者のOSはmacOSです。LinuxやUnixのコマンドとはオプションが異なります。
 
-# In[1]:
+# In[2]:
 
 
 get_ipython().system('sw_vers')
 
 
-# In[2]:
+# In[3]:
 
 
 get_ipython().system('python -V')
@@ -28,7 +28,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリとkerasをインポートしそのバージョンを確認しておきます。
 
-# In[7]:
+# In[5]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -62,7 +62,7 @@ print('torch version : ', torch.__version__)
 # 
 # BertModelの事前学習済みのモデルの詳細を確認します。
 
-# In[5]:
+# In[7]:
 
 
 from pytorch_transformers import BertModel
@@ -73,7 +73,7 @@ print(bert_model)
 
 # ## 設定の確認
 
-# In[6]:
+# In[10]:
 
 
 from pytorch_transformers import BertConfig
@@ -82,7 +82,7 @@ config = BertConfig.from_pretrained("bert-base-uncased")
 print(config) 
 
 
-# In[8]:
+# In[11]:
 
 
 from transformers import BertForSequenceClassification
@@ -96,7 +96,7 @@ print(sc_model.state_dict().keys())
 # `AdamW`は、オリジナルのAdamの重みの減衰に関する式を変更したものです。  
 # https://arxiv.org/abs/1711.05101
 
-# In[9]:
+# In[12]:
 
 
 from transformers import AdamW
@@ -108,7 +108,7 @@ optimizer = AdamW(sc_model.parameters(), lr=1e-5)
 # `BertTokenizer`により文章を単語に分割し、idに変換します。  
 # `BertForSequenceClassification`のモデルの訓練時には入力の他にAttention maskを渡す必要があるのですが、`BertTokenizer`によりこちらも得ることができます。
 
-# In[10]:
+# In[13]:
 
 
 from transformers import BertTokenizer
@@ -125,7 +125,7 @@ attention_mask = tokenized["attention_mask"]
 # ## ファインチューニング
 # 事前に学習済みのモデルに対して、追加で訓練を行います。
 
-# In[11]:
+# In[14]:
 
 
 import torch
@@ -152,15 +152,29 @@ plt.show()
 
 # 追加の訓練により、重みが調整されていく様子が確認できます。
 
-# In[12]:
+# In[15]:
 
 
 1 + 1
 
 
-# In[13]:
+# In[16]:
 
 
-for i in range(100):
-  print(i)
+2 + 3
+
+
+# ## 要約
+# ### Self-atetntion
+# - inputとmemoryが同じAttention
+# 
+# 
+# ### Multi-Head Attention
+# - Attention を並行に並べる
+# - それぞれのAtetntionはHeadっと呼ばれる
+
+# In[ ]:
+
+
+
 
