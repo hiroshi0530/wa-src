@@ -88,10 +88,13 @@ mnist_train
 type(mnist_train)
 
 
-# In[ ]:
+# In[23]:
 
 
+next(iter(mnist_train))
 
+for i in mnist_train:
+  print(len(i))
 
 
 # In[ ]:
