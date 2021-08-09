@@ -1,25 +1,36 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## qiskit
+# ## PageRankとGoogle行列
 # 
+# 最近PageRankとGoogle行列について調べる必要があったので、メモ代わりにまとめてみる。
+# 
+# 教科書は以下の通りで、数式の表現などもこれに合わせています。
+# 
+# - [Google PageRankの数理 ―最強検索エンジンのランキング手法を求めて](https://www.amazon.co.jp/Google-PageRank%E3%81%AE%E6%95%B0%E7%90%86-%E2%80%95%E6%9C%80%E5%BC%B7%E6%A4%9C%E7%B4%A2%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%81%AE%E3%83%A9%E3%83%B3%E3%82%AD%E3%83%B3%E3%82%B0%E6%89%8B%E6%B3%95%E3%82%92%E6%B1%82%E3%82%81%E3%81%A6%E2%80%95-Amy-N-Langville/dp/4320122399)
+# 
+# 実はこれを購入したのは、2013年(8年前)で、それまでずっと本棚に眠っていました。今回良いチャンスを頂いたので、要点をまとめてみます。
+# 
+# また、以下のPDFも参考にさせていただきました。
+# 
+# - http://www.kentmiyajima.com/document/pagerank.pdf
 # qiskitを利用して、量子アルゴリズムについて自分なりに勉強していこうと思います。
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/rec/pagerank/base_nb.ipynb)
 # 
 # ### google colaboratory
-# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/rec/pagerank/base_nb.ipynb)
 # 
 # ### 筆者の環境
 
-# In[5]:
+# In[108]:
 
 
 get_ipython().system('sw_vers')
 
 
-# In[6]:
+# In[109]:
 
 
 get_ipython().system('python -V')
@@ -27,7 +38,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[105]:
+# In[110]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -49,20 +60,6 @@ print('numpy version :', np.__version__)
 print('pandas version :', pd.__version__)
 print('nx version :', nx.__version__)
 
-
-# ## PageRankとGoogle行列
-# 
-# 最近PageRankとGoogle行列について調べる必要があったので、メモ代わりにまとめてみる。
-# 
-# 教科書は以下の通りで、数式の表現などもこれに合わせています。
-# 
-# - [Google PageRankの数理 ―最強検索エンジンのランキング手法を求めて](https://www.amazon.co.jp/Google-PageRank%E3%81%AE%E6%95%B0%E7%90%86-%E2%80%95%E6%9C%80%E5%BC%B7%E6%A4%9C%E7%B4%A2%E3%82%A8%E3%83%B3%E3%82%B8%E3%83%B3%E3%81%AE%E3%83%A9%E3%83%B3%E3%82%AD%E3%83%B3%E3%82%B0%E6%89%8B%E6%B3%95%E3%82%92%E6%B1%82%E3%82%81%E3%81%A6%E2%80%95-Amy-N-Langville/dp/4320122399)
-# 
-# 実はこれを購入したのは、2013年(8年前)で、それまでずっと本棚に眠っていました。今回良いチャンスを頂いたので、要点をまとめてみます。
-# 
-# また、以下のPDFも参考にさせていただきました。
-# 
-# - http://www.kentmiyajima.com/document/pagerank.pdf
 
 # ## PageRank
 # 
@@ -110,12 +107,16 @@ print('nx version :', nx.__version__)
 # になります。$T$は転置行列を表します。$\pi$は各成分の状態になっている確率を表します。つまり、上記の計算を無限回繰り返し、もし、$\pi$がある一つのベクトルに収束すると、和が1になるように正規化されたベクトルが、pagerankに相当します。そして、$H$がGoogle行列と呼ばれる以下の様な確率的で既約行列
 # 
 # $$
-# \boldsymbol{G}=\alpha \mathbf{S}+(1-\alpha) \mathbf{E}
+# \mathbf{G}=\alpha \mathbf{S}+(1-\alpha) \mathbf{E}
 # $$
 # 
 # で表現できる場合、あるベクトルに収束することはペロン−フロベニウスの定理により証明されています。
 
-# In[106]:
+# ## 実際の計算
+# 
+# 理論だけではなく、実際にPageRankを計算してみます。まず、リンク、被リンクの関係は有向グラフで表現されるので、以下の様な簡単なネットワーク構造を考えます。
+
+# In[107]:
 
 
 G = nx.DiGraph()
@@ -127,8 +128,10 @@ svg = SVG(nx.nx_agraph.to_agraph(G).draw(prog='fdp', format='svg'))
 display(svg)
 
 
-# 
+# 何となく、ノード3が多くのサイトにリンクされており、ノード4がそのノード3にリンクされているため、この二つのランクが高くなりそうな感じがします。ノード2はどのサイトともリンク関係にないため、ランダムジャンプの重み$\alpha$の影響を強く受けそうです。
 
+# ## 隣接行列、確率行列、Google行列
+# 
 # 隣接行列$P_{ij}$は以下の通りになります。ノード$i$からノード$j$にエッジがあれば1をなければ0の成分を持つ行列になります。
 
 # $$
