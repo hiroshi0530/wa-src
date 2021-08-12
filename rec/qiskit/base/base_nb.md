@@ -671,3 +671,82 @@ $$
 ```python
 
 ```
+
+
+```python
+
+```
+
+
+```python
+import numpy as np
+import sympy as sp
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+
+```python
+plt.style.use('ggplot')
+```
+
+
+```python
+sp.init_printing()
+```
+
+
+```python
+_x = sp.Symbol('x')
+```
+
+
+```python
+_x
+```
+
+
+
+
+$\displaystyle x$
+
+
+
+
+```python
+y = _x ** 2 + 3 * _x + 1
+```
+
+
+```python
+y
+```
+
+
+
+
+$\displaystyle x^{2} + 3 x + 1$
+
+
+
+
+```python
+sp.diff(y, _x)
+```
+
+
+
+
+$\displaystyle 2 x + 3$
+
+
+
+
+```python
+
+```
+
+
+```python
+
+```
