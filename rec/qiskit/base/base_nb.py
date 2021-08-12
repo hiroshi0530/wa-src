@@ -538,3 +538,72 @@ plot_bloch_multivector(final_state)
 
 
 
+
+# In[ ]:
+
+
+
+
+
+# In[10]:
+
+
+import numpy as np
+import sympy as sp
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+# In[11]:
+
+
+plt.style.use('ggplot')
+
+
+# In[4]:
+
+
+sp.init_printing()
+
+
+# In[12]:
+
+
+_x = sp.Symbol('x')
+
+
+# In[13]:
+
+
+_x
+
+
+# In[14]:
+
+
+y = _x ** 2 + 3 * _x + 1
+
+
+# In[15]:
+
+
+y
+
+
+# In[16]:
+
+
+sp.diff(y, _x)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
