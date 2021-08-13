@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## qiskit
+# ## qiskitの使い方と単一の量子ビット
 # 
 # qiskitを利用して、量子アルゴリズムについて自分なりに勉強していこうと思います。
+# 個人的な勉強の記録なので、説明などを大幅に省いている可能性があります。
+# 
+# qiskitのウェブサイト通りに勉強を進めています。
+# 
+# - https://qiskit.org/textbook/ja/preface.html 
 # 
 # ### github
-# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
+# - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/rec/qiskit/base/base_nb.ipynb)
 # 
 # ### google colaboratory
-# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/ml/data100/05/05_nb.ipynb)
+# - google colaboratory で実行する場合は[こちら](https://colab.research.google.com/github/hiroshi0530/wa-src/blob/master/rec/qiskit/base/base_nb.ipynb)
 # 
 # ### 筆者の環境
 
@@ -27,7 +32,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[30]:
+# In[21]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -45,28 +50,349 @@ print('numpy version :', np.__version__)
 print('pandas version :', pd.__version__)
 
 
-# In[31]:
+# In[135]:
 
 
 import qiskit
-qiskit.__qiskit_version__
+import json
+
+dict(qiskit.__qiskit_version__)
 
 
-# In[32]:
+# ## Qiskitの文法の基礎
+# 
+# 基礎から手を動かして実行し、操作を覚えていきます。
+# 
+# - https://qiskit.org/textbook/ja/ch-appendix/qiskit.html
+
+# In[173]:
 
 
-from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit import Aer, execute
+qc = QuantumCircuit()
+qr = QuantumRegister(2, 'qreg')
+
+
+# In[174]:
+
+
+qc.add_register(qr)
+qc.qregs
+
+
+# In[175]:
+
+
+qc.draw(output='mpl')
+
+
+# In[176]:
+
+
+# 一つ目の量子ビットにアダマールゲートを適用
+qc.h(qr[0])
+
+# qr0とqr1にCNOTゲートを適用
+qc.cx(qr[0], qr[1]);
+
+
+# In[177]:
+
+
+qc.draw(output='mpl')
+
+
+# In[178]:
+
+
+# バックエンドシミュレータの準備
+vector_sim = Aer.get_backend('statevector_simulator')
+
+
+# In[179]:
+
+
+# バックエンドの準備
+Aer.backends()
+
+
+# In[180]:
+
+
+# シミュレータの実行
+job = execute(qc, vector_sim)
+
+
+# In[182]:
+
+
+job.result().get_statevector()
+
+
+# ベル状態を取得できました。
+# $$
+# \frac{|00\rangle+|11\rangle}{\sqrt{2}}
+# $$
+
+# ## 測定
+# 
+# 測定するには、量子ビットの他に、古典レジスタが必要になります。
+
+# In[183]:
+
+
+cr = ClassicalRegister(2,'creg')
+qc.add_register(cr)
+
+
+# In[184]:
+
+
+qc.measure(qr[0], cr[0])
+qc.measure(qr[1], cr[1])
+
+qc.draw(output='mpl')
+
+
+# 確率振幅に基づいた統計値を得るために、測定回数を指定する。
+
+# In[185]:
+
+
+emulator = Aer.get_backend('qasm_simulator')
+job = execute(qc, emulator, shots=8192)
+
+
+# In[186]:
+
+
+hist = job.result().get_counts()
+print(hist)
+
+
+# In[187]:
+
+
+# ヒストグラムの表示
 from qiskit.visualization import plot_histogram
 
-
-# In[ ]:
-
+plot_histogram(hist)
 
 
+# In[188]:
 
 
-# ## 単一の量子ビット
+# 結果のリストの取得
+job = execute(qc, emulator, shots=10, memory=True)
+samples = job.result().get_memory()
+print(samples)
+
+
+# ### ビットの表記
+# 
+# ビットには右から左にラベルがついている。
+
+# In[189]:
+
+
+qubit = QuantumRegister(8)
+bit = ClassicalRegister(8)
+circuit = QuantumCircuit(qubit,bit)
+
+circuit.x(qubit[7])
+circuit.measure(qubit,bit) # this is a way to do all the qc.measure(qr8[j],cr8[j]) at once
+
+execute(circuit, emulator, shots=8192).result().get_counts()
+
+
+# 以下の様なバイナリ表現を表している。
+# 
+# $$
+# b_{n-1} b_{n-2} \ldots b_{1} b_{0}=\sum_{j} b_{j} 2^{j}
+# $$
+
+# ### 簡略表記
+
+# In[190]:
+
+
+# 古典レジスタを持たない単一量子レジスタのみの回路
+
+qc = QuantumCircuit(3)
+
+
+# In[191]:
+
+
+# 数字を指定することで操作可能
+
+qc.h(1)
+qc.draw(output='mpl')
+
+
+# In[192]:
+
+
+# 古典レジスタも同時に定義するには、二つ引数を設定する
+
+qc = QuantumCircuit(2,1)
+
+qc.h(0)
+qc.cx(0,1)
+qc.measure(1,0)
+
+qc.draw(output='mpl')
+
+
+# ## 1量子ビット
+
+# In[193]:
+
+
+from qiskit import QuantumCircuit, execute, Aer
+from qiskit.visualization import plot_histogram, plot_bloch_vector
+from math import sqrt, pi
+
+backend = Aer.get_backend('statevector_simulator')
+
+
+# In[212]:
+
+
+qc = QuantumCircuit(1)
+qc.draw('mpl')
+
+
+# In[221]:
+
+
+result = execute(qc, backend).result()
+
+
+# In[222]:
+
+
+out_state = result.get_statevector()
+
+
+# In[223]:
+
+
+plot_bloch_multivector(out_state)
+
+
+# In[224]:
+
+
+## 状態ベクトルの表示
+out_state
+
+
+# In[225]:
+
+
+counts = result.get_counts()
+plot_histogram(counts)
+
+
+# ### 初期状態の設定
+# 
+# initial_state で初期状態を設定可能
+# 
+# $$
+# |q\rangle=|1\rangle
+# $$
+
+# In[249]:
+
+
+qc = QuantumCircuit(1)
+initial_state = [0,1]
+qc.initialize(initial_state, 0)
+qc.draw('mpl')
+
+
+# In[250]:
+
+
+result = execute(qc,backend).result()
+
+
+# In[251]:
+
+
+out_state = result.get_statevector()
+
+
+# In[252]:
+
+
+plot_bloch_multivector(out_state)
+
+
+# In[253]:
+
+
+out_state
+
+
+# In[254]:
+
+
+counts = result.get_counts()
+plot_histogram(counts)
+
+
+# ### 初期状態の設定 2
+# 
+# initial_state で初期状態を設定可能
+# 
+# $$
+# \left|q\right\rangle=\frac{1}{\sqrt{2}}|0\rangle+\frac{i}{\sqrt{2}}|1\rangle
+# $$
+
+# In[243]:
+
+
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+qc.draw('mpl')
+
+
+# In[244]:
+
+
+result = execute(qc,backend).result()
+
+
+# In[245]:
+
+
+out_state = result.get_statevector()
+
+
+# In[246]:
+
+
+plot_bloch_multivector(out_state)
+
+
+# In[247]:
+
+
+out_state
+
+
+# In[248]:
+
+
+counts = result.get_counts()
+plot_histogram(counts)
+
+
+# とりあえず、量子回路の表示、ブロッホ球を用いた表示、状態ベクトルの表示、測定など一通り出来ました。
+
+# ## 単一の量子ビットの操作
 # 
 # 単一の量子ビットは以下の様に表現できます。$\theta$、$\phi$は実数です。
 # 
@@ -75,12 +401,14 @@ from qiskit.visualization import plot_histogram
 # $$
 # 
 # 
+# ### 古典コンピュータのゲート
 # 
+# 代表的な論理回路です。NOT回路以外は、二入力一出力の回路になります。
+# これらに相当する回路を量子回路でも実装する事になります。
 # 
-# ## 古典コンピュータのゲート
-# 通常のロジック半導体は、
+# ![svg](base_nb_files_local/logic_circuit.svg)
 # 
-# ![png](base_nb_files_local/logic_circuit.png)
+# #### AND回路
 # 
 # $$
 # \begin{array}{|c|c||c|}
@@ -93,6 +421,8 @@ from qiskit.visualization import plot_histogram
 # \end{array}
 # $$
 # 
+# #### OR回路
+# 
 # $$
 # \begin{array}{|c|c||c|}
 # \hline A & B & Z \\
@@ -103,6 +433,9 @@ from qiskit.visualization import plot_histogram
 # \hline
 # \end{array}
 # $$
+# 
+# 
+# #### NOT回路
 # 
 # $$
 # \begin{array}{|c||c|}
@@ -113,6 +446,9 @@ from qiskit.visualization import plot_histogram
 # \end{array}
 # $$
 # 
+# 
+# #### NAND回路
+# 
 # $$
 # \begin{array}{|c|c||c|}
 # \hline A & B & Z \\
@@ -123,6 +459,9 @@ from qiskit.visualization import plot_histogram
 # \hline
 # \end{array}
 # $$
+# 
+# 
+# #### NOR回路
 # 
 # $$
 # \begin{array}{|c|c||c|}
@@ -135,6 +474,8 @@ from qiskit.visualization import plot_histogram
 # \end{array}
 # $$
 # 
+# #### XOR回路
+# 
 # $$
 # \begin{array}{|c|c||c|}
 # \hline A & B & Z \\
@@ -145,8 +486,13 @@ from qiskit.visualization import plot_histogram
 # \hline
 # \end{array}
 # $$
+
+# ## パウリゲート
 # 
-# ## パウリ行列
+# パウリゲートは古典ゲートのNOT回路に相当する物で、ただ、NOTとは言ってもX、Y、Z各軸に対してのNOTが存在します。
+# NOTとは言っても、各軸に対して$\pi$だけ回転させたビットになります。
+# 
+# ### Xゲート
 # 
 # $$
 # X=\left(\begin{array}{ll}
@@ -154,7 +500,8 @@ from qiskit.visualization import plot_histogram
 # 1 & 0
 # \end{array}\right)=|0\rangle\langle 1|+| 1\rangle\langle 0|
 # $$
-
+# 
+# 
 # $$
 # X|0\rangle=\left(\begin{array}{ll}
 # 0 & 1 \\
@@ -180,430 +527,245 @@ from qiskit.visualization import plot_histogram
 # 0
 # \end{array}\right)=|0\rangle
 # $$
+
+# ### Yゲート
 # 
-
-# In[ ]:
-
-
-
-
-
 # $$
-# |00\rangle=|0\rangle|0\rangle=|0\rangle \otimes|0\rangle=\left(\begin{array}{l}
-# 1 \times\left(\begin{array}{l}
+# Y=\left(\begin{array}{cc}
+# 0 & -i \\
+# i & 0
+# \end{array}\right)=i|0\rangle\langle 1|-i| 1\rangle\langle 0|
+# $$
+# 
+# 
+# $$
+# Y|1\rangle=\left(\begin{array}{ll}
+# 0 & -i \\
+# i & 0
+# \end{array}\right)\left(\begin{array}{l}
 # 1 \\
 # 0
-# \end{array}\right) \\
-# 0 \times\left(\begin{array}{l}
+# \end{array}\right)=i\left(\begin{array}{l}
+# 0 \\
+# 1
+# \end{array}\right)=i|0\rangle
+# $$
+# 
+# $$
+# Y|0\rangle=\left(\begin{array}{ll}
+# 0 & -i \\
+# i & 0
+# \end{array}\right)\left(\begin{array}{l}
+# 0 \\
+# 1
+# \end{array}\right)=-i\left(\begin{array}{l}
 # 1 \\
 # 0
-# \end{array}\right)
+# \end{array}\right)=-i|1\rangle
+# $$
+
+# ### Zゲート
+# 
+# $$
+# Z=\left(\begin{array}{cc}
+# 1 & 0 \\
+# 0 & -1
+# \end{array}\right)=|0\rangle\langle 0|-| 1\rangle\langle 1|
+# $$
+# 
+# $$
+# Z|1\rangle=\left(\begin{array}{ll}
+# 1 & 0 \\
+# 0 & -1
+# \end{array}\right)\left(\begin{array}{l}
+# 1 \\
+# 0
 # \end{array}\right)=\left(\begin{array}{l}
 # 1 \\
-# 0 \\
-# 0 \\
 # 0
+# \end{array}\right)=|1\rangle
+# $$
+# 
+# $$
+# Z|0\rangle=\left(\begin{array}{ll}
+# 1 & 0 \\
+# 0 & -1
+# \end{array}\right)\left(\begin{array}{l}
+# 0 \\
+# 1
+# \end{array}\right)=\left(\begin{array}{l}
+# 0 \\
+# -1
+# \end{array}\right)=|0\rangle
+# $$
+
+# ## アダマールゲート
+# 
+# xz平面において、$z=x$の直線を中心として$\pi$だけ回転させるゲートになります。
+# 
+# $$
+# H=\frac{1}{\sqrt{2}}\left(\begin{array}{cc}
+# 1 & 1 \\
+# 1 & -1
 # \end{array}\right)
 # $$
-
-# In[ ]:
-
-
-
-
-
-# In[49]:
-
-
-# |0> 量子ビットに対してゲート作用させてみましょう。
-qc = QuantumCircuit(1)
-qc.x(0)
-qc.draw('mpl')
-
-
-# In[50]:
-
-
-# 結果を見てみましょう
-backend = Aer.get_backend('statevector_simulator')
-out = execute(qc,backend).result().get_statevector()
-plot_bloch_multivector(out)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-cr = ClassicalRegister(2)
-
-
-# In[ ]:
-
-
-
-
-
-# In[47]:
-
-
-# 量子ビット、古典ビットの準備
-qr = QuantumRegister(2)
-cr = ClassicalRegister(2)
-
-# 量子回路初期化
-qc = QuantumCircuit(qr,cr)
-
-# オラクル(|11>を反転)
-qc.h(qr)
-qc.cz(qr[0],qr[1])
-qc.h(qr)
-
-# 振幅増幅
-qc.x(qr)
-qc.cz(qr[0],qr[1])
-qc.x(qr)
-qc.h(qr)
-
-# 測定
-qc.measure(qr,cr)
-
-
-# In[48]:
-
-
-qc.draw(output='mpl')
-
-
-# $ |q\rangle = \cos{\tfrac{\theta}{2}}|0\rangle + e^{i\phi}\sin{\tfrac{\theta}{2}}|1\rangle $
-
-# $$
-# |+++\rangle=\frac{1}{\sqrt{8}}\left[\begin{array}{l}
-# 1 \\
-# 1 \\
-# 1 \\
-# 1 \\
-# 1 \\
-# 1 \\
-# 1 \\
-# 1
-# \end{array}\right]
-# $$
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# $$
-# |b a\rangle=|b\rangle \otimes|a\rangle=\left[\begin{array}{l}
-# b_{0} \times\left[\begin{array}{l}
-# a_{0} \\
-# a_{1}
-# \end{array}\right] \\
-# b_{1} \times\left[\begin{array}{l}
-# a_{0} \\
-# a_{1}
-# \end{array}\right]
-# \end{array}\right]=\left[\begin{array}{l}
-# b_{0} a_{0} \\
-# b_{0} a_{1} \\
-# b_{1} a_{0} \\
-# b_{1} a_{1}
-# \end{array}\right]
-# $$
-
-# In[ ]:
-
-
-
-
-
-# In[35]:
-
-
-from qiskit import QuantumCircuit, execute, Aer
-from qiskit.visualization import plot_histogram
-
-
-# In[36]:
-
-
-from qiskit_textbook.widgets import binary_widget
-binary_widget(nbits=5)
-
-
-# In[37]:
-
-
-n = 8
-n_q = n
-n_b = n
-qc_output = QuantumCircuit(n_q,n_b)
-
-
-# In[38]:
-
-
-for j in range(n):
-    qc_output.measure(j,j)
-
-
-# In[39]:
-
-
-qc_output.draw()
-
-
-# In[40]:
-
-
-counts = execute(qc_output,Aer.get_backend('qasm_simulator')).result().get_counts()
-plot_histogram(counts)
-
-
-# In[41]:
-
-
-from qiskit_textbook.widgets import bloch_calc
-bloch_calc()
-
-
-# In[ ]:
-
-
-
-
-
-# In[42]:
+# 
+# 
+# ブロッホベクトルで結果を見てみます。
+
+# In[277]:
 
 
 qc = QuantumCircuit(1)
-qc.x(0)
-qc.draw('mpl')
-
-
-# In[43]:
-
-
-from qiskit import *
-from math import pi
-from qiskit.visualization import plot_bloch_multivector
-
-# 結果を見てみましょう
-backend = Aer.get_backend('statevector_simulator')
-out = execute(qc,backend).result().get_statevector()
-plot_bloch_multivector(out)
-
-
-# In[ ]:
-
-
-
-
-
-# $|ba\rangle = |b\rangle \otimes |a\rangle = \begin{bmatrix} b_0 \times \begin{bmatrix} a_0 \\ a_1 \end{bmatrix} \\ b_1 \times \begin{bmatrix} a_0 \\ a_1 \end{bmatrix} \end{bmatrix} = \begin{bmatrix} b_0 a_0 \\ b_0 a_1 \\ b_1 a_0 \\ b_1 a_1 \end{bmatrix}$
-
-# In[ ]:
-
-
-
-
-
-# In[26]:
-
-
-# このセルのコードを実行してウィジェットを表示します。
-from qiskit_textbook.widgets import gate_demo
-gate_demo(gates='pauli+h')
-
-
-# In[27]:
-
-
-from qiskit.extensions import Initialize # Inititialize機能をインポートします。
-# X測定関数を作成します。
-def x_measurement(qc,qubit,cbit):
-    """Measure 'qubit' in the X-basis, and store the result in 'cbit'"""
-    qc.h(qubit)
-    qc.measure(qubit, cbit)
-    qc.h(qubit)
-    return qc
-
-# 量子ビットを初期化して測定します。
-qc = QuantumCircuit(1,1)
-initial_state = [0,1]
-initialize_qubit = Initialize(initial_state)
-qc.append(initialize_qubit, [0])
-x_measurement(qc, 0, 0)
-qc.draw()
-
-
-# In[ ]:
-
-
-
-
-
-# $$
-# \|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}
-# $$
-
-# $ X\otimes H = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} \otimes \tfrac{1}{\sqrt{2}}\begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} = \frac{1}{\sqrt{2}}
-# \begin{bmatrix} 0 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-#               & 1 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-#                 \\ 
-#                 1 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-#               & 0 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-# \end{bmatrix} = \frac{1}{\sqrt{2}}
-# \begin{bmatrix} 0 & 0 & 1 & 1 \\
-#                 0 & 0 & 1 & -1 \\
-#                 1 & 1 & 0 & 0 \\
-#                 1 & -1 & 0 & 0 \\
-# \end{bmatrix} $
-
-# In[45]:
-
-
-from qiskit_textbook.tools import array_to_latex
-
-
-# In[46]:
-
-
-qc = QuantumCircuit(2)
 qc.h(0)
-qc.h(1)
-qc.cx(0,1)
-display(qc.draw())
-
-# Let's see the result
-statevector_backend = Aer.get_backend('statevector_simulator')
-final_state = execute(qc,statevector_backend).result().get_statevector()
-array_to_latex(final_state, pretext="\\text{Statevector} = ", precision=1)
-plot_bloch_multivector(final_state)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
-# In[ ]:
-
-
-
-
-
-# $$ \int f(x) dx$$
-
-# $$
-# \lambda=\frac{(2 \pi) \times 1.97 \times 10^{3} \mathrm{eV} \cdot \angstrom}{\sqrt{2 \times 0.511 \times 10^{6} \mathrm{eV} \times V \cdot \mathrm{eV}}}=\frac{12.3}{\sqrt{V}} \AA
-# $$
-
+# 
+# $|0\rangle$,$|1\rangle$ にアダマールゲートを適用したものをそれぞれ、$|+\rangle$、$|-\rangle$と書きます。
+# これらはそれぞれY基底と言われる正規直交基底になります。
+# 
 # $$
 # \begin{aligned}
-# \frac{1}{\sqrt{2^{n}}} \sum_{k=0}^{2^{n}-1} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)|k\rangle &=\frac{1}{\sqrt{2^{n}}} \sum_{k_{0}=0,1} \sum_{k_{1}=0,1} \cdots \sum_{k_{n-1}=0,1} \exp \left(i \frac{2 \pi j}{2^{n}} \sum_{l=0}^{n-1} k_{l} 2^{l}\right)\left|k_{n-1} \cdots k_{0}\right\rangle \\
-# &=\frac{1}{\sqrt{2^{n}}} \sum_{k_{0}=0,1} \sum_{k_{1}=0,1} \cdots \sum_{k_{n-1}=0,1} \prod_{l=0}^{n-1} \exp \left(i 2 \pi j k_{l} 2^{l-n}\right)\left|k_{l}\right\rangle \\
-# &=\frac{1}{\sqrt{2^{n}}} \prod_{l=0}^{n-1}\left(\sum_{k_{l}=0,1} \exp \left(i 2 \pi j k_{l} 2^{l-n}\right)\left|k_{l}\right\rangle\right) \\
-# &=\frac{1}{\sqrt{2^{n}}} \prod_{l=0}^{n-1}\left(|0\rangle+\exp \left(i 2 \pi j 2^{l-n}\right)|1\rangle\right) \\
-# &=\frac{1}{\sqrt{2^{n}}} \prod_{l=0}^{n-1}\left(|0\rangle+\exp \left(i 2 \pi 0 . j_{n-1-l} \cdots j_{0}\right)|1\rangle\right) \\
-# &=\frac{1}{\sqrt{2^{n}}}\left(|0\rangle+e^{i 2 \pi 0 . j_{0}}|1\rangle\right)\left(|0\rangle+e^{i 2 \pi 0 . j_{1} j_{0}}|1\rangle\right) \cdots\left(|0\rangle+e^{i 2 \pi 0 . j_{n-1} j_{n-2} \cdots j_{0}}|1\rangle\right)
+# &H|0\rangle=|+\rangle \\
+# &H|1\rangle=|-\rangle
 # \end{aligned}
 # $$
 
+# ## R_{\phi}ゲート
+# 
+# $R_{\phi}$ゲートは、Z軸を中心に$\phi$だけ回転させるゲートです。
+# 行列で表すと以下の様になります。
+# 
 # $$
-# |x\rangle=\sum_{i_{1} \ldots i_{k}=0}^{1} x_{i_{1}, \ldots, i_{n}}\left|i_{1}, \ldots, i,\right\rangle \in \underbrace{\mathbf{C}^{2} \otimes \cdots \otimes \mathbf{C}^{2}}_{, 1}
+# R_{\phi}=\left(\begin{array}{cc}
+# 1 & 0 \\
+# 0 & e^{i \phi}
+# \end{array}\right)
 # $$
 
 # $$
-# \frac{\partial^{2} u}{\partial t^{2}}=c^{2}\left(\frac{\partial^{2} u}{\partial \xi^{2}}-2 \frac{\partial^{2} u}{\partial \xi \partial \eta}+\frac{\partial^{2} u}{\partial \eta^{2}}\right)
+# \cos \frac{\theta}{2}|0\rangle+e^{i \varphi} \sin \frac{\theta}{2}|1\rangle \\
+# $$
+# の量子ビットに対して、上記の$R_{\phi}$を適用させます。
+# 
+# $$
+# \begin{aligned}
+# & R_{\phi} \left(\cos \frac{\theta}{2}|0\rangle+e^{i \varphi} \sin \frac{\theta}{2}|1\rangle\right) \\
+# =&\left.\left(\begin{array}{ll}
+# 1 & 0 \\
+# 0 & e^{i\phi}
+# \end{array}\right)\left(\cos \frac{\theta}{2} \left(\begin{array}{l}
+# 1 \\
+# 0
+# \end{array}\right)\right)+e^{i \varphi} \sin \frac{\theta}{2}\left(\begin{array}{l}
+# 0 \\
+# 1
+# \end{array}\right)\right) \\
+# =& \cos \frac{\theta}{2}\left(\begin{array}{l}
+# 1 \\
+# 0
+# \end{array}\right)+e^{i(\varphi+\phi)} \sin \frac{\theta}{2}\left(\begin{array}{l}
+# 0 \\
+# 1
+# \end{array}\right)
+# \end{aligned}
+# $$
+# 
+# となり、確かにZ軸に対して、$\phi$だけ回転していることが分かります。
+
+# ## 実際に見てみる
+# 
+# 以下の初期状態から、各ゲート演算子を作用させ、ブロッホベクトルがどのように変化するか見てみます。
+# 
+# $$
+# \left|q_0\right\rangle=\frac{1}{\sqrt{2}}|0\rangle+\frac{i}{\sqrt{2}}|1\rangle
 # $$
 
-# In[ ]:
+# ### 初期状態
+
+# In[284]:
 
 
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
+# ### Xゲート
 
-# In[ ]:
-
-
-
+# In[279]:
 
 
-# In[10]:
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+qc.x(0)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
-import numpy as np
-import sympy as sp
-import pandas as pd
-import matplotlib.pyplot as plt
+# ### Yゲート
+
+# In[280]:
 
 
-# In[11]:
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+qc.y(0)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
-plt.style.use('ggplot')
+# Y軸に対しては何も変化がありません。固有ベクトルとなっています。
+# 
+# ### Zゲート
+
+# In[282]:
 
 
-# In[4]:
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+qc.z(0)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
-sp.init_printing()
+# ### Hゲート
+
+# In[283]:
 
 
-# In[12]:
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+qc.h(0)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
-_x = sp.Symbol('x')
+# ### R_{\phi}ゲート
+
+# In[285]:
 
 
-# In[13]:
+qc = QuantumCircuit(1)
+initial_state = [1/sqrt(2), complex(0, 1/sqrt(2))]
+qc.initialize(initial_state, 0)
+qc.rz(pi/4, 0)
+out = execute(qc,backend).result().get_statevector()
+plot_bloch_multivector(out)
 
 
-_x
-
-
-# In[14]:
-
-
-y = _x ** 2 + 3 * _x + 1
-
-
-# In[15]:
-
-
-y
-
-
-# In[16]:
-
-
-sp.diff(y, _x)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
+# ちゃんとZ軸に$\displaystyle \frac{\pi}{4}$だけ回転されていることが分かります。
+# 
+# ## まとめ
+# 
+# とりあえず、基本的な使い方と1量子ビットの操作をqiskitを利用して理解してみました。
+# いやーとても便利です。視覚的にもわかりやすいし。
+# さらに勉強を進めて理解を深めようと思います。

@@ -2,12 +2,12 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Created with matplotlib (https://matplotlib.org/) -->
-<svg height="78.0314pt" version="1.1" viewBox="0 0 115.212136 78.0314" width="115.212136pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg height="78.0314pt" version="1.1" viewBox="0 0 92.486636 78.0314" width="92.486636pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
  <metadata>
   <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2021-06-23T23:53:28.773933</dc:date>
+    <dc:date>2021-08-13T14:21:15.141376</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -23,52 +23,20 @@
  <g id="figure_1">
   <g id="patch_1">
    <path d="M 0 78.0314 
-L 115.212136 78.0314 
-L 115.212136 0 
+L 92.486636 78.0314 
+L 92.486636 0 
 L 0 0 
 z
 " style="fill:#ffffff;"/>
   </g>
   <g id="axes_1">
    <g id="line2d_1">
-    <path clip-path="url(#p3207ee1d4f)" d="M 53.470936 43.5608 
-L 103.467036 43.5608 
+    <path clip-path="url(#p2316dc0fab)" d="M 53.470936 43.5608 
+L 80.741536 43.5608 
 " style="fill:none;stroke:#000000;stroke-linecap:square;stroke-width:2;"/>
    </g>
-   <g id="patch_2">
-    <path clip-path="url(#p3207ee1d4f)" d="M 63.242901 58.332375 
-L 92.786051 58.332375 
-L 92.786051 28.789225 
-L 63.242901 28.789225 
-z
-" style="fill:#05bab6;stroke:#05bab6;stroke-linejoin:miter;stroke-width:1.5;"/>
-   </g>
    <g id="text_1">
-    <g clip-path="url(#p3207ee1d4f)">
-     <!-- X -->
-     <g transform="translate(73.561976 47.147987)scale(0.13 -0.13)">
-      <defs>
-       <path d="M 6.296875 72.90625 
-L 16.890625 72.90625 
-L 35.015625 45.796875 
-L 53.21875 72.90625 
-L 63.8125 72.90625 
-L 40.375 37.890625 
-L 65.375 0 
-L 54.78125 0 
-L 34.28125 31 
-L 13.625 0 
-L 2.984375 0 
-L 29 38.921875 
-z
-" id="DejaVuSans-88"/>
-      </defs>
-      <use xlink:href="#DejaVuSans-88"/>
-     </g>
-    </g>
-   </g>
-   <g id="text_2">
-    <g clip-path="url(#p3207ee1d4f)">
+    <g clip-path="url(#p2316dc0fab)">
      <!-- q -->
      <g transform="translate(34.064525 48.044784)scale(0.1625 -0.1625)">
       <defs>
@@ -105,8 +73,8 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p3207ee1d4f">
-   <rect height="63.6314" width="100.812136" x="7.2" y="7.2"/>
+  <clipPath id="p2316dc0fab">
+   <rect height="63.6314" width="78.086636" x="7.2" y="7.2"/>
   </clipPath>
  </defs>
 </svg>
