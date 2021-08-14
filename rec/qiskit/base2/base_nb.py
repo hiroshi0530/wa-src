@@ -326,7 +326,7 @@ plot_histogram(results)
 from qiskit.visualization import plot_bloch_multivector, plot_histogram, array_to_latex
 
 
-# In[71]:
+# In[89]:
 
 
 qc = QuantumCircuit(2)
@@ -336,16 +336,15 @@ qc.cx(0,1)
 qc.h(0)
 qc.h(1)
 display(qc.draw('mpl')) 
-# `display` is an IPython tool, remove if it causes an error
 
 qc.save_unitary()
 usim = Aer.get_backend('aer_simulator')
 qobj = assemble(qc)
 unitary = usim.run(qobj).result().get_unitary()
-array_to_latex(unitary, prefix="\\text{Circuit = }\n")
+array_to_latex(unitary, prefix="\\text{Circuit = }")
 
 
-# In[72]:
+# In[91]:
 
 
 qc = QuantumCircuit(2)
@@ -355,20 +354,27 @@ qc.save_unitary()
 
 qobj = assemble(qc)
 unitary = usim.run(qobj).result().get_unitary()
-array_to_latex(unitary, prefix="\\text{Circuit = }\n")
+array_to_latex(unitary, prefix="\\text{Circuit = }")
 
 
-# In[ ]:
+# 上では制御ビットが逆になっているにも関わるず等価なユニタリ行列になっています。これは位相キックバックの例となっています。
+# 
+# 
+# 興味深い例が、制御ビットが重ね合わせの場合になります。CNOTゲートを$|-+\rangle$に適用すると、不思議なことに、制御ビットの方が影響を受けます。
+# 
+# $$
+# \begin{aligned}
+# \mathrm{CNOT}|-+\rangle &=\frac{1}{\sqrt{2}}(\mathrm{CNOT}|-0\rangle+\mathrm{CNOT}|-1\rangle) \\
+# &=\frac{1}{\sqrt{2}}(|-0\rangle+X|-1\rangle) \\
+# &=\frac{1}{\sqrt{2}}(|-0\rangle-|-1\rangle) \\
+# &=|-\rangle \otimes \frac{1}{\sqrt{2}}(|0\rangle-|1\rangle) \\
+# &=|--\rangle
+# \end{aligned}
+# $$
+# 
+# 制御ビットである$|+\rangle$が$|-\rangle$に変化しています。
 
-
-
-
-
-# In[ ]:
-
-
-
-
+# 次に、Tゲートを重ね合わせの状態のコントロールビットに適用してみます。
 
 # In[74]:
 
@@ -383,47 +389,68 @@ unitary = usim.run(qobj).result().get_unitary()
 array_to_latex(unitary, prefix="\\text{Controlled-T} = \n")
 
 
-# In[76]:
+# コントロールTは上の図の表記だと対象になっています。
+
+# In[93]:
 
 
 qc = QuantumCircuit(2)
 qc.h(0)
 qc.x(1)
-# Add Controlled-T
-qc.cp(pi/4, 0, 1)
 display(qc.draw('mpl'))
-# See Results:
+
 qc.save_statevector()
 qobj = assemble(qc)
 final_state = svsim.run(qobj).result().get_statevector()
 plot_bloch_multivector(final_state)
 
 
-# In[ ]:
-
-
-
-
-
-# In[77]:
-
+# In[94]:
 
 
 qc = QuantumCircuit(2)
+qc.h(0)
+qc.x(1)
+
+# Add Controlled-T
 qc.cp(pi/4, 0, 1)
 display(qc.draw('mpl'))
-# See Results:
-qc.save_unitary()
+
+qc.save_statevector()
 qobj = assemble(qc)
-unitary = usim.run(qobj).result().get_unitary()
-array_to_latex(unitary, prefix="\\text{Controlled-T} = \n")
+final_state = svsim.run(qobj).result().get_statevector()
+plot_bloch_multivector(final_state)
 
 
-# In[ ]:
+# こちらも制御ビットの方がZ軸に対して$\displaystyle \frac{\pi}{4}$だけ回転していることが分かります。制御Zゲートには、制御や標的量子ビットの区別はないという事のようです。これが理由で、qiskitでは、制御Z回転ゲートを対称な形で表現されています。素晴らしい。
+
+# 位相キックバックはこちらの記事に綺麗にまとまっています。
+# 
+# - https://qiita.com/shnchr/items/ae194ba81cd07f2277f6#fn1
+# 
+# 二つの量子ビットを用意し、最初のビットにアダマールゲートを適用し、二つ目の量子ビットに制御付きユニタリゲートを作用させるという簡単なモデルから位相キックバックを解説しています。
+
+# In[87]:
 
 
+qc = QuantumCircuit(2)
+qc.h(0)
+qc.cx(0,1)
+display(qc.draw('mpl'))
 
 
+# 要約すると、ユニタリゲートとその固有ベクトルのをコントロールビットに入力すると、不思議なことに制御ビットの$|1\rangle$の位相に固有値が現れるという事になります。ターゲットビットに入力したユニタリゲートと固有ベクトルの固有値が、なぜか、コントロールビットの現れるという意味で、キックバックなんだと思います。
+# 
+# $$
+# \begin{array}{|c|c|c|l|}
+# \hline \text{Unitary} & |q_1\rangle & \text{eigenvalue of }|q_1\rangle  & \text{status} \\
+# \hline Z & |0\rangle & +1 & |+\rangle=\frac{1}{\sqrt{2}}(|0\rangle+1|1\rangle) \\
+# \hline Z & |1\rangle & -1 & |-\rangle=\frac{1}{\sqrt{2}}(|0\rangle-1|1\rangle) \\
+# \hline X & |+\rangle & +1 & |+\rangle=\frac{1}{\sqrt{2}}(|0\rangle+1|1\rangle) \\
+# \hline X & |-\rangle & -1 & |-\rangle=\frac{1}{\sqrt{2}}(|0\rangle-1|1\rangle) \\
+# \hline
+# \end{array}
+# $$
 
 # ## 行列一般について
 # 
@@ -436,9 +463,3 @@ array_to_latex(unitary, prefix="\\text{Controlled-T} = \n")
 # 当時は非常に理解するのに苦しみましたが、年も取り、当時より頭の柔軟性はなくなっているはずなのに、比較的脳みそにすっと入ってきます。もちろん、当時は素粒子論の理論物理の先生が書いた教科書で、ネット上で情報もそれほどなかった中でその教科書だけを頼りに勉強していたのが理由かもしれませんが、やはり自分でプログラムを書いたり、回路を図示して視覚的に理解できるというのはとても大きいことだと思います。
 # 
 # それにしても、これほどクオリティが高い教材を無料で利用できるとは、そちらの方が驚きかもしれません。IBM様々です。
-
-# In[ ]:
-
-
-
-
