@@ -85,336 +85,69 @@ dict(qiskit.__qiskit_version__)
 
 
 
-$ |q\rangle = \cos{\tfrac{\theta}{2}}|0\rangle + e^{i\phi}\sin{\tfrac{\theta}{2}}|1\rangle $
-
-
-```python
-
-```
-
-
-```python
-
-```
+## 2量子ビットの状態
 
 $$
-|+++\rangle=\frac{1}{\sqrt{8}}\left[\begin{array}{l}
-1 \\
-1 \\
-1 \\
-1 \\
-1 \\
-1 \\
-1 \\
-1
-\end{array}\right]
+|a\rangle=a_{00}|00\rangle+a_{01}|01\rangle+a_{10}|10\rangle+a_{11}|11\rangle=\left(\begin{array}{l}
+a_{00} \\
+a_{01} \\
+a_{10} \\
+a_{11}
+\end{array}\right)
 $$
 
+各ベクトルの成分は上からそれぞれ、$|00\range$、$|01\range$、$|10\range$、$|11\range$の振幅を表し、ちょうど二進数表記となっています。
 
-```python
-
-```
-
-
-```python
-
-```
+2量子ビットの状態はテンソル積を利用すると綺麗に表現できます。
 
 $$
-|b a\rangle=|b\rangle \otimes|a\rangle=\left[\begin{array}{l}
-b_{0} \times\left[\begin{array}{l}
+|a\rangle=\left(\begin{array}{l}
 a_{0} \\
 a_{1}
-\end{array}\right] \\
-b_{1} \times\left[\begin{array}{l}
+\end{array}\right), \quad|b\rangle=\left(\begin{array}{l}
+b_{0} \\
+b_{1}
+\end{array}\right)
+$$
+
+$$
+|b a\rangle=|b\rangle \otimes|a\rangle=\left(\begin{array}{l}
+b_{0} \times\left(\begin{array}{c}
 a_{0} \\
 a_{1}
-\end{array}\right]
-\end{array}\right]=\left[\begin{array}{l}
+\end{array}\right) \\
+b_{1} \times\left(\begin{array}{c}
+a_{0} \\
+a_{1}
+\end{array}\right)
+\end{array}\right)=\left(\begin{array}{c}
 b_{0} a_{0} \\
 b_{0} a_{1} \\
 b_{1} a_{0} \\
 b_{1} a_{1}
-\end{array}\right]
+\end{array}\right)
 $$
 
-
-```python
-
-```
-
-
-```python
-from qiskit import QuantumCircuit, execute, Aer
-from qiskit.visualization import plot_histogram
-```
-
-
-```python
-from qiskit_textbook.widgets import binary_widget
-binary_widget(nbits=5)
-```
-
-
-    VBox(children=(Label(value='Toggle the bits below to change the binary number.'), Label(value='Think of a numb…
-
-
-
-    HTML(value='<pre>Binary   Decimal\n 00000 = 0</pre>')
-
-
-
-```python
-n = 8
-n_q = n
-n_b = n
-qc_output = QuantumCircuit(n_q,n_b)
-```
-
-
-```python
-for j in range(n):
-    qc_output.measure(j,j)
-```
-
-
-```python
-qc_output.draw()
-```
-
-
-
-
-<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">     ┌─┐                     
-q_0: ┤M├─────────────────────
-     └╥┘┌─┐                  
-q_1: ─╫─┤M├──────────────────
-      ║ └╥┘┌─┐               
-q_2: ─╫──╫─┤M├───────────────
-      ║  ║ └╥┘┌─┐            
-q_3: ─╫──╫──╫─┤M├────────────
-      ║  ║  ║ └╥┘┌─┐         
-q_4: ─╫──╫──╫──╫─┤M├─────────
-      ║  ║  ║  ║ └╥┘┌─┐      
-q_5: ─╫──╫──╫──╫──╫─┤M├──────
-      ║  ║  ║  ║  ║ └╥┘┌─┐   
-q_6: ─╫──╫──╫──╫──╫──╫─┤M├───
-      ║  ║  ║  ║  ║  ║ └╥┘┌─┐
-q_7: ─╫──╫──╫──╫──╫──╫──╫─┤M├
-      ║  ║  ║  ║  ║  ║  ║ └╥┘
-c: 8/═╩══╩══╩══╩══╩══╩══╩══╩═
-      0  1  2  3  4  5  6  7 </pre>
-
-
-
-
-```python
-counts = execute(qc_output,Aer.get_backend('qasm_simulator')).result().get_counts()
-plot_histogram(counts)
-```
-
-
-
-
-    
-![svg](base_nb_files/base_nb_19_0.svg)
-    
-
-
-
-
-```python
-from qiskit_textbook.widgets import bloch_calc
-bloch_calc()
-```
-
-
-    VBox(children=(Label(value='Define a qubit state using $\\theta$ and $\\phi$:'), Text(value='', placeholder='T…
-
-
-
-    HTML(value='<pre></pre>')
-
-
-
-    Image(value=b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x01h\x00\x00\x01h\x08\x06\x00\x00\x00z\xe5a\xd5\x00\…
-
-
-
-```python
-
-```
-
-
-```python
-qc = QuantumCircuit(1)
-qc.x(0)
-qc.draw('mpl')
-```
-
-
-
-
-    
-![svg](base_nb_files/base_nb_22_0.svg)
-    
-
-
-
-
-```python
-from qiskit import *
-from math import pi
-from qiskit.visualization import plot_bloch_multivector
-
-# 結果を見てみましょう
-backend = Aer.get_backend('statevector_simulator')
-out = execute(qc,backend).result().get_statevector()
-plot_bloch_multivector(out)
-```
-
-
-
-
-    
-![svg](base_nb_files/base_nb_23_0.svg)
-    
-
-
-
-
-```python
-
-```
-
-$|ba\rangle = |b\rangle \otimes |a\rangle = \begin{bmatrix} b_0 \times \begin{bmatrix} a_0 \\ a_1 \end{bmatrix} \\ b_1 \times \begin{bmatrix} a_0 \\ a_1 \end{bmatrix} \end{bmatrix} = \begin{bmatrix} b_0 a_0 \\ b_0 a_1 \\ b_1 a_0 \\ b_1 a_1 \end{bmatrix}$
-
-
-```python
-
-```
-
-
-```python
-# このセルのコードを実行してウィジェットを表示します。
-from qiskit_textbook.widgets import gate_demo
-gate_demo(gates='pauli+h')
-```
-
-
-    HBox(children=(Button(description='X', layout=Layout(height='3em', width='3em'), style=ButtonStyle()), Button(…
-
-
-
-    Image(value=b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x01 \x00\x00\x01 \x08\x06\x00\x00\x00\x14\x83\xae\x8…
-
-
-
-```python
-from qiskit.extensions import Initialize # Inititialize機能をインポートします。
-# X測定関数を作成します。
-def x_measurement(qc,qubit,cbit):
-    """Measure 'qubit' in the X-basis, and store the result in 'cbit'"""
-    qc.h(qubit)
-    qc.measure(qubit, cbit)
-    qc.h(qubit)
-    return qc
-
-# 量子ビットを初期化して測定します。
-qc = QuantumCircuit(1,1)
-initial_state = [0,1]
-initialize_qubit = Initialize(initial_state)
-qc.append(initialize_qubit, [0])
-x_measurement(qc, 0, 0)
-qc.draw('mpl')
-```
-
-
-
-
-    
-![svg](base_nb_files/base_nb_28_0.svg)
-    
-
-
-
-
-```python
-
-```
+3量子ビットについても同様です。
 
 $$
-\|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{\frac{1}{p}}
+|c b a\rangle=\left(\begin{array}{l}
+c_{0} b_{0} a_{0} \\
+c_{0} b_{0} a_{1} \\
+c_{0} b_{1} a_{0} \\
+c_{0} b_{1} a_{1} \\
+c_{1} b_{0} a_{0} \\
+c_{1} b_{0} a_{1} \\
+c_{1} b_{1} a_{0} \\
+c_{1} b_{1} a_{1}
+\end{array}\right)
 $$
 
-$ X\otimes H = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} \otimes \tfrac{1}{\sqrt{2}}\begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} = \frac{1}{\sqrt{2}}
-\begin{bmatrix} 0 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-              & 1 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-                \\ 
-                1 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-              & 0 \times \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-\end{bmatrix} = \frac{1}{\sqrt{2}}
-\begin{bmatrix} 0 & 0 & 1 & 1 \\
-                0 & 0 & 1 & -1 \\
-                1 & 1 & 0 & 0 \\
-                1 & -1 & 0 & 0 \\
-\end{bmatrix} $
+ベクトルの要素と振幅に関する考えた方も２次元と同じです。
 
+### 回路
 
-```python
-from qiskit_textbook.tools import array_to_latex
-```
-
-
-```python
-qc = QuantumCircuit(2)
-qc.h(0)
-qc.h(1)
-qc.cx(0,1)
-display(qc.draw('mpl'))
-
-# Let's see the result
-statevector_backend = Aer.get_backend('statevector_simulator')
-final_state = execute(qc,statevector_backend).result().get_statevector()
-array_to_latex(final_state, pretext="\\text{Statevector} = ", precision=1)
-plot_bloch_multivector(final_state)
-```
-
-
-    
-![svg](base_nb_files/base_nb_33_0.svg)
-    
-
-
-
-$\displaystyle 
-\text{Statevector} = \begin{bmatrix}
-\tfrac{1}{2} \\
-\tfrac{1}{2} \\
-\tfrac{1}{2} \\
-\tfrac{1}{2}
-\end{bmatrix}
-$
-
-
-
-
-
-    
-![svg](base_nb_files/base_nb_33_2.svg)
-    
-
-
-
-
-```python
-
-```
-
-
-```python
-
-```
+3つの量子ビットを用意して、それぞれにアダマールゲートを適用してみます。
 
 
 ```python
@@ -427,10 +160,9 @@ from qiskit.visualization import plot_bloch_multivector, plot_histogram
 
 ```python
 qc = QuantumCircuit(3)
-# Apply H-gate to each qubit:
-for qubit in range(3):
-    qc.h(qubit)
-# See the circuit:
+qc.h(0)
+qc.h(1)
+qc.h(2)
 qc.draw('mpl')
 ```
 
@@ -438,20 +170,16 @@ qc.draw('mpl')
 
 
     
-![svg](base_nb_files/base_nb_37_0.svg)
+![svg](base_nb_files/base_nb_12_0.svg)
     
 
 
 
 
 ```python
-# Let's see the result
 backend = Aer.get_backend('statevector_simulator')
 final_state = execute(qc,backend).result().get_statevector()
 
-# In Jupyter Notebooks we can display this nicely using Latex.
-# If not using Jupyter Notebooks you may need to remove the 
-# array_to_latex function and use print(final_state) instead.
 from qiskit_textbook.tools import array_to_latex
 array_to_latex(final_state, pretext="\\text{Statevector} = ")
 ```
@@ -471,66 +199,15 @@ $\displaystyle
 $
 
 
+三つの$|+++\rangle$で作られた状態になります。
+
+## 複数量子ビットへの単一の量子ビットゲート
+
 
 ```python
 qc = QuantumCircuit(2)
 qc.h(0)
 qc.x(1)
-qc.draw()
-```
-
-
-
-
-<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">     ┌───┐
-q_0: ┤ H ├
-     ├───┤
-q_1: ┤ X ├
-     └───┘</pre>
-
-
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-from qiskit import QuantumCircuit, assemble, Aer
-from math import pi, sqrt
-from qiskit.visualization import plot_bloch_multivector, plot_histogram
-sim = Aer.get_backend('aer_simulator')  # Jupyterノートブックの場合
-```
-
-
-```python
-# |0> 量子ビットに対してゲート作用させてみましょう。
-qc = QuantumCircuit(1)
-qc.x(0)
-qc.draw()
-```
-
-
-
-
-<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">     ┌───┐
-q_0: ┤ X ├
-     └───┘</pre>
-
-
-
-
-```python
-qc = QuantumCircuit(3)
-qc.h(0)
-qc.x(1)
-qc.x(2)
 qc.draw('mpl')
 ```
 
@@ -538,22 +215,70 @@ qc.draw('mpl')
 
 
     
-![svg](base_nb_files/base_nb_44_0.svg)
+![svg](base_nb_files/base_nb_16_0.svg)
     
 
 
 
+$H$と$X$による同時演算はテンソル積を用いて表現できます。
+
+$$
+X\left|q_{1}\right\rangle \otimes H\left|q_{0}\right\rangle=(X \otimes H)\left|q_{1} q_{0}\right\rangle
+$$
+
+この表現はとてもわかりやすいと思いました。$|q_1\rangle$と$H$が可換になっています。一般的なテンソル積は非可換です。
+
+$$
+X \otimes H=\left(\begin{array}{ll}
+0 & 1 \\
+1 & 0
+\end{array}\right) \otimes \frac{1}{\sqrt{2}}\left(\begin{array}{cc}
+1 & 1 \\
+1 & -1
+\end{array}\right)=\frac{1}{\sqrt{2}}\left(\begin{array}{cc}
+0 \times\left(\begin{array}{cc}
+1 & 1 \\
+1 & -1
+\end{array}\right) & 1 \times\left(\begin{array}{cc}
+1 & 1 \\
+1 & -1
+\end{array}\right) \\
+1 \times\left(\begin{array}{cc}
+1 & 1 \\
+1 & -1
+\end{array}\right) & 0 \times\left(\begin{array}{cc}
+1 & 1 \\
+1 & -1
+\end{array}\right)
+\end{array}\right)=\frac{1}{\sqrt{2}}\left(\begin{array}{cccc}
+0 & 0 & 1 & 1 \\
+0 & 0 & 1 & -1 \\
+1 & 1 & 0 & 0 \\
+1 & -1 & 0 & 0
+\end{array}\right)
+$$
+
+こちらも非常にわかりやすい表現です。
+
+$$
+X \otimes H=\left(\begin{array}{cc}
+0 & H \\
+H & 0
+\end{array}\right)
+$$
+
+この辺の演算子はqiskitで簡単に取得できます。
+
 
 ```python
+# バックエンドでユニタリシミュレータを利用
+
 backend = Aer.get_backend('unitary_simulator')
 unitary = execute(qc,backend).result().get_unitary()
 ```
 
 
 ```python
-# In Jupyter Notebooks we can display this nicely using Latex.
-# If not using Jupyter Notebooks you may need to remove the 
-# array_to_latex function and use print(unitary) instead.
 from qiskit_textbook.tools import array_to_latex
 array_to_latex(unitary, pretext="\\text{Circuit = }\n")
 ```
@@ -562,48 +287,357 @@ array_to_latex(unitary, pretext="\\text{Circuit = }\n")
 $\displaystyle 
 \text{Circuit = }
 \begin{bmatrix}
-0 & 0 & 0 & 0 & 0 & 0 & \tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}}  \\
-0 & 0 & 0 & 0 & 0 & 0 & \tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}}  \\
-0 & 0 & 0 & 0 & \tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}} & 0 & 0  \\
-0 & 0 & 0 & 0 & \tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}} & 0 & 0  \\
-0 & 0 & \tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}} & 0 & 0 & 0 & 0  \\
-0 & 0 & \tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}} & 0 & 0 & 0 & 0  \\
-\tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}} & 0 & 0 & 0 & 0 & 0 & 0  \\
-\tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}} & 0 & 0 & 0 & 0 & 0 & 0  \\
+0 & 0 & \tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}}  \\
+0 & 0 & \tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}}  \\
+\tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}} & 0 & 0  \\
+\tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}} & 0 & 0  \\
+\end{bmatrix}
+$$
+$
+
+
+この結果は、
+
+$$
+X \otimes H=\left(\begin{array}{cc}
+0 & H \\
+H & 0
+\end{array}\right)
+$$
+
+になっています。
+
+## CNOTゲート
+
+
+
+
+```python
+qc = QuantumCircuit(2)
+qc.cx(0,1)
+
+qc.draw('mpl')
+```
+
+
+
+
+    
+![svg](base_nb_files/base_nb_22_0.svg)
+    
+
+
+
+
+```python
+
+backend = Aer.get_backend('unitary_simulator')
+unitary = execute(qc,backend).result().get_unitary()
+array_to_latex(unitary, pretext="\\text{Circuit = }\n")
+```
+
+
+$\displaystyle 
+\text{Circuit = }
+\begin{bmatrix}
+1 & 0 & 0 & 0  \\
+0 & 0 & 0 & 1  \\
+0 & 0 & 1 & 0  \\
+0 & 1 & 0 & 0  \\
 \end{bmatrix}
 $$
 $
 
 
 $$
-X \otimes H=\left[\begin{array}{ll}
-0 & 1 \\
-1 & 0
-\end{array}\right] \otimes \frac{1}{\sqrt{2}}\left[\begin{array}{cc}
-1 & 1 \\
-1 & -1
-\end{array}\right]=\frac{1}{\sqrt{2}}\left[\begin{array}{cc}
-0 \times\left[\begin{array}{cc}
-1 & 1 \\
-1 & -1
-\end{array}\right] & 1 \times\left[\begin{array}{cc}
-1 & 1 \\
-1 & -1
-\end{array}\right] \\
-1 \times\left[\begin{array}{cc}
-1 & 1 \\
-1 & -1
-\end{array}\right] & 0 \times\left[\begin{array}{cc}
-1 & 1 \\
-1 & -1
-\end{array}\right]
-\end{array}\right]=\frac{1}{\sqrt{2}}\left[\begin{array}{cccc}
-0 & 0 & 1 & 1 \\
-0 & 0 & 1 & -1 \\
-1 & 1 & 0 & 0 \\
-1 & -1 & 0 & 0
-\end{array}\right]
+\begin{array}{|c|c|}
+\hline \text { Input (t,c) } & \text { Output (t,c) } \\
+\hline 00 & 00 \\
+01 & 11 \\
+10 & 10 \\
+11 & 01 \\
+\hline
+\end{array}
 $$
+
+## 重ね合わせの状態のビットに対するCNOTゲート
+
+
+```python
+qc = QuantumCircuit(2)
+qc.h(0)
+qc.cx(0,1)
+qc.draw('mpl')
+```
+
+
+
+
+    
+![svg](base_nb_files/base_nb_26_0.svg)
+    
+
+
+
+
+```python
+backend = Aer.get_backend('statevector_simulator')
+final_state = execute(qc,backend).result().get_statevector()
+array_to_latex(final_state, pretext="\\text{Statevector = }")
+```
+
+
+$\displaystyle 
+\text{Statevector = }\begin{bmatrix}
+\tfrac{1}{\sqrt{2}} \\
+0 \\
+0 \\
+\tfrac{1}{\sqrt{2}}
+\end{bmatrix}
+$
+
+
+$$
+\operatorname{CNOT}|0+\rangle=\frac{1}{\sqrt{2}}(|00\rangle+|11\rangle)
+$$
+
+アダマールゲートとCNOTゲートでベル状態を作れました。これは振幅である$a_{01}$と$a_{11}$の振幅のスワップとなっています。
+
+## ベル状態
+
+$$
+\operatorname{CNOT}|0+\rangle=\frac{1}{\sqrt{2}}(|00\rangle+|11\rangle)
+$$
+
+をベル状態といい、もつれた状態になっています。
+よく知られるように、片方のビットの状態を測定すると、例えば、どれだけ距離が離れていても一瞬にしてもう片方の量子ビットの状態が決まってしまうことになります。
+
+
+```python
+results = execute(qc,backend).result().get_counts()
+plot_histogram(results)
+```
+
+
+
+
+    
+![svg](base_nb_files/base_nb_29_0.svg)
+    
+
+
+
+## 位相キックバック
+
+
+```python
+from qiskit.visualization import plot_bloch_multivector, plot_histogram, array_to_latex
+```
+
+
+```python
+qc = QuantumCircuit(2)
+qc.h(0)
+qc.h(1)
+qc.cx(0,1)
+qc.h(0)
+qc.h(1)
+display(qc.draw('mpl')) 
+# `display` is an IPython tool, remove if it causes an error
+
+qc.save_unitary()
+usim = Aer.get_backend('aer_simulator')
+qobj = assemble(qc)
+unitary = usim.run(qobj).result().get_unitary()
+array_to_latex(unitary, prefix="\\text{Circuit = }\n")
+```
+
+
+    
+![svg](base_nb_files/base_nb_32_0.svg)
+    
+
+
+
+
+
+$$
+\text{Circuit = }
+
+\begin{bmatrix}
+1 & 0 & 0 & 0  \\
+ 0 & 1 & 0 & 0  \\
+ 0 & 0 & 0 & 1  \\
+ 0 & 0 & 1 & 0  \\
+ \end{bmatrix}
+$$
+
+
+
+
+```python
+qc = QuantumCircuit(2)
+qc.cx(1,0)
+display(qc.draw('mpl'))
+qc.save_unitary()
+
+qobj = assemble(qc)
+unitary = usim.run(qobj).result().get_unitary()
+array_to_latex(unitary, prefix="\\text{Circuit = }\n")
+```
+
+
+    
+![svg](base_nb_files/base_nb_33_0.svg)
+    
+
+
+
+
+
+$$
+\text{Circuit = }
+
+\begin{bmatrix}
+1 & 0 & 0 & 0  \\
+ 0 & 1 & 0 & 0  \\
+ 0 & 0 & 0 & 1  \\
+ 0 & 0 & 1 & 0  \\
+ \end{bmatrix}
+$$
+
+
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+
+```python
+qc = QuantumCircuit(2)
+qc.cp(pi/4, 0, 1)
+display(qc.draw('mpl'))
+# See Results:
+qc.save_unitary()
+qobj = assemble(qc)
+unitary = usim.run(qobj).result().get_unitary()
+array_to_latex(unitary, prefix="\\text{Controlled-T} = \n")
+```
+
+
+    
+![svg](base_nb_files/base_nb_36_0.svg)
+    
+
+
+
+
+
+$$
+\text{Controlled-T} = 
+
+\begin{bmatrix}
+1 & 0 & 0 & 0  \\
+ 0 & 1 & 0 & 0  \\
+ 0 & 0 & 1 & 0  \\
+ 0 & 0 & 0 & \tfrac{1}{\sqrt{2}}(1 + i)  \\
+ \end{bmatrix}
+$$
+
+
+
+
+```python
+qc = QuantumCircuit(2)
+qc.h(0)
+qc.x(1)
+# Add Controlled-T
+qc.cp(pi/4, 0, 1)
+display(qc.draw('mpl'))
+# See Results:
+qc.save_statevector()
+qobj = assemble(qc)
+final_state = svsim.run(qobj).result().get_statevector()
+plot_bloch_multivector(final_state)
+```
+
+
+    
+![svg](base_nb_files/base_nb_37_0.svg)
+    
+
+
+
+
+
+    
+![svg](base_nb_files/base_nb_37_1.svg)
+    
+
+
+
+
+```python
+
+```
+
+
+```python
+
+qc = QuantumCircuit(2)
+qc.cp(pi/4, 0, 1)
+display(qc.draw('mpl'))
+# See Results:
+qc.save_unitary()
+qobj = assemble(qc)
+unitary = usim.run(qobj).result().get_unitary()
+array_to_latex(unitary, prefix="\\text{Controlled-T} = \n")
+```
+
+
+    
+![svg](base_nb_files/base_nb_39_0.svg)
+    
+
+
+
+
+
+$$
+\text{Controlled-T} = 
+
+\begin{bmatrix}
+1 & 0 & 0 & 0  \\
+ 0 & 1 & 0 & 0  \\
+ 0 & 0 & 1 & 0  \\
+ 0 & 0 & 0 & \tfrac{1}{\sqrt{2}}(1 + i)  \\
+ \end{bmatrix}
+$$
+
+
+
+
+```python
+
+```
+
+## 行列一般について
+
+ユニタリ行列やエルミート行列、ゲートセットについてで解説がなされています。
+
+- https://qiskit.org/textbook/ja/ch-gates/proving-universality.html
+
+一応理学部物理学科出身で、量子力学や統計物理、量子情報なんかはやってきた記憶がありますが、改めて勉強すると、完成された理論で非常に理解しやすいという印象です。
+
+当時は非常に理解するのに苦しみましたが、年も取り、当時より頭の柔軟性はなくなっているはずなのに、比較的脳みそにすっと入ってきます。もちろん、当時は素粒子論の理論物理の先生が書いた教科書で、ネット上で情報もそれほどなかった中でその教科書だけを頼りに勉強していたのが理由かもしれませんが、やはり自分でプログラムを書いたり、回路を図示して視覚的に理解できるというのはとても大きいことだと思います。
+
+それにしても、これほどクオリティが高い教材を無料で利用できるとは、そちらの方が驚きかもしれません。IBM様々です。
 
 
 ```python
