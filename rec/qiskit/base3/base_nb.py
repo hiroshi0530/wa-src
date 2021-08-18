@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## 2量子ビット
+# ## ドイチ-ジョサのアルゴリズム
 # 
 # qiskitを利用して、量子アルゴリズムについて自分なりに勉強していこうと思います。
 # 個人的な勉強の記録なので、説明などを大幅に省いている可能性があります。
@@ -81,52 +81,79 @@ from qiskit_textbook.tools import array_to_latex
 # 簡単に考えると、1回目の試行で0が出て、2回目の試行で1が出れば分布型であると分かりますが、2回目も0の場合、決定することが出来ずに再度試行を重ねることになります。
 # 
 # 量子コンピュータを利用して、ドイチ-ジョサアルゴリズムを適用すると、$f(x)$を一度実行させるだけでどちらの型かを決定することが出来るというものです。
+# 
+# こちらもqiskitの[サイト](https://qiskit.org/textbook/ja/ch-algorithms/deutsch-jozsa.html)に沿って手を動かしてみようと思います。
 
+# アルゴリズムの流れは以下の様なフローになります。これも上記サイトを書き写しただけです。
+# 
+# ![svg](base_nb_files_local/dj.svg)
+
+# ### 1.  量子ビットの準備
+# 
+# $|0\rangle$に初期化された量子ビットを$N$個と$|1\rangle$に初期化された量子ビットを1つ用意します。
+# 
 # $$
 # \left|\psi_{0}\right\rangle=|0\rangle^{\otimes n}|1\rangle
 # $$
 
+# ### 2. アダマールゲートを適用
+# 
+# 全量子ビットにアダマールゲートを適用します。
+# 
 # $$
 # \left|\psi_{1}\right\rangle=\frac{1}{\sqrt{2^{n+1}}} \sum_{x=0}^{2^{n}-1}|x\rangle(|0\rangle-|1\rangle)
 # $$
+# 
+# 以下の公式を利用します。
+# 
+# $$
+# \begin{aligned}
+# &|0\rangle \stackrel{H}{\longrightarrow} \frac{1}{\sqrt{2}}(|0\rangle+|1\rangle) \\
+# &|1\rangle \stackrel{H}{\longrightarrow} \frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)
+# \end{aligned}
+# $$
+# 
+# ここで言う、$|x\rangle$は、2ビット表記で以下の様な状態を表します。$x_k$は0か1です。詳細な具体例は[こちら](#ビット表記)です。
+# 
+# $$
+# |x\rangle=\left|x_{n} x_{n-1} \cdots x_{2} x_{1} x_{0}\right\rangle
+# $$
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
+# ### 3. 量子オラクルの適用
+# 
+# $|x\rangle|y\rangle=|x_{n} x_{n-1} \cdots x_{2} x_{1} x_{0}\rangle|y\rangle$を$|x\rangle|y \oplus f(x)\rangle$に変換する量子オラクルを適用すると、$f(x)$の部分を係数（グローバル位相）に外出しすることが出来ます。
+# 
 # $$
 # \begin{aligned}
 # \left|\psi_{2}\right\rangle &=\frac{1}{\sqrt{2^{n+1}}} \sum_{x=0}^{2^{n}-1}|x\rangle(|f(x)\rangle-|1 \oplus f(x)\rangle) \\
 # &=\frac{1}{\sqrt{2^{n+1}}} \sum_{x=0}^{2^{n}-1}(-1)^{f(x)}|x\rangle(|0\rangle-|1\rangle)
 # \end{aligned}
 # $$
+# 
+# 
 
+# ### 4. 最初のNビットにアダマールゲートを適用
+# 
+# ここで、最後の量子ビット$\displaystyle \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)$を無視すると、
+# 
 # $$
 # \begin{aligned}
 # \left|\psi_{3}\right\rangle &=\frac{1}{2^{n}} \sum_{x=0}^{2^{n}-1}(-1)^{f(x)}\left[\sum_{y=0}^{2^{n}-1}(-1)^{x \cdot y}|y\rangle\right] \\
 # &=\frac{1}{2^{n}} \sum_{y=0}^{2^{n}-1}\left[\sum_{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x \cdot y}\right]|y\rangle
 # \end{aligned}
 # $$
+# 
+# となります。$x \cdot y=x_{0} y_{0} \oplus x_{1} y_{1} \oplus \ldots \oplus x_{n-1} y_{n-1}$はビット単位の積の和です。
+
+# ### 5. 最初のNビットを測定
+# 
+# 最初のNビットの$\displaystyle |0\rangle^{\otimes n}$の振幅確率を計算します。
+# 
+# $$
+# \left|\frac{1}{2^{n}} \sum_{x=0}^{2^{n}-1}(-1)^{f(x)}\right|^{2}
+# $$
+# 
+# この結果が、$f(x)$が定数型の場合は1で、$f(x)$が分布型の場合は0になります。
 
 # In[ ]:
 
@@ -134,55 +161,55 @@ from qiskit_textbook.tools import array_to_latex
 
 
 
+# ## 2ビットの分布型の関数の例
+# 
+# サイトのコピーですが、少しずつ理解しながら進めます。
+# 
+# ### 1. 量子ビットの初期化
+# 
 # $$
-# H^{\otimes n}\left[\begin{array}{l}
-# 1 \\
-# 0 \\
-# 0 \\
-# \vdots \\
-# 0
-# \end{array}\right]=\frac{1}{\sqrt{2^{n}}}\left[\begin{array}{c}
-# 1 \\
-# 1 \\
-# 1 \\
-# \vdots \\
-# 1
-# \end{array}\right] \stackrel{\text { after } U_{f}}{\longrightarrow} \quad H^{\otimes n} \frac{1}{\sqrt{2^{n}}}\left[\begin{array}{c}
-# 1 \\
-# 1 \\
-# 1 \\
-# \vdots \\
-# 1
-# \end{array}\right]=\left[\begin{array}{c}
-# 1 \\
-# 0 \\
-# 0 \\
-# \vdots \\
-# 0
-# \end{array}\right]
+# \left|\psi_{0}\right\rangle=|00\rangle_{12} \otimes|1\rangle_{3}
 # $$
-
+# 
+# ### 2. 全量子ビットにアダマールゲートを適用
+# 
 # $$
-# U_{f} \frac{1}{\sqrt{2^{n}}}\left[\begin{array}{c}
-# 1 \\
-# 1 \\
-# 1 \\
-# \vdots \\
-# 1
-# \end{array}\right]=\frac{1}{\sqrt{2^{n}}}\left[\begin{array}{c}
-# -1 \\
-# 1 \\
-# -1 \\
-# \vdots \\
-# 1
-# \end{array}\right]
+# \left|\psi_{1}\right\rangle=\frac{1}{2}(|00\rangle+|01\rangle+|10\rangle+|11\rangle)_{12} \otimes \frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)_{3}
+# $$
+# 
+# ### 3. オラクル関数の実装
+# 分布型の関数の場合、オラクル関数は位相キックバックを利用し、CXゲートで実装する事が出来ます。制御ビットが0ならば何もせず、1ならば位相を反転させる操作なので、CXゲートが利用できます。
+# 
+# $$
+# \begin{aligned}
+# \left|\psi_{2}\right\rangle &=\frac{1}{2 \sqrt{2}}\left[|00\rangle_{12} \otimes(|0 \oplus 0 \oplus 0\rangle-|1 \oplus 0 \oplus 0\rangle)_{3}\right.\\
+# &+|01\rangle_{12} \otimes(|0 \oplus 0 \oplus 1\rangle-|1 \oplus 0 \oplus 1\rangle)_{3} \\
+# &+|10\rangle_{12} \otimes(|0 \oplus 1 \oplus 0\rangle-|1 \oplus 1 \oplus 0\rangle)_{3} \\
+# &\left.+|11\rangle_{12} \otimes(|0 \oplus 1 \oplus 1\rangle-|1 \oplus 1 \oplus 1\rangle)_{3}\right]
+# \end{aligned}
 # $$
 
-# In[ ]:
+# ### 4. 式の整理
+# 
+# $$
+# \begin{aligned}
+# \left|\psi_{2}\right\rangle &=\frac{1}{2 \sqrt{2}}\left[|00\rangle_{12} \otimes(|0\rangle-|1\rangle)_{3}-|01\rangle_{12} \otimes(|0\rangle-|1\rangle)_{3}-|10\rangle_{12} \otimes(|0\rangle-|1\rangle)_{3}+|11\rangle_{12} \otimes(|0\rangle-|1\rangle)_{3}\right] \\
+# &=\frac{1}{2}(|00\rangle-|01\rangle-|10\rangle+|11\rangle)_{12} \otimes \frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)_{3} \\
+# &=\frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)_{1} \otimes \frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)_{2} \otimes \frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)_{3}
+# \end{aligned}
+# $$
+# 
+# 非常にシンプルになりました。
 
-
-
-
+# ### 5. 最初の量子ビットにアダマールゲートを適用
+# 
+# $$
+# \left|\psi_{3}\right\rangle=|1\rangle_{1} \otimes|1\rangle_{2} \otimes(|0\rangle-|1\rangle)_{3}
+# $$
+# 
+# ### 6. 最初の2量子ビットを測定
+# 
+# 最初の2量子ビットを測定すると、$|11\rangle$が得られ、分布が関数という事が分かります。
 
 # ## 複数ビットへのアダマールゲートを適用した際の表記
 # 
@@ -267,7 +294,7 @@ array_to_latex(final_state, pretext="\\text{Statevector} = ")
 # $$
 # \begin{aligned}
 # \mid 00) & \stackrel{H}{\rightarrow} \frac{1}{\sqrt{2^2}} \sum_{y=0}^{3}(-1)^{x \cdot y}|y\rangle \\
-# &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{x_{0} t_{0}+x_{1}, y_{1}}|y\rangle \\
+# &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{x_{0} y_{0}+x_{1}, y_{1}}|y\rangle \\
 # &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}|y\rangle \\
 # &=\frac{1}{\sqrt{2^{2}}} \left(|00\rangle+|01\rangle+|10\rangle+|11\rangle\right)
 # \end{aligned}
@@ -299,7 +326,7 @@ array_to_latex(final_state, pretext="\\text{Statevector} = ")
 # $$
 # \begin{aligned}
 # \mid 01) & \stackrel{H}{\rightarrow} \frac{1}{\sqrt{2^2}} \sum_{y=0}^{3}(-1)^{x \cdot y}|y\rangle \\
-# &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{x_{0} t_{0}+x_{1}, y_{1}}|y\rangle \\
+# &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{x_{0} y_{0}+x_{1}, y_{1}}|y\rangle \\
 # &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{y_{0}}|y\rangle \\
 # &=\frac{1}{\sqrt{2^{2}}} \left(|00\rangle-|01\rangle+|10\rangle-|11\rangle\right)
 # \end{aligned}
@@ -330,7 +357,7 @@ array_to_latex(final_state, pretext="\\text{Statevector} = ")
 # $$
 # \begin{aligned}
 # \mid 10) & \stackrel{H}{\rightarrow} \frac{1}{\sqrt{2^2}} \sum_{y=0}^{3}(-1)^{x \cdot y}|y\rangle \\
-# &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{x_{0} t_{0}+x_{1}, y_{1}}|y\rangle \\
+# &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{x_{0} y_{0}+x_{1}, y_{1}}|y\rangle \\
 # &=\frac{1}{\sqrt{2^{2}}} \sum_{y=0}^{3}(-1)^{y_{1}}|y\rangle \\
 # &=\frac{1}{\sqrt{2^{2}}} \left(|00\rangle+|01\rangle-|10\rangle-|11\rangle\right)
 # \end{aligned}
@@ -369,163 +396,27 @@ array_to_latex(final_state, pretext="\\text{Statevector} = ")
 # 
 # となりこちらも一致しています。簡単にですが、braの中のビット表記とか少しややこしいですが、慣れるとそうでもないですね。
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
+# ## 量子オラクルの作成
+# 
+# 量子オラクルを実際に量子回路として作成する方法が解説されています。
+# 
+# 量子オラクル$f(x)$は以下の様な回路にになります。
+# 
 # $$
-# \begin{aligned}
-# &|0\rangle \stackrel{H}{\rightarrow} \frac{1}{\sqrt{2}} \sum_{y=0}^{1}(-1)^{0 \cdot y}|y\rangle=\frac{1}{\sqrt{2}}(|0\rangle+|1\rangle) \\
-# &|1\rangle \stackrel{H}{\rightarrow} \frac{1}{\sqrt{2}} \sum_{y=0}^{1}(-1)^{1 \cdot y}|y\rangle=\frac{1}{\sqrt{2}}(|0\rangle-|1\rangle)
-# \end{aligned}
+# |x\rangle|y\rangle \rightarrow |x\rangle|y \oplus f(x)\rangle
 # $$
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# こんなアルゴリズムを考える人はすごいですね。
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[3]:
-
-
-import numpy as np
-
-A = np.array([[2, 2, 2, 2], [1, -1, 1, -1], [-1, 1, -1, 1]])
-u, s, v = np.linalg.svd(A)
-
-
-# In[4]:
-
-
-u
-
-
-# In[5]:
-
-
-s
-
-
-# In[6]:
-
-
-v
-
-
-# In[7]:
-
-
-import numpy as np
-import array_to_latex as a2l
-A = np.array([[1.23456, 23.45678],[456.23, 8.239521]])
-a2l.to_ltx(A, frmt = '{:6.2f}', arraytype = 'array')
-
-
-# \begin{array}
-#     1.23 &   23.46\\
-#   456.23 &    8.24
-# \end{array}
-
-# In[8]:
-
-
-import numpy as np
-import array_to_latex as a2l
-A = np.array([[1.23456, 23.45678],[456.23, 8.239521]])
-a2l.to_clp(A, frmt = '{:6.2f}', arraytype = 'array')
-
-
-# $$
-# \left(\begin{array}
-#     1.23 &   23.46\\
-#   456.23 &    8.24
-# \end{array}\right)
-# $$
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[16]:
-
-
-import pandas as pd
-movielens = pd.read_csv(
-  'http://files.grouplens.org/datasets/movielens/ml-100k/u.data', 
-  sep='\t', header=None, index_col=None)
-
-_ITEM_FEATURES = """
-item_id | movie title | release date | 
-video release date | IMDb URL | unknown | 
-Action | Adventure | Animation | 
-Children | Comedy | Crime | 
-Documentary | Drama | Fantasy | 
-Film-Noir | Horror | Musical | 
-Mystery | Romance | Sci-Fi | 
-Thriller | War | Western"""
-
-# item_features = map(lambda f: f.replace('\n', '').replace(' ', '-').lower(), _ITEM_FEATURES.split(' | '))
-# movielens.columns = item_features
-movielens
-
-
-# In[15]:
-
-
-get_ipython().system('ls -al')
-
-
-# In[ ]:
-
-
-
-
+# 
+# よって、$f(x)$が定数型、分布型で分けた場合、簡単に表記できます。
+# 
+# ### 定数型関数の場合
+# 
+# 1. $f(x)=0$の場合、$|x\rangle|y \oplus f(x)\rangle$より、レジスタ2の量子ビットに何も操作する必要がないので、$I$ゲートを適用します。
+# 
+# 2. $f(x)=1$の場合、$X$ゲートを適用すれば良い事になります。
+# 
+# ### 分布型の場合
+# 
+# 上記で述べたように、レジスター1の各量子ビットを制御ビット、レジスター2の量子ビットをターゲットにしてCXゲートを適用すれば良い事になります。
+
+# こんなアルゴリズムを考える人はすごいです。
+# 次はサイモンのアルゴリズムを勉強しようと思います。
