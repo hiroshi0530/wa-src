@@ -97,6 +97,56 @@ from qiskit_textbook.tools import array_to_latex
 
 
 ```python
+sss
+```
+
+通常のフーリエ変換は以下の様に
+
+$$
+y_{k}=\frac{1}{\sqrt{2^{n}}} \sum_{j=0}^{2^{n}-1} x_{j} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)
+$$
+
+$$
+|\boldsymbol{x}\rangle \stackrel{\mathrm{QFT}}{\longrightarrow}|\boldsymbol{y}\rangle
+$$
+
+$$
+W_{k j}:=w^{k j}=\exp \left(i \frac{2 \pi}{2^{n}}\right)^{k j}
+$$
+
+$$
+|\boldsymbol{x}\rangle=\sum_{j=0}^{2^{n}-1} x_{j}|j\rangle 
+$$
+
+$$
+|\boldsymbol{y}\rangle=\sum_{k=0}^{2^{n}-1} y_{k}|k\rangle
+$$
+
+基底の変換。
+
+$$
+W^{\dagger} W=W W^{\dagger}=I
+$$
+
+が成立するのでユニタリ変換。
+
+$$
+\begin{aligned}
+&\frac{1}{\sqrt{2^{n}}} \sum_{k_{1}=0}^{1} \cdots \sum_{k_{n}=0}^{1} \exp \left(i \frac{2 \pi\left(k_{1} 2^{n-1}+\cdots k_{n} 2^{0}\right) \cdot j}{2^{n}}\right)\left|k_{1}\right\rangle\left|k_{2}\right\rangle \cdots\left|k_{n}\right\rangle \\
+&=\frac{1}{\sqrt{2^{n}}} \sum_{k_{1}=0}^{1} \cdots \sum_{k_{n}=0}^{1} \exp \left(i 2 \pi j\left(k_{1} 2^{-1}+\cdots k_{n} 2^{-n}\right)\right)\left|k_{1} k_{2} \cdots k_{n}\right\rangle \\
+&=\frac{1}{\sqrt{2^{n}}}\left(\sum_{k_{1}=0}^{1} e^{i 2 \pi j k_{1} 2^{-1}}\left|k_{1}\right\rangle\right) \otimes \cdots \otimes\left(\sum_{k_{n}=0}^{1} e^{i 2 \pi j k_{n} 2^{-n}}\left|k_{n}\right\rangle\right) \\
+&=\frac{1}{\sqrt{2^{n}}}\left(|0\rangle+e^{i 2 \pi 0 . j_{n}}|1\rangle\right) \otimes\left(|0\rangle+e^{i 2 \pi 0 . j_{n-1} j_{n}}|1\rangle\right) \otimes \cdots \\
+&\otimes\left(|0\rangle+e^{i 2 \pi 0 . j_{2} j_{3} \cdots j_{n}}|1\rangle\right) \otimes\left(|0\rangle+e^{i 2 \pi 0 . j_{1} j_{2} \cdots j_{n}}|1\rangle\right)
+\end{aligned}
+$$
+
+
+```python
+
+```
+
+
+```python
 
 ```
 
