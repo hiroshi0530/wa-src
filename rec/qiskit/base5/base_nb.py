@@ -10,8 +10,7 @@
 # 
 # - https://qiskit.org/textbook/ja/ch-algorithms/quantum-fourier-transform.html
 # 
-# 量子フーリエ変換になります。
-# 量子フーリエ変換になります。
+# 次は、量子フーリエ変換の復習をしてみます。学生時代に理解したつもりでしたが、全く忘れているので、１から勉強し直しです。
 # 
 # ### github
 # - jupyter notebook形式のファイルは[こちら](https://github.com/hiroshi0530/wa-src/blob/master/rec/qiskit/base5/base_nb.ipynb)
@@ -21,13 +20,13 @@
 # 
 # ### 筆者の環境
 
-# In[36]:
+# In[53]:
 
 
 get_ipython().system('sw_vers')
 
 
-# In[37]:
+# In[54]:
 
 
 get_ipython().system('python -V')
@@ -35,7 +34,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[3]:
+# In[55]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -53,7 +52,7 @@ print('numpy version :', np.__version__)
 print('pandas version :', pd.__version__)
 
 
-# In[4]:
+# In[56]:
 
 
 import qiskit
@@ -62,37 +61,52 @@ import json
 dict(qiskit.__qiskit_version__)
 
 
-# In[5]:
-
-
-from qiskit import IBMQ, Aer, execute
-from qiskit.providers.ibmq import least_busy
-from qiskit import QuantumCircuit, assemble, transpile
-
-from qiskit.visualization import plot_histogram
-from qiskit_textbook.tools import array_to_latex
-
-
-# In[ ]:
-
-
-sss
-
-
-# 通常のフーリエ変換は以下の様に
+# ## 離散フーリエ変換の復習
+# 
+# フーリエ変換は、関数$f(x)$は様々な波数を持つ三角関数の和として表現できるというフーリエの考え方から来ています。
 # 
 # $$
-# y_{k}=\frac{1}{\sqrt{2^{n}}} \sum_{j=0}^{2^{n}-1} x_{j} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)
+# f(x)=\frac{a_{0}}{2}+a_{1} \cos \frac{\pi x}{L}+b_{1} \sin \frac{\pi x}{L}+a_{2} \cos \frac{2 \pi x}{L}+b_{2} \sin \frac{2 \pi x}{L}+\cdots
 # $$
-
+# 
+# ここで、　$a_1$や$b_1$などは、それぞれの波数を持つ三角関数の振幅であり、関数＄f(x)＄を三角関数で分解したときの重みと考えられます。これらの振幅を求めるには三角関数の公式を利用して以下の様に求める事が出来ます。
+# 
 # $$
-# |\boldsymbol{x}\rangle \stackrel{\mathrm{QFT}}{\longrightarrow}|\boldsymbol{y}\rangle
+# a_{n}=\frac{1}{L} \int_{-L}^{L} f(x) \cos \frac{n \pi x}{L} d x \quad(n=0,1,2, \cdots)
 # $$
 # 
 # $$
-# W_{k j}:=w^{k j}=\exp \left(i \frac{2 \pi}{2^{n}}\right)^{k j}
+# b_{n}=\frac{1}{L} \int_{-L}^{L} f(x) \sin \frac{n \pi x}{L} d x \quad(n=1,2, \cdots)
 # $$
+# 
+# それぞれの振幅をフーリエ係数と呼ぶようです。
+# 
+# これを$L \rightarrow \infty$としてあげて、$\cos$と$\sin$をオイラー数を用いて変換してあげると、以下の公式が導かれます。
+# 
+# $$
+# \begin{aligned}
+# &{F}(k)=\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} f(x) e^{-i k x} d x \\
+# &f(x)=\frac{1}{\sqrt{2 \pi}} \int_{-\infty}^{\infty} \hat{F}(k) e^{i k x} d k
+# \end{aligned}
+# $$
+# 
+# 今関数$f(x)$は連続関数という仮定がありましたが、これを離散化してあげると、
+# 
+# $$
+# \begin{aligned}
+# y_{k}=\frac{1}{\sqrt{2^{n}}} \sum_{j=0}^{2^{n}-1} x_{j} \exp \left(i \frac{2 \pi k j}{2^{n}}\right) \\
+# x_{k}=\frac{1}{\sqrt{2^{n}}} \sum_{j=0}^{2^{n}-1} y_{j} \exp \left(-i \frac{2 \pi k j}{2^{n}}\right) 
+# \end{aligned}
+# $$
+# 
+# と変換できます。これは、ベクトル$\left(x_{0}, \ldots, x_{N-1}\right)$からベクトル$\left(y_{0}, \ldots, y_{N-1}\right)$へのマッピングに相当します。
+# 
+# フーリエ変換は実世界では欠かせない技術で、サラリーマン時代、アナログ回路設計や半導体設計をしてきましたが、これなしではデバイスを開発することは出来ません。
 
+# ## 量子フーリエ変換
+# 
+# 先ほどの議論を量子状態の変換に応用します。$|\boldsymbol{x}\rangle$、$|\boldsymbol{y}\rangle$を以下の様な重ね合わせの状態と定義します。
+# 
 # $$
 # |\boldsymbol{x}\rangle=\sum_{j=0}^{2^{n}-1} x_{j}|j\rangle 
 # $$
@@ -100,14 +114,351 @@ sss
 # $$
 # |\boldsymbol{y}\rangle=\sum_{k=0}^{2^{n}-1} y_{k}|k\rangle
 # $$
-
-# 基底の変換。
+# 
+# $|\boldsymbol{x}\rangle \rightarrow |\boldsymbol{y}\rangle$への変換を考えます。$|\boldsymbol{y}\rangle$は、以下の様に変換できます。
+# 
+# $$
+# \begin{aligned}
+# |\boldsymbol{y}\rangle&=\sum_{k=0}^{2^{n}-1} y_{k}|k\rangle \\
+# &=\frac{1}{\sqrt{2^{n}}} \sum_{k=0}^{2^{n}-1} \sum_{j=0}^{2^{n}-1} x_{j} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)|k\rangle \\
+# &=\sum_{j=0}^{2^{n}-1} x_{j}\left(\frac{1}{\sqrt{2^{n}}} \sum_{k=0}^{2^{n}-1} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)|k\rangle\right)
+# \end{aligned}
+# $$
+# 
+# つまり、
+# 
+# $$
+# |\boldsymbol{j}\rangle \rightarrow \frac{1}{\sqrt{2^{n}}} \sum_{k=0}^{2^{n}-1} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)|k\rangle
+# $$
+# 
+# という変換が量子フーリエ変換になることが分かります。一般的にこの$\exp$の部分を
+# 
+# $$
+# W=w^{k j}=\exp \left(i \frac{2 \pi kj}{2^{n}}\right)
+# $$
+# 
+# と書き、この$W$は
 # 
 # $$
 # W^{\dagger} W=W W^{\dagger}=I
 # $$
 # 
-# が成立するのでユニタリ変換。
+# を満たすので、量子フーリエ変換はユニタリ変換になります。
+
+# In[ ]:
+
+
+
+
+
+# $$
+# \begin{aligned}
+# & \frac{1}{\sqrt{2^{n}}} \sum_{k=0}^{2^{n}-1} \exp \left(i \frac{2 \pi k j}{2^{n}}\right)|k\rangle \\
+# &=\frac{1}{\sqrt{2^{n}}} \sum_{k_{1}=0}^{1} \sum_{k_{2}=0}^{1} \cdots \sum_{k_{n}=0}^{1} \exp \left(i \frac{2 \pi j\left(k_{n} k_{n-1} \cdots k_{1}\right)_{2}}{2^{n}}\right)|k_{n}k_{n-1} \cdots k_{1}\rangle \\
+# &=\frac{1}{\sqrt{2^{n}}} \sum_{k_{1}={0}}^1 \sum_{k_{2}=0}^{1} \cdots \sum_{k_{n}=0}^{1} \exp \left(i \cdot 2 \pi j\left(0. k_{n} k_{n-1} \cdots k_{1}\right)_{2}\right)|k_{n} k_{n-1} \cdots k_{1}\rangle\\
+# &=\frac{1}{\sqrt{2^{n}}}\left(\sum_{k_{n}=0}^{1} \exp \left(i^{1} \cdot 2 \pi j\left(0. k_{n}\right)_{2}|k_{n}\rangle \right)\right) \otimes\left(\sum_{k_{n}-0}^{1} \exp \left(i \cdot 2 \pi j\left(0.0 k_{n-1}\right)_{2} \mid k_{n-1}\right)\right) \otimes \cdots\\
+# & \cdots \otimes \left(\sum_{k_{1}=0}^{1} \exp (i \cdot 2 \pi j(0. \underbrace{0 \cdots 0 k_{1}}_{n})|k_{1}\rangle\right)
+# \end{aligned}
+# $$
+
+# $$
+# \begin{aligned}
+# \end{aligned}
+# $$
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# $$
+# \frac{1}{\sqrt{2^n}}\left(|0\rangle+e^{\frac{2 \pi i}{2} x}|1\rangle\right) \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{2}} x}|1\rangle\right) \otimes \ldots \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{n-1}} x}|1\rangle\right) \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{n}} x}|1\rangle\right)
+# $$
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# ## qiskitを用いた量子フーリエ変換回路の作成
+
+# In[57]:
+
+
+qc = QuantumCircuit(3)
+
+
+# In[58]:
+
+
+qc.h(2)
+qc.draw('mpl')
+
+
+# In[59]:
+
+
+qc.cp(pi/2, 1, 2) # qubit 1 から qubit 2へのCROT 
+qc.draw('mpl')
+
+
+# In[60]:
+
+
+qc.cp(pi/4, 0, 2) # qubit 0から qubit 2へのCROT 
+qc.draw('mpl')
+
+
+# In[61]:
+
+
+qc.h(1)
+qc.cp(pi/2, 0, 1) # qubit 0からqubit 1へのCROT 
+qc.h(0)
+qc.draw('mpl')
+
+
+# In[62]:
+
+
+qc.swap(0,2)
+qc.draw('mpl')
+
+
+# In[63]:
+
+
+backend = Aer.get_backend('statevector_simulator')
+final_state = execute(qc,backend).result().get_statevector()
+array_to_latex(final_state, pretext="\\\\text{Statevector} = ")
+
+
+# ## 2量子ビットの場合をqiskitで確認
+# 
+# 2ビットにおける量子フーリエ変換を手計算の結果が合っているかqiskitで確認してみます。
+
+# In[64]:
+
+
+from numpy import pi
+from qiskit import QuantumCircuit, transpile, assemble, Aer, IBMQ, execute
+from qiskit.providers.ibmq import least_busy
+from qiskit.tools.monitor import job_monitor
+from qiskit.visualization import plot_histogram, plot_bloch_multivector
+from qiskit_textbook.tools import array_to_latex
+
+
+# ### 00の場合
+# 
+# $$
+# \begin{aligned}
+# \left|00\right\rangle &=\frac{1}{\sqrt{2^{2}}} \sum_{k=0}^{3} \exp \left(i \frac{2 \pi k j}{2^{2}}\right)|k\rangle \\
+# &=\frac{1}{\sqrt{2^{2}}} \sum_{k=0}^{3} |k\rangle \\
+# &=\frac{1}{2}\left(|00\rangle+|01\rangle+|10\rangle+|11\rangle \right)
+# \end{aligned}
+# $$
+
+# In[65]:
+
+
+qc = QuantumCircuit(2)
+qc.h(1)
+qc.cp(pi/2, 0, 1)
+qc.h(0)
+qc.swap(0,1)
+qc.draw('mpl')
+
+
+# In[66]:
+
+
+backend = Aer.get_backend('statevector_simulator')
+final_state = execute(qc,backend).result().get_statevector()
+array_to_latex(final_state, pretext="\\\\text{Statevector} = ")
+
+
+# となり、一致しています。
+# 
+# ### 01の場合
+# 
+# $$
+# \begin{aligned}
+# |01\rangle &=\frac{1}{\sqrt{2^{2}}} \sum_{k=1}^{3} \exp \left(i \frac{2 \pi}{2^{2}} k\right)|k\rangle \\
+# &=\frac{1}{2}\left(|00\rangle+i|01\rangle-|10\rangle-i|11\rangle \right)
+# \end{aligned}
+# $$
+
+# In[67]:
+
+
+qc = QuantumCircuit(2)
+qc.x(0)
+qc.h(1)
+qc.cp(pi/2, 0, 1)
+qc.h(0)
+qc.swap(0,1)
+qc.draw('mpl')
+
+
+# In[68]:
+
+
+backend = Aer.get_backend('statevector_simulator')
+final_state = execute(qc,backend).result().get_statevector()
+array_to_latex(final_state, pretext="\\\\text{Statevector} = ")
+
+
+# となり、一致しています。
+# 
+# ### 10の場合
+# 
+# $$
+# \begin{aligned}
+# |10\rangle &=\frac{1}{\sqrt{2^{2}}} \sum_{k=0}^{3} \exp \left(i \frac{2 \pi \cdot 2}{2^{2}} k\right)|k\rangle \\
+# &=\frac{1}{2} \sum_{k=0}^{3} \exp (i \pi k)|k\rangle \\
+# &=\frac{1}{2}\left(|00\rangle-|01\rangle+|10\rangle-|11\rangle\right)
+# \end{aligned}
+# $$
+
+# In[69]:
+
+
+qc = QuantumCircuit(2)
+qc.x(1)
+qc.h(1)
+qc.cp(pi/2, 0, 1)
+qc.h(0)
+qc.swap(0,1)
+qc.draw('mpl')
+
+
+# In[70]:
+
+
+backend = Aer.get_backend('statevector_simulator')
+final_state = execute(qc,backend).result().get_statevector()
+array_to_latex(final_state, pretext="\\\\text{Statevector} = ")
+
+
+# となり、こちらも一致しています。
+# 
+# ### 11の場合
+# 
+# $$
+# \begin{aligned}
+# |11 \mid &=\frac{1}{\sqrt{2^{2}}} \sum_{k=0}^{3} \exp \left(i \frac{2 \pi}{2^{2}} 3 k\right)|k\rangle \\
+# &=\frac{1}{2} \sum_{k=0}^{3} \exp \left(i \frac{3}{2} \pi k\right)|k\rangle \\
+# &=\frac{1}{2}\left(|00\rangle-i|01\rangle-|10\rangle+i|11\rangle \right)
+# \end{aligned}
+# $$
+
+# In[71]:
+
+
+qc = QuantumCircuit(2)
+qc.x(0)
+qc.x(1)
+qc.h(1)
+qc.cp(pi/2, 0, 1)
+qc.h(0)
+qc.swap(0,1)
+qc.draw('mpl')
+
+
+# In[72]:
+
+
+backend = Aer.get_backend('statevector_simulator')
+final_state = execute(qc,backend).result().get_statevector()
+array_to_latex(final_state, pretext="\\\\text{Statevector} = ")
+
+
+# 以上より、手計算の結果が確認出来ました。
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[15]:
+
+
+sim = Aer.get_backend("aer_simulator")
+qc_init = qc.copy()
+qc_init.save_statevector()
+statevector = sim.run(qc_init).result().get_statevector()
+plot_bloch_multivector(statevector)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# 
+# 
+
+# 
+
+# 
 
 # $$
 # \begin{aligned}
@@ -136,51 +487,6 @@ sss
 
 
 
-
-# ## 問題設定
-# 
-# 問題としては、関数$f(x)$が、1：1の関数なのか、2：1の関数なのかを判定する事です。1：1の関数とは、$y=x$のような、単純な全単射関数を考えれば良いと思います。
-# 
-# $$
-# \begin{aligned}
-# &|00\rangle \stackrel{f}{\longrightarrow}| 00\rangle \\
-# &|01\rangle \stackrel{f}{\longrightarrow}| 01\rangle \\
-# &|10\rangle \stackrel{f}{\longrightarrow}| 10\rangle \\
-# &|11\rangle \stackrel{f}{\longrightarrow}| 11\rangle 
-# \end{aligned}
-# $$
-# 
-# 2：1の関数というのは、以下の様に、NビットからN-1ビットへの関数になります。二つの入力値が一つの出力値に相当していて、2：1なので、ビット数が1つ減少することになります。
-# 
-# $$
-# f:\lbrace 0,1 \rbrace^{n} \rightarrow \lbrace 0,1 \rbrace^{n-1}
-# $$
-# $$
-# x \in\{0,1\}^{n}
-# $$
-# 
-# 2ビットでの具体的例は以下の通りです。
-# 
-# $$
-# \begin{aligned}
-# &|00>\stackrel{f}{\longrightarrow}| 0\rangle \\
-# &|01>\stackrel{f}{\longrightarrow}| 1\rangle \\
-# &|10>\stackrel{f}{\longrightarrow}| 1\rangle \\
-# &|11>\stackrel{f}{\longrightarrow}| 0\rangle 
-# \end{aligned}
-# $$
-# 
-# ![svg](base_nb_files_local/qiskit-2_1.svg)
-# 
-# 2：1の関数なので、あるNビット配列$a (a\ne |00\cdots\rangle)$が存在して、
-# 
-# $$
-# f(x \oplus a)=f(x)
-# $$
-# 
-# が成立します。
-
-# 
 
 # In[ ]:
 
