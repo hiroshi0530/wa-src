@@ -208,14 +208,14 @@ $$
 $$
 \begin{aligned}
 &\frac{1}{\sqrt{2^{n}}}\left( |0\rangle + \exp \left(i \cdot 2 \pi \cdot 0.j_{n} \right)|1\rangle \right) \otimes \left(|0\rangle + \exp \left(i \cdot 2 \pi \cdot 0.j_{n-1}j_{n} \right)|1\rangle  \right) \otimes \cdots\\
-& \cdots \otimes \left(|0\rangle + \exp \left(i \cdot 2 \pi \cdot 0.j_1j_2\cdots j_n \right)|1\rangle  \right) \,\, \cdots \,\, (1)
+& \cdots \otimes \left(|0\rangle + \exp \left(i \cdot 2 \pi \cdot 0.j_1j_2\cdots j_n \right)|1\rangle  \right)  \cdots  (1)
 \end{aligned}
 $$
 
 となります。この表現はqiskitのサイトにあるように、
 
 $$
-\frac{1}{\sqrt{N}}\left(|0\rangle+e^{\frac{2 \pi i}{2} x}|1\rangle\right) \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{2}} x}|1\rangle\right) \otimes \ldots \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{n-1}} x}|1\rangle\right) \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{n} x}}|1\rangle\right) \,\, \cdots \,\, (2)
+\frac{1}{\sqrt{N}}\left(|0\rangle+e^{\frac{2 \pi i}{2} x}|1\rangle\right) \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{2}} x}|1\rangle\right) \otimes \ldots \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{n-1}} x}|1\rangle\right) \otimes\left(|0\rangle+e^{\frac{2 \pi i}{2^{n} x}}|1\rangle\right)  \cdots (2)
 $$
 
 と同じです。次は、これをどのように量子回路で表現するかが次のポイントになります。
@@ -275,7 +275,7 @@ $$
 $$
 \begin{aligned}
 & CROT_n \cdots CROT_2 \cdot H_2 \cdot \frac{1}{\sqrt{2}}\left(|0\rangle+\exp \left(i \cdot 2 \pi \cdot 0.j_1j_2\cdots j_n  \right)|1\rangle\otimes|j_2j_3\cdots j_n\rangle\right) \\
-&=\frac{1}{\sqrt{2}}\left(|0\rangle+\exp \left(i \cdot 2 \pi \cdot 0.j_1j_2\cdots j_n  \right)|1\rangle\otimes|0\rangle+\exp \left(i \cdot 2 \pi \cdot 0.j_2\cdots j_n  \right)|1\rangle\otimes|j_3j_4\cdots j_n\rangle\right) \,\, \cdots \,\, (3)\\
+&=\frac{1}{\sqrt{2}}\left(|0\rangle+\exp \left(i \cdot 2 \pi \cdot 0.j_1j_2\cdots j_n  \right)|1\rangle\otimes|0\rangle+\exp \left(i \cdot 2 \pi \cdot 0.j_2\cdots j_n  \right)|1\rangle\otimes|j_3j_4\cdots j_n\rangle\right) \cdots (3)\\
 \end{aligned}
 $$
 
