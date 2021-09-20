@@ -48,12 +48,18 @@ import json
 
 import matplotlib.pyplot as plt
 import numpy as np
-import math
+from qiskit import QuantumCircuit, Aer, execute
+from qiskit.visualization import plot_histogram
+from math import gcd
+from numpy.random import randint
+from tabulate import tabulate
+from fractions import Fraction
 
 from qiskit import IBMQ, Aer, transpile, assemble
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
 from qiskit.visualization import plot_histogram
+from qiskit_textbook.tools import array_to_latex
 
 dict(qiskit.__qiskit_version__)
 ```
@@ -381,40 +387,52 @@ $$
 
 ### 逆量子フーリエ変換
 
-逆量子フーリエ変換を行うことで、$\frac{s}{k}$の位相が第一のレジスターの各量子ビットに格納されます。
+次に第一レジスターに対して、逆量子フーリエ変換を行うことで、
+
+$$
+\begin{aligned}
+& \frac{1}{\sqrt{2^{n}}} \sum_{k=0}^{2^{n}-1} e^{\frac{2 \pi i k}{r} s}|k\rangle \\
+\rightarrow & \frac{1}{{2^{n}}} \sum_{k=0}^{2^{n}-1} \sum_{t=0}^{r-1} e^{\frac{2 \pi i k}{r} s} e^{-2 \pi i k t}|t\rangle \\
+=& \frac{1}{{2^{n}}} \sum_{k=0}^{2^{n}-1} \sum_{t=0}^{r-1} e^{2 \pi i k\left(\frac{s}{r}-t\right)}|t\rangle
+\end{aligned}
+$$
+
+ここで、第一レジスターの測定を行うと、$t=\frac{r}{s}$の位相が測定される確率が最も高くなり、$\frac{s}{k}$の位相が第一のレジスターの各量子ビットに格納されます。
 
 $$
 \left|\varphi_{4}\right\rangle=\frac{1}{\sqrt{r}} \sum_{s=0}^{r-1}\left|\frac{s}{r}\right\rangle\otimes\left|u_{s}\right\rangle
 $$
 
+ただし、この状態は$s$に対して重ね合わせの状態で観測されるため、どの$s$が観測されるかはランダム（一様分布からのサンプリング）になるため、結果をチェックする必要があります。$s=0$の場合や、$s,r$が素数でなかった場合に失敗します。
 
-```python
+## qiskitで実装
 
-```
-
-
-```python
-
-```
-
-$$
-a_{0}+\frac{1}{a_{1}+\frac{1}{a_{2}+\frac{1}{\cdots+\frac{1}{a_{M}}}}}
-$$
+ほとんどコピーですが、qiskitのサイトのコードを理解しながら実装してきます。$a=7, N=15$の周期を求めますが、最初にpythonで実行して答えを求めてみます。
 
 
 ```python
+n = 15
+a = 7
 
+ret_list = []
+max_iter = 50
+for k in range(max_iter):
+  ret_list.append(a**k % n)
+
+ret_list.index(1, 10)
+
+r = [i for i, v in enumerate(ret_list) if v == 1]
+print('位数 r = {}'.format(r[1] - r[0]))
 ```
 
+    位数 r = 4
 
-```python
 
-```
+$a$の冪乗を求める関数です。
 
 
 ```python
 def c_amod15(a, power):
-    """mod 15による制御ゲートをかける"""
     if a not in [2,7,8,11,13]:
         raise ValueError("'a' must be 2,7,8,11 or 13")
     U = QuantumCircuit(4)        
@@ -439,6 +457,10 @@ def c_amod15(a, power):
     return c_U
 ```
 
+この関数は一見分かりにくいですが、量子回路で$a$を乗算する回路は以下の様になります。計算用のレジスターを用意して、そこで計算させています。
+
+![svg](base_nb_files_local/multi.svg)
+
 
 ```python
 # Specify variables
@@ -448,6 +470,7 @@ a = 7
 
 
 ```python
+# 逆量子フーリエ変換の計算　
 def qft_dagger(n):
     """n量子ビットの逆QFTを回路の最初のn量子ビットにかける"""
     qc = QuantumCircuit(n)
@@ -462,6 +485,8 @@ def qft_dagger(n):
     return qc
 ```
 
+以上で準備は終了で、上記の関数群を逐次実行します。
+
 
 ```python
 # n_count個の測定用量子ビットとUを操作するための4量子ビットで
@@ -472,7 +497,8 @@ qc = QuantumCircuit(n_count + 4, n_count)
 # |+>状態に初期化
 for q in range(n_count):
     qc.h(q)
-    
+
+# 第二レジスタの最右翼
 # アンシラレジスターを|1>の状態にする
 qc.x(3+n_count)
 
@@ -489,21 +515,211 @@ qc.measure(range(n_count), range(n_count))
 qc.draw('mpl')
 ```
 
+    <qiskit.circuit.gate.Gate object at 0x13264f520>
+    <qiskit.circuit.gate.Gate object at 0x132316040>
+    <qiskit.circuit.gate.Gate object at 0x132612a00>
+    <qiskit.circuit.gate.Gate object at 0x132bba400>
+    <qiskit.circuit.gate.Gate object at 0x1336bab20>
+    <qiskit.circuit.gate.Gate object at 0x132626fd0>
+    <qiskit.circuit.gate.Gate object at 0x13369cfa0>
+    <qiskit.circuit.gate.Gate object at 0x133a5e160>
+
+
 
 
 
     
-![svg](base_nb_files/base_nb_33_0.svg)
+![svg](base_nb_files/base_nb_33_1.svg)
     
 
 
 
 
 ```python
-
+backend = Aer.get_backend('qasm_simulator')
+results = execute(qc, backend, shots=2048).result()
+counts = results.get_counts()
+plot_histogram(counts)
 ```
+
+
+
+
+    
+![svg](base_nb_files/base_nb_34_0.svg)
+    
+
+
+
+測定してみると、４つの量子ビットが得られます。これらが、どの位相に相当するか計算してみます。
 
 
 ```python
-
+rows, measured_phases = [], []
+for output in counts:
+    decimal = int(output, 2)  # 2進数を10進数に変換します
+    phase = decimal/(2**n_count) # 固有値を探します
+    measured_phases.append(phase)
+    # これらの値をテーブルの行に追加します：
+    rows.append(["%s(bin) = %i(dec)" % (output, decimal), 
+                 "%i/%i = %.2f" % (decimal, 2**n_count, phase)])
+# tabulateを使って、ASCIIテーブルとして行を印刷します：
+print(tabulate(rows, 
+               headers=["Register Output", "Phase"], 
+               colalign=("left","right")))
 ```
+
+    Register Output                    Phase
+    ------------------------  --------------
+    00000000(bin) = 0(dec)      0/256 = 0.00
+    11000000(bin) = 192(dec)  192/256 = 0.75
+    10000000(bin) = 128(dec)  128/256 = 0.50
+    01000000(bin) = 64(dec)    64/256 = 0.25
+
+
+ここで得られたPhaseを連分数アルゴリズムを利用して、分数の形を求め、最終的に$r$を求めます。
+連分数は、以下の様に、整数を利用して、実数を近似する方法です。
+
+$$
+a_{0}+\frac{1}{a_{1}+\frac{1}{a_{2}+\frac{1}{\cdots+\frac{1}{a_{m}}}}}
+$$
+
+pythonには連分数展開が実装されていて、例えば、
+
+
+```python
+Fraction(0.25)
+```
+
+
+
+
+    Fraction(1, 4)
+
+
+
+
+```python
+Fraction(0.875)
+```
+
+
+
+
+    Fraction(7, 8)
+
+
+
+と求められます。ただ、無限小数になる値については、
+
+
+```python
+Fraction(0.3333333)
+```
+
+
+
+
+    Fraction(6004798902680711, 18014398509481984)
+
+
+
+のように、わかりにくい数字が出てくるので、分母の値に上限値を設けることが出来ます。
+
+
+```python
+Fraction(0.3333333).limit_denominator(100000000)
+```
+
+
+
+
+    Fraction(3333333, 10000000)
+
+
+
+
+```python
+Fraction(0.3333333).limit_denominator(1000000000000)
+```
+
+
+
+
+    Fraction(243429975650, 730289999979)
+
+
+
+ここでは最大１５で十分です。
+
+
+```python
+Fraction(0.3333333).limit_denominator(15)
+```
+
+
+
+
+    Fraction(1, 3)
+
+
+
+求めたPhaseを実際に連分数アルゴリズムを利用して$r$を求めます。
+
+
+```python
+rows = []
+for phase in measured_phases:
+    frac = Fraction(phase).limit_denominator(15)
+    rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
+# ASCIIテーブルを表示
+print(tabulate(rows, 
+               headers=["Phase", "Fraction", "Guess for r"], 
+               colalign=('right','right','right')))
+```
+
+      Phase    Fraction    Guess for r
+    -------  ----------  -------------
+          0         0/1              1
+       0.75         3/4              4
+        0.5         1/2              2
+       0.25         1/4              4
+
+
+このように、二つのPhaseについて、正しい結果が得られました。上述したように、ランダムサンプリングされる$s$に依存して正確な$r$が求められない可能性があります。その際は再度実験を繰り返します。
+
+
+
+## pとqを求める
+
+偶数の$r$が得られると、以下の因数分解し、最大公約数を求める事で素数$p,q$を求める事が出来ます。
+
+$$
+a^{2r'} - 1 = \left(a^{r'} + 1\right)\left(a^{r'} - 1\right) \equiv 0 \operatorname{mod} n
+$$
+
+$$
+p=\operatorname{gcd}\left(a^{r'}+1, n\right), q=\operatorname{gcd}\left(a^{r'}-1, n\right)
+$$
+
+
+```python
+import math
+
+a, r = 7, 4
+
+print('p = {}'.format(math.gcd(int(x**(r/2) + 1), n)))
+```
+
+    p = 5
+
+
+
+```python
+print('q = {}'.format(math.gcd(int(x**(r/2) - 1), n)))
+```
+
+    q = 3
+
+
+となり、無事$p$と$q$を求める事が出来ました。ただ、上述したように、すべての素数が$a^{r'} + 1$に含まれる可能性があるので、その場合は再度実験をやり直すことになります。
