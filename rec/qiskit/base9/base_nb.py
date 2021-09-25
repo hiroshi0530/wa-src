@@ -181,20 +181,32 @@ dict(qiskit.__qiskit_version__)
 # x^{(k+1)}=x^{(k)}+\alpha_{k} p^{(k)}
 # $$
 # 
-# ここで、$p^{k}$は解を探索する方向ベクトルです。
+# ここで、$p^{(k)}$は解を探索する方向ベクトルです。また、$r^{(k)}$は解との残差ベクトルです。
 # 
 # $$
-# \boldsymbol{r}^{(0)}=\boldsymbol{b}-A \boldsymbol{x}^{(0)}, \quad \boldsymbol{p}^{(0)}=\boldsymbol{r}^{(0)}
+# r^{(0)}=b-A x^{(0)}, \quad {p}^{(0)}={r}^{(0)}
 # $$
 # 
+# $k+1$回目のステップでの$f(x^{(k+1)})$を最小にする$\alpha_k$を求めます。
+# 
 # $$
-# f\left(x^{(k)}+\alpha_{k} p^{(k)}\right)=\frac{1}{2} \alpha_{k}{ }^{2}\left(p^{(k)}, A p^{(k)}\right)-\alpha_{k}\left(p^{(k)}, b-A x^{(k)}\right)+f\left(x^{(k)}\right)
+# \begin{aligned}
+# &f(x^{(k+1)}) \\
+# &=f\left(x^{(k)}+\alpha_{k} p^{(k)}\right) \\
+# &=\frac{1}{2} \alpha_{k}{ }^{2}\left(p^{(k)}, A p^{(k)}\right)-\alpha_{k}\left(p^{(k)}, b-A x^{(k)}\right)+f\left(x^{(k)}\right)
+# \end{aligned}
 # $$
+# 
+# これは単純な二次関数なので、$\alpha_k$を求める事が出来ます。
+# 
+# 
+# $$
+# \alpha_{k}=\frac{\left(p^{(k)}, b-A x^{(k)}\right)}{\left(p^{(k)}, A p^{(k)}\right)}=\frac{\left(p^{(k)}, r^{(k)}\right)}{\left(p^{(k)}, A p^{(k)}\right)}
+# $$
+# 
+# 
 
-# $$
-# \frac{\partial f\left(x^{(k)}+\alpha_{k} p^{(k)}\right)}{\partial \alpha_{k}}=0 \Rightarrow \alpha_{k}=\frac{\left(p^{(k)}, b-A x^{(k)}\right)}{\left(p^{(k)}, A p^{(k)}\right)}=\frac{\left(p^{(k)}, r^{(k)}\right)}{\left(p^{(k)}, A p^{(k)}\right)}
-# $$
-
+# 次に$r$を更新するために、$r^{(k+1)}$を求めます。
 # $$
 # \begin{aligned}
 # &r^{(k+1)}=b-A x^{(k+1)} \\
@@ -202,50 +214,64 @@ dict(qiskit.__qiskit_version__)
 # &r^{(k+1)}-r^{(k)}=A x^{(k+1)}-A x^{(k)}=\alpha_{k} A p^{(k)}
 # \end{aligned}
 # $$
-
+# 
+# よって、
+# 
 # $$
-# \alpha_{k}=\frac{\left(p^{(k)}, r^{(k)}\right)}{\left(p^{(k)}, A p^{(k)}\right)}
+# r^{(k+1)}=r^{(k)}-\alpha_{k} A p^{(k)}
 # $$
+# 
+# となります。
 
+# この$r^{(k+1)}$がある一定の閾値以下であれば、探索を終了します。
+# 
 # $$
 # \left\|\boldsymbol{r}^{(k+1)}\right\|<\varepsilon
 # $$
 
-# $$
-# \boldsymbol{p}^{(k+1)}=\boldsymbol{r}^{(k+1)}+\beta^{(k)} \boldsymbol{p}^{(k)}
-# $$
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
+# 閾値以下以外の場合、次に$p$を更新するために、$p^{(k+1)}$を求めます。$p^{(k+1)}$は、残差$r^{(k+1)}$と$p^{(k)}$の定数倍のベクトルで構成されます。
 # 
+# $$
+# p^{(k+1)}=r^{(k+1)}+\beta_{k} p^{(k)}
+# $$
+# 
+# この定数$\beta_k$は、$p^{(k)}$と$p^{(k+1)}$が$A$に対して共役になるように取ります。
+# 
+# $$
+# \left(p^{(k+1)}, A p^{(k)}\right)=\left(r^{(k+1)}+\beta_{k} p^{(k)}, A p^{(k)}\right)=\left(r^{(k+1)}, A p^{(k)}\right)+\beta_{k}\left(p^{(k)}, A p^{(k)}\right)
+# $$
+# 
+# これより、
+# $$
+# \beta_{k}=-\frac{\left(r^{(k+1)}, A p^{(k)}\right)}{\left(p^{(k)}, A p^{(k)}\right)}
+# $$
+# 
+# となります。
+# 
+# これを残差がある一定の閾値以下に収束するまで繰り返します。
+
+# ここで、
+# 
+# $$
+# \left(p^{(i)}, A p^{(j)}\right)=0 \quad (i \neq j)
+# $$
+# 
+# が成立するので、共役関係を持つベクトルを方向ベクトルととする勾配法という事で、共役勾配法という名前なのでしょうか。
+# 
+# また、残差ベクトルについても、
+# 
+# $$
+# \left(r^{(i)}, r^{(j)}\right)=0 \quad (i \neq j)
+# $$
+# 
+# という直交関係が成立します。
+
+# 一次独立である$r_k$の個数は高々$N$個しかないので、計算は$N$回以内に収束します。
+# 
+# この他に、前処理付き共役勾配法やクリロフ部分空間と言った解析的な話、収束性についての詳細は以下を参考にしています。
+# 
+# - [Matrix Computations](https://www.amazon.co.jp/Computations-Hopkins-Studies-Mathematical-Sciences/dp/1421407949)
+# - [数値解析入門](https://www.amazon.co.jp/%E5%A4%A7%E5%AD%A6%E6%95%B0%E5%AD%A6%E3%81%AE%E5%85%A5%E9%96%809-%E6%95%B0%E5%80%A4%E8%A7%A3%E6%9E%90%E5%85%A5%E9%96%80-%E9%BD%8A%E8%97%A4-%E5%AE%A3%E4%B8%80/dp/413062959X)
 
 # ### 計算量
 # $s$は行列$A$の非0要素の割合、$\kappa$は行列$A$の最大固有値と最小固有値の比$\displaystyle \left| \frac{\lambda_{max}}{\lambda_{min}}\right|$、$\epsilon$  は精度です．
@@ -267,6 +293,10 @@ dict(qiskit.__qiskit_version__)
 # - $A$がエルミート行列
 # - $\mathcal{O}\left(\log (N) s^{2} \kappa^{2} / \epsilon\right)$で計算可能
 # - 古典アルゴリズムが完全解を返すが、HHLは解となるベクトルを与える関数を近似するだけ
+# 
+# ### HHLのアウトライン
+# 
+# ![svg](base_nb_files_local/hhl.svg)
 
 # ### 量子回路へのマッピング
 # 
@@ -354,7 +384,7 @@ dict(qiskit.__qiskit_version__)
 # \end{aligned}
 # $$
 # 
-# となり、量子位相推定を利用して、$\lambda_j$の量子状態$|\tilde{\lambda}_j\rangle_{n_l}$を求める事が出来ます。
+# となり、量子位相推定を利用して、$\lambda_j$の量子状態 $|\tilde{\lambda_j} \rangle_{n_l}$ を求める事が出来ます。
 # 
 # $\tilde{\lambda_{j}}$は、$\displaystyle 2^{n_{l}} \frac{\lambda_{j} t}{2 \pi}$に対する$n_l$-bitバイナリ近似となります。
 
@@ -658,3 +688,5 @@ Returns:
 # ## 参考文献
 # - [嶋田義皓. 量子コンピューティング](https://www.amazon.co.jp/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0-%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%8B%E3%82%89%E9%87%8F%E5%AD%90%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E3%81%BE%E3%81%A7-%E6%83%85%E5%A0%B1%E5%87%A6%E7%90%86%E5%AD%A6%E4%BC%9A%E5%87%BA%E7%89%88%E5%A7%94%E5%93%A1%E4%BC%9A/dp/4274226212)
 # - https://www2.yukawa.kyoto-u.ac.jp/~qischool2019/mitaraiCTO.pdf
+# - [Matrix Computations](https://www.amazon.co.jp/Computations-Hopkins-Studies-Mathematical-Sciences/dp/1421407949)
+# - [数値解析入門](https://www.amazon.co.jp/%E5%A4%A7%E5%AD%A6%E6%95%B0%E5%AD%A6%E3%81%AE%E5%85%A5%E9%96%809-%E6%95%B0%E5%80%A4%E8%A7%A3%E6%9E%90%E5%85%A5%E9%96%80-%E9%BD%8A%E8%97%A4-%E5%AE%A3%E4%B8%80/dp/413062959X)
