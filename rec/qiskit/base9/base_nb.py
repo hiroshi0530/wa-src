@@ -37,7 +37,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[1]:
+# In[105]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -160,6 +160,21 @@ dict(qiskit.__qiskit_version__)
 # ### アルゴリズム
 # 
 # 上記の通り、共役勾配法(CG法)は、関数$f(x)$を最小化することに帰着されます。
+# 
+# 通常の勾配法だと、等高線の垂直方向に探索するため効率は悪くなります。
+# 
+# $$
+# -\nabla f(x)=\left(\begin{array}{c}
+# \frac{\partial f}{\partial x_{1}} \\
+# \vdots \\
+# \frac{\partial f}{\partial x_{n}}
+# \end{array}\right)=-b + A\boldsymbol{x}
+# $$
+# 
+# $f(x)$は楕円を形成しますが、その楕円に線形変換をかけて、楕円を円に変換すると、等高線の垂直方向が最小点への最短距離となるため、効率的な解を求めることが出来るという考えです。
+# 
+# ![svg](base_nb_files_local/cg.svg)
+
 # そのために、ある$x^{(0)}$を出発点に、以下の漸化式に従って最小値とする$x$を求めます。
 # 
 # $$
@@ -168,6 +183,9 @@ dict(qiskit.__qiskit_version__)
 # 
 # ここで、$p^{k}$は解を探索する方向ベクトルです。
 # 
+# $$
+# \boldsymbol{r}^{(0)}=\boldsymbol{b}-A \boldsymbol{x}^{(0)}, \quad \boldsymbol{p}^{(0)}=\boldsymbol{r}^{(0)}
+# $$
 # 
 # $$
 # f\left(x^{(k)}+\alpha_{k} p^{(k)}\right)=\frac{1}{2} \alpha_{k}{ }^{2}\left(p^{(k)}, A p^{(k)}\right)-\alpha_{k}\left(p^{(k)}, b-A x^{(k)}\right)+f\left(x^{(k)}\right)
@@ -226,10 +244,6 @@ dict(qiskit.__qiskit_version__)
 
 
 
-
-# $$
-# p^{k}=-\nabla f\left(x^{k}\right)=\left(\frac{\partial f\left(x^{k}\right)}{\partial x^{1}}, \ldots, \frac{\partial f\left(x^{k}\right)}{\partial x^{n}}\right)^{T}
-# $$
 
 # 
 
@@ -350,12 +364,20 @@ dict(qiskit.__qiskit_version__)
 # \operatorname{QPE}\left(e^{i A 2 \pi}, \sum_{j=0}^{N-1} b_{j}|0\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}\right)=\sum_{j=0}^{N-1} b_{j}\left|\lambda_{j}\right\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}
 # $$
 
-# In[ ]:
-
-
-
-
-
+# ### 3. 補助量子ビットの利用
+# 
+# 天下り的ですが、制御回転ゲートを利用して、$|v_i\rangle$を量子ビットの振幅として取り出す方法を考えます。
+# 
+# ここでは、以下の文献を参考にしています。
+# 
+# - [嶋田義皓. 量子コンピューティング](https://www.amazon.co.jp/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0-%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%8B%E3%82%89%E9%87%8F%E5%AD%90%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E3%81%BE%E3%81%A7-%E6%83%85%E5%A0%B1%E5%87%A6%E7%90%86%E5%AD%A6%E4%BC%9A%E5%87%BA%E7%89%88%E5%A7%94%E5%93%A1%E4%BC%9A/dp/4274226212)
+# - https://www2.yukawa.kyoto-u.ac.jp/~qischool2019/mitaraiCTO.pdf
+# 
+# 
+# 二つの量子ビットを考えます。一つは、制御回転ゲートの制御ビット、二つ目は制御回転ゲートの対象ビットです。
+# 
+# 唐突ですが、制御ビットに、$\left|b\left(\frac{1}{\pi} \cos ^{-1} v_{i}\right)\right\rangle$の状態を入力し、対象ビットには$|0\rangle$。を入力します。この対象ビットが補助量子ビットになります。
+# 
 # $b(\cdots)$は二進数表記である事を示し、$b_k(\cdots)$は、二進数表記の$k$ビット目の値を表します。まとめると、以下の様になります。
 # 
 # $$
@@ -376,7 +398,7 @@ dict(qiskit.__qiskit_version__)
 # \end{aligned}
 # $$
 
-# $\displaystyle b_{k}\left(\frac{2}{\pi} \cos ^{-1}\left(v_{i}\right)\right)$をターゲットビットとして、$R_{y}\left(2^{-k-1}\pi\right)$である制御回転ゲートをかけることを考えます。
+# $\displaystyle b_{k}\left(\frac{2}{\pi} \cos ^{-1}\left(v_{i}\right)\right)$を制御ビットとして、$R_{y}\left(2^{-k-1}\pi\right)$である制御回転ゲートをかけることを考えます。
 # 
 # $$
 # \begin{aligned}
@@ -385,7 +407,7 @@ dict(qiskit.__qiskit_version__)
 # \end{aligned}
 # $$
 
-# 回転ゲートは、以下の様にになります。
+# 回転ゲートは、以下の様になります。
 # 
 # $$
 # R_{y}(\theta)|0\rangle=\cos \frac{\theta}{2}|0\rangle+\sin \frac{\theta}{2}|1\rangle
@@ -406,57 +428,64 @@ dict(qiskit.__qiskit_version__)
 # R_{y}\left(\sum_{k=0}^{m-1} b_{k}\left(\frac{1}{\pi} \cos ^{-1}\left(v_{i}\right)\right) 2^{-k-1}\pi\right)|0\rangle=v_{i}|0\rangle+\sqrt{1-v_{i}^{2}}|1\rangle
 # $$
 # 
-# を得る。ここで、$\displaystyle v_i = \frac{1}{\lambda_i}$とすることで、補助ビットを、
+# を得る事ができます。ここで、$\displaystyle v_i = \frac{1}{\lambda_i}$とすることで、補助量子ビットを、
 # 
 # $$
-# \sqrt{1-\frac{C^{2}}{\lambda_{j}^{2}}}|0\rangle+\frac{C}{\lambda_{j}}|1\rangle
+# \frac{1}{\lambda_{j}}|0\rangle + \sqrt{1-\frac{1}{\lambda_{j}^{2}}}|1\rangle
 # $$
 # 
-# と計算することが出来る。
+# と計算することが出来きます。$\frac{1}{\lambda_j}$が振幅として得られたので、これを利用して連立一次方程式を解けそうです。
 
+# ### 4. 逆量子位相推定を利用
+# 
+# 量子位相推定の逆変換を行うと、以下の様になります。
+# 
+# $$
+# \sum_{j=0}^{N-1} b_{j}|0\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}\left(\frac{1}{\lambda_{j}}|0\rangle+\sqrt{1-\frac{1}{\lambda_{j}^{2}}}|1\rangle\right)
+# $$
 # 
 
-# In[ ]:
-
-
-
-
-
+# ### 5. 補助量子ビットの測定
+# 
+# 補助量子ビットを測定し、$|0\rangle$が測定された場合、
+# 
 # $$
-# \operatorname{QPE}\left(U,|0\rangle_{n}|\psi\rangle_{m}\right)=|\tilde{\theta}\rangle_{n}|\psi\rangle_{m}
+# \left(\sqrt{\frac{1}{\sum_{j=0}^{N-1}\left|b_{j}\right|^{2} /\left|\lambda_{j}\right|^{2}}}\right) \sum_{j=0}^{N-1} \frac{b_{j}}{\lambda_{j}}|0\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}
 # $$
-
-# In[ ]:
-
-
-
-
+# 
+# となり、解の形となっています。
 
 # ## 計算量の比較
 # 
-# ## 量子
+# ### 量子アルゴリズム
 # 
 # 
 # $$
 # O(s \kappa \operatorname{poly} \log (s \kappa / \varepsilon)))
 # $$
 # 
-# 行列 $A$ がスパース $(s \sim O(\operatorname{poly} \log N))$なら、
+# 行列 $A$に対して、スパース性 $(s \sim O(\operatorname{poly} \log N))$を仮定できる場合、
 # 
 # $$
 # O(s \kappa \operatorname{poly} \log (s \kappa / \varepsilon))) \sim O(s \kappa \operatorname{poly} \log N \operatorname{poly} \log (s \kappa / \varepsilon))
 # $$
 # 
-# 
-# ### 古典
+# となります。
+
+# ### 共役勾配法
 # $$
 # O(N s \kappa \log (1 / \varepsilon))
 # $$
+# 
+# これより、量子アルゴリズムの方が、指数関数的な速度向上が見込まれます。
 
 # ## qiskitで実装
 # 
+# qiskitのサイトに従って、実装してみます。
+# 
+# 結論から言うと、私の環境ではサイト通りの結果になりませんです。DepricateWarningが出ていて、それかなと思って色々やってみたのですが、結果が一致しなかったので、後に詳細な原因を探ろうと思います。
 
-# In[84]:
+# In[108]:
 
 
 from qiskit import Aer
@@ -469,6 +498,16 @@ from qiskit.aqua.components.reciprocals import LookupRotation
 from qiskit.aqua.operators import MatrixOperator
 from qiskit.aqua.components.initial_states import Custom
 import numpy as np
+
+from qiskit import aqua
+
+dict(qiskit.__qiskit_version__)
+
+
+# In[107]:
+
+
+print(aqua.__version__)
 
 
 # In[85]:
@@ -520,7 +559,6 @@ num_q, num_a = eigs.get_register_sizes()
 
 # Initialize initial state module
 init_state = Custom(num_q, state_vector=vector)
-# init_state = QuantumCircuit(num_q).initialize(vector/np.linalg.norm(vector))
 
 # Initialize reciprocal rotation module
 reci = LookupRotation(negative_evals=eigs._negative_evals, evo_time=eigs._evo_time)
@@ -550,54 +588,23 @@ print("circuit_depth:\t", result['circuit_info']['depth'])
 print("CNOT gates:\t", result['circuit_info']['operations']['cx'])
 
 
-# In[ ]:
+# qiskitのサイトだと、
+# 
+# ```text
+# Solution:		 [1.13586-0.j 0.40896+0.j]
+# Classical Solution:	 [1.125 0.375]
+# ```
+# 
+# となっています、今回の結果は、
+# 
+# ```text
+# Solution:		 [ 0.66576-0.j -0.38561+0.j]
+# Classical Solution:	 [1.125 0.375]
+# ```
+# 
+# となり、あまり良い結果が得られていないようです。。。
 
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[32]:
-
-
-from qiskit import aqua
-aqua.__version__
-
-
-# In[ ]:
-
-
-
-
-
-# In[65]:
-
-
-get_ipython().system('pip install --upgrade qiskit')
-
-
-# In[13]:
-
-
-get_ipython().system('pip install qiskit-terra')
-
-
-# In[ ]:
-
-
-
-
+# メモがてら、DepricateのログにあるCustomとQuantumCircuit.initializeのdocを残しておきます。
 
 # In[42]:
 
@@ -637,63 +644,17 @@ Returns:
     qiskit.circuit.Instruction: a handle to the instruction that was just initialized
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[103]:
-
-
-import math
-
-qc = QuantumCircuit(2)
-qc.h(0)
-qc.x(1)
-# Add Controlled-T
-qc.cp(math.pi/4, 0, 1)
-display(qc.draw())
-
-
-# In[104]:
-
-
-from qiskit import QuantumCircuit, Aer, assemble
-from math import pi
-import numpy as np
-from qiskit.visualization import plot_bloch_multivector, plot_histogram, array_to_latex
-
-qc.save_unitary()
-usim = Aer.get_backend('aer_simulator')
-qobj = assemble(qc)
-unitary = usim.run(qobj).result().get_unitary()
-array_to_latex(unitary, prefix="\\text{Circuit = }\n")
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
+# ## まとめ
+# 
+# このHHLアルゴリズムを元に、量子推薦アルゴリズムやそれにインスパイアされた古典アルゴリズムが発表されています。
+# 
+# - https://arxiv.org/pdf/1603.08675.pdf
+# - https://arxiv.org/pdf/1807.04271.pdf
+# 
+# インスパイアされた古典アルゴリズムでは、推薦システムで利用されるUser-Item行列はしばしば低ランク近似が利用可能（莫大な数のユーザーのカテゴリはその数に比べてはるかに少ない）であるため、それを利用して解となる状態を高速でサンプリングすることが出来るというのが概要です。
+# 
+# いずれ近いうちにその内容もまとめたいと思います。
 
 # ## 参考文献
-# - https://www2.yukawa.kyoto-u.ac.  jp/~qischool2019/mitaraiCTO.pdf
+# - [嶋田義皓. 量子コンピューティング](https://www.amazon.co.jp/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0-%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%8B%E3%82%89%E9%87%8F%E5%AD%90%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E3%81%BE%E3%81%A7-%E6%83%85%E5%A0%B1%E5%87%A6%E7%90%86%E5%AD%A6%E4%BC%9A%E5%87%BA%E7%89%88%E5%A7%94%E5%93%A1%E4%BC%9A/dp/4274226212)
+# - https://www2.yukawa.kyoto-u.ac.jp/~qischool2019/mitaraiCTO.pdf

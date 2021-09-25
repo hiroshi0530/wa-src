@@ -178,6 +178,21 @@ $$
 ### アルゴリズム
 
 上記の通り、共役勾配法(CG法)は、関数$f(x)$を最小化することに帰着されます。
+
+通常の勾配法だと、等高線の垂直方向に探索するため効率は悪くなります。
+
+$$
+-\nabla f(x)=\left(\begin{array}{c}
+\frac{\partial f}{\partial x_{1}} \\
+\vdots \\
+\frac{\partial f}{\partial x_{n}}
+\end{array}\right)=-b + A\boldsymbol{x}
+$$
+
+$f(x)$は楕円を形成しますが、その楕円に線形変換をかけて、楕円を円に変換すると、等高線の垂直方向が最小点への最短距離となるため、効率的な解を求めることが出来るという考えです。
+
+![svg](base_nb_files_local/cg.svg)
+
 そのために、ある$x^{(0)}$を出発点に、以下の漸化式に従って最小値とする$x$を求めます。
 
 $$
@@ -186,6 +201,9 @@ $$
 
 ここで、$p^{k}$は解を探索する方向ベクトルです。
 
+$$
+\boldsymbol{r}^{(0)}=\boldsymbol{b}-A \boldsymbol{x}^{(0)}, \quad \boldsymbol{p}^{(0)}=\boldsymbol{r}^{(0)}
+$$
 
 $$
 f\left(x^{(k)}+\alpha_{k} p^{(k)}\right)=\frac{1}{2} \alpha_{k}{ }^{2}\left(p^{(k)}, A p^{(k)}\right)-\alpha_{k}\left(p^{(k)}, b-A x^{(k)}\right)+f\left(x^{(k)}\right)
@@ -239,10 +257,6 @@ $$
 ```python
 
 ```
-
-$$
-p^{k}=-\nabla f\left(x^{k}\right)=\left(\frac{\partial f\left(x^{k}\right)}{\partial x^{1}}, \ldots, \frac{\partial f\left(x^{k}\right)}{\partial x^{n}}\right)^{T}
-$$
 
 
 
@@ -363,10 +377,19 @@ $$
 \operatorname{QPE}\left(e^{i A 2 \pi}, \sum_{j=0}^{N-1} b_{j}|0\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}\right)=\sum_{j=0}^{N-1} b_{j}\left|\lambda_{j}\right\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}
 $$
 
+### 3. 補助量子ビットの利用
 
-```python
+天下り的ですが、制御回転ゲートを利用して、$|v_i\rangle$を量子ビットの振幅として取り出す方法を考えます。
 
-```
+ここでは、以下の文献を参考にしています。
+
+- [嶋田義皓. 量子コンピューティング](https://www.amazon.co.jp/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0-%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%8B%E3%82%89%E9%87%8F%E5%AD%90%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E3%81%BE%E3%81%A7-%E6%83%85%E5%A0%B1%E5%87%A6%E7%90%86%E5%AD%A6%E4%BC%9A%E5%87%BA%E7%89%88%E5%A7%94%E5%93%A1%E4%BC%9A/dp/4274226212)
+- https://www2.yukawa.kyoto-u.ac.jp/~qischool2019/mitaraiCTO.pdf
+
+
+二つの量子ビットを考えます。一つは、制御回転ゲートの制御ビット、二つ目は制御回転ゲートの対象ビットです。
+
+唐突ですが、制御ビットに、$\left|b\left(\frac{1}{\pi} \cos ^{-1} v_{i}\right)\right\rangle$の状態を入力し、対象ビットには$|0\rangle$。を入力します。この対象ビットが補助量子ビットになります。
 
 $b(\cdots)$は二進数表記である事を示し、$b_k(\cdots)$は、二進数表記の$k$ビット目の値を表します。まとめると、以下の様になります。
 
@@ -388,7 +411,7 @@ $$
 \end{aligned}
 $$
 
-$\displaystyle b_{k}\left(\frac{2}{\pi} \cos ^{-1}\left(v_{i}\right)\right)$をターゲットビットとして、$R_{y}\left(2^{-k-1}\pi\right)$である制御回転ゲートをかけることを考えます。
+$\displaystyle b_{k}\left(\frac{2}{\pi} \cos ^{-1}\left(v_{i}\right)\right)$を制御ビットとして、$R_{y}\left(2^{-k-1}\pi\right)$である制御回転ゲートをかけることを考えます。
 
 $$
 \begin{aligned}
@@ -397,7 +420,7 @@ $$
 \end{aligned}
 $$
 
-回転ゲートは、以下の様にになります。
+回転ゲートは、以下の様になります。
 
 $$
 R_{y}(\theta)|0\rangle=\cos \frac{\theta}{2}|0\rangle+\sin \frac{\theta}{2}|1\rangle
@@ -418,53 +441,62 @@ $$
 R_{y}\left(\sum_{k=0}^{m-1} b_{k}\left(\frac{1}{\pi} \cos ^{-1}\left(v_{i}\right)\right) 2^{-k-1}\pi\right)|0\rangle=v_{i}|0\rangle+\sqrt{1-v_{i}^{2}}|1\rangle
 $$
 
-を得る。ここで、$\displaystyle v_i = \frac{1}{\lambda_i}$とすることで、補助ビットを、
+を得る事ができます。ここで、$\displaystyle v_i = \frac{1}{\lambda_i}$とすることで、補助量子ビットを、
 
 $$
-\sqrt{1-\frac{C^{2}}{\lambda_{j}^{2}}}|0\rangle+\frac{C}{\lambda_{j}}|1\rangle
+\frac{1}{\lambda_{j}}|0\rangle + \sqrt{1-\frac{1}{\lambda_{j}^{2}}}|1\rangle
 $$
 
-と計算することが出来る。
+と計算することが出来きます。$\frac{1}{\lambda_j}$が振幅として得られたので、これを利用して連立一次方程式を解けそうです。
 
+### 4. 逆量子位相推定を利用
 
-
-
-```python
-
-```
+量子位相推定の逆変換を行うと、以下の様になります。
 
 $$
-\operatorname{QPE}\left(U,|0\rangle_{n}|\psi\rangle_{m}\right)=|\tilde{\theta}\rangle_{n}|\psi\rangle_{m}
+\sum_{j=0}^{N-1} b_{j}|0\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}\left(\frac{1}{\lambda_{j}}|0\rangle+\sqrt{1-\frac{1}{\lambda_{j}^{2}}}|1\rangle\right)
 $$
 
 
-```python
+### 5. 補助量子ビットの測定
 
-```
+補助量子ビットを測定し、$|0\rangle$が測定された場合、
+
+$$
+\left(\sqrt{\frac{1}{\sum_{j=0}^{N-1}\left|b_{j}\right|^{2} /\left|\lambda_{j}\right|^{2}}}\right) \sum_{j=0}^{N-1} \frac{b_{j}}{\lambda_{j}}|0\rangle_{n_{l}}\left|u_{j}\right\rangle_{n_{b}}
+$$
+
+となり、解の形となっています。
 
 ## 計算量の比較
 
-## 量子
+### 量子アルゴリズム
 
 
 $$
 O(s \kappa \operatorname{poly} \log (s \kappa / \varepsilon)))
 $$
 
-行列 $A$ がスパース $(s \sim O(\operatorname{poly} \log N))$なら、
+行列 $A$に対して、スパース性 $(s \sim O(\operatorname{poly} \log N))$を仮定できる場合、
 
 $$
 O(s \kappa \operatorname{poly} \log (s \kappa / \varepsilon))) \sim O(s \kappa \operatorname{poly} \log N \operatorname{poly} \log (s \kappa / \varepsilon))
 $$
 
+となります。
 
-### 古典
+### 共役勾配法
 $$
 O(N s \kappa \log (1 / \varepsilon))
 $$
 
+これより、量子アルゴリズムの方が、指数関数的な速度向上が見込まれます。
+
 ## qiskitで実装
 
+qiskitのサイトに従って、実装してみます。
+
+結論から言うと、私の環境ではサイト通りの結果になりませんです。DepricateWarningが出ていて、それかなと思って色々やってみたのですが、結果が一致しなかったので、後に詳細な原因を探ろうと思います。
 
 
 ```python
@@ -478,7 +510,35 @@ from qiskit.aqua.components.reciprocals import LookupRotation
 from qiskit.aqua.operators import MatrixOperator
 from qiskit.aqua.components.initial_states import Custom
 import numpy as np
+
+from qiskit import aqua
+
+dict(qiskit.__qiskit_version__)
 ```
+
+
+
+
+    {'qiskit-terra': '0.17.4',
+     'qiskit-aer': '0.8.2',
+     'qiskit-ignis': '0.6.0',
+     'qiskit-ibmq-provider': '0.13.1',
+     'qiskit-aqua': '0.9.1',
+     'qiskit': '0.26.2',
+     'qiskit-nature': None,
+     'qiskit-finance': None,
+     'qiskit-optimization': None,
+     'qiskit-machine-learning': None}
+
+
+
+
+```python
+print(aqua.__version__)
+```
+
+    0.9.1
+
 
 
 ```python
@@ -525,7 +585,6 @@ num_q, num_a = eigs.get_register_sizes()
 
 # Initialize initial state module
 init_state = Custom(num_q, state_vector=vector)
-# init_state = QuantumCircuit(num_q).initialize(vector/np.linalg.norm(vector))
 
 # Initialize reciprocal rotation module
 reci = LookupRotation(negative_evals=eigs._negative_evals, evo_time=eigs._evo_time)
@@ -572,192 +631,23 @@ print("CNOT gates:\t", result['circuit_info']['operations']['cx'])
     CNOT gates:	 54
 
 
+qiskitのサイトだと、
 
-```python
-
+```text
+Solution:		 [1.13586-0.j 0.40896+0.j]
+Classical Solution:	 [1.125 0.375]
 ```
 
+となっています、今回の結果は、
 
-```python
-
+```text
+Solution:		 [ 0.66576-0.j -0.38561+0.j]
+Classical Solution:	 [1.125 0.375]
 ```
 
+となり、あまり良い結果が得られていないようです。。。
 
-```python
-
-```
-
-
-```python
-from qiskit import aqua
-aqua.__version__
-```
-
-
-
-
-    '0.9.1'
-
-
-
-
-```python
-
-```
-
-
-```python
-!pip install --upgrade qiskit
-
-```
-
-    Requirement already satisfied: qiskit in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (0.26.2)
-    Collecting qiskit
-      Downloading qiskit-0.30.0.tar.gz (12 kB)
-    Collecting qiskit-terra==0.18.2
-      Downloading qiskit_terra-0.18.2-cp38-cp38-macosx_10_9_x86_64.whl (5.3 MB)
-    [K     |████████████████████████████████| 5.3 MB 4.8 MB/s eta 0:00:01
-    [?25hCollecting qiskit-aer==0.9.0
-      Downloading qiskit_aer-0.9.0-cp38-cp38-macosx_10_9_x86_64.whl (8.6 MB)
-    [K     |████████████████████████████████| 8.6 MB 5.1 MB/s eta 0:00:01
-    [?25hCollecting qiskit-ibmq-provider==0.16.0
-      Downloading qiskit_ibmq_provider-0.16.0-py3-none-any.whl (235 kB)
-    [K     |████████████████████████████████| 235 kB 39.1 MB/s eta 0:00:01
-    [?25hRequirement already satisfied: qiskit-ignis==0.6.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit) (0.6.0)
-    Collecting qiskit-aqua==0.9.5
-      Downloading qiskit_aqua-0.9.5-py3-none-any.whl (2.1 MB)
-    [K     |████████████████████████████████| 2.1 MB 30.0 MB/s eta 0:00:01
-    [?25hRequirement already satisfied: pybind11>=2.6 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aer==0.9.0->qiskit) (2.6.2)
-    Requirement already satisfied: numpy>=1.16.3 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aer==0.9.0->qiskit) (1.19.2)
-    Requirement already satisfied: scipy>=1.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aer==0.9.0->qiskit) (1.5.2)
-    Requirement already satisfied: quandl in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (3.6.0)
-    Requirement already satisfied: sympy>=1.3 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (1.6.2)
-    Requirement already satisfied: fastdtw<=0.3.4 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (0.3.4)
-    Collecting docplex>=2.21.207
-      Downloading docplex-2.22.213.tar.gz (634 kB)
-    [K     |████████████████████████████████| 634 kB 37.7 MB/s eta 0:00:01
-    [?25hRequirement already satisfied: pandas in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (1.1.3)
-    Collecting yfinance>=0.1.62
-      Downloading yfinance-0.1.63.tar.gz (26 kB)
-    Requirement already satisfied: psutil>=5 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (5.7.2)
-    Requirement already satisfied: scikit-learn>=0.20.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (0.23.2)
-    Requirement already satisfied: setuptools>=40.1.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (54.2.0)
-    Requirement already satisfied: retworkx>=0.8.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (0.8.0)
-    Requirement already satisfied: dlx<=1.0.4 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (1.0.4)
-    Requirement already satisfied: h5py<3.3.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-aqua==0.9.5->qiskit) (2.10.0)
-    Requirement already satisfied: requests>=2.19 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-ibmq-provider==0.16.0->qiskit) (2.24.0)
-    Requirement already satisfied: python-dateutil>=2.8.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-ibmq-provider==0.16.0->qiskit) (2.8.1)
-    Collecting websocket-client>=1.0.1
-      Using cached websocket_client-1.2.1-py2.py3-none-any.whl (52 kB)
-    Requirement already satisfied: requests-ntlm>=1.1.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-ibmq-provider==0.16.0->qiskit) (1.1.0)
-    Requirement already satisfied: urllib3>=1.21.1 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-ibmq-provider==0.16.0->qiskit) (1.25.11)
-    Requirement already satisfied: ply>=3.10 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra==0.18.2->qiskit) (3.11)
-    Collecting tweedledum<2.0,>=1.1
-      Downloading tweedledum-1.1.1-cp38-cp38-macosx_10_9_x86_64.whl (1.8 MB)
-    [K     |████████████████████████████████| 1.8 MB 45.5 MB/s eta 0:00:01
-    [?25hCollecting retworkx>=0.8.0
-      Downloading retworkx-0.10.2-cp38-cp38-macosx_10_9_x86_64.whl (1.1 MB)
-    [K     |████████████████████████████████| 1.1 MB 17.1 MB/s eta 0:00:01
-    [?25hCollecting symengine>0.7
-      Downloading symengine-0.8.1-cp38-cp38-macosx_10_9_x86_64.whl (17.7 MB)
-    [K     |████████████████████████████████| 17.7 MB 31.2 MB/s eta 0:00:01
-    [?25hRequirement already satisfied: fastjsonschema>=2.10 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra==0.18.2->qiskit) (2.15.1)
-    Requirement already satisfied: python-constraint>=1.4 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra==0.18.2->qiskit) (1.4.0)
-    Requirement already satisfied: jsonschema>=2.6 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra==0.18.2->qiskit) (3.2.0)
-    Requirement already satisfied: dill>=0.3 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra==0.18.2->qiskit) (0.3.3)
-    Requirement already satisfied: six in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from docplex>=2.21.207->qiskit-aqua==0.9.5->qiskit) (1.15.0)
-    Requirement already satisfied: pyrsistent>=0.14.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from jsonschema>=2.6->qiskit-terra==0.18.2->qiskit) (0.17.3)
-    Requirement already satisfied: attrs>=17.4.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from jsonschema>=2.6->qiskit-terra==0.18.2->qiskit) (20.3.0)
-    Requirement already satisfied: idna<3,>=2.5 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from requests>=2.19->qiskit-ibmq-provider==0.16.0->qiskit) (2.10)
-    Requirement already satisfied: chardet<4,>=3.0.2 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from requests>=2.19->qiskit-ibmq-provider==0.16.0->qiskit) (3.0.4)
-    Requirement already satisfied: certifi>=2017.4.17 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from requests>=2.19->qiskit-ibmq-provider==0.16.0->qiskit) (2020.6.20)
-    Requirement already satisfied: ntlm-auth>=1.0.2 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from requests-ntlm>=1.1.0->qiskit-ibmq-provider==0.16.0->qiskit) (1.5.0)
-    Requirement already satisfied: cryptography>=1.3 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from requests-ntlm>=1.1.0->qiskit-ibmq-provider==0.16.0->qiskit) (3.1.1)
-    Requirement already satisfied: cffi!=1.11.3,>=1.8 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from cryptography>=1.3->requests-ntlm>=1.1.0->qiskit-ibmq-provider==0.16.0->qiskit) (1.14.3)
-    Requirement already satisfied: pycparser in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from cffi!=1.11.3,>=1.8->cryptography>=1.3->requests-ntlm>=1.1.0->qiskit-ibmq-provider==0.16.0->qiskit) (2.20)
-    Requirement already satisfied: threadpoolctl>=2.0.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from scikit-learn>=0.20.0->qiskit-aqua==0.9.5->qiskit) (2.1.0)
-    Requirement already satisfied: joblib>=0.11 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from scikit-learn>=0.20.0->qiskit-aqua==0.9.5->qiskit) (0.17.0)
-    Requirement already satisfied: mpmath>=0.19 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from sympy>=1.3->qiskit-aqua==0.9.5->qiskit) (1.1.0)
-    Requirement already satisfied: multitasking>=0.0.7 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from yfinance>=0.1.62->qiskit-aqua==0.9.5->qiskit) (0.0.9)
-    Requirement already satisfied: lxml>=4.5.1 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from yfinance>=0.1.62->qiskit-aqua==0.9.5->qiskit) (4.6.1)
-    Requirement already satisfied: pytz>=2017.2 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from pandas->qiskit-aqua==0.9.5->qiskit) (2020.1)
-    Requirement already satisfied: inflection>=0.3.1 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from quandl->qiskit-aqua==0.9.5->qiskit) (0.5.1)
-    Requirement already satisfied: more-itertools in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from quandl->qiskit-aqua==0.9.5->qiskit) (8.6.0)
-    Building wheels for collected packages: qiskit, docplex, yfinance
-      Building wheel for qiskit (setup.py) ... [?25ldone
-    [?25h  Created wheel for qiskit: filename=qiskit-0.30.0-py3-none-any.whl size=11258 sha256=0f32db3ed88a5e775405ba64e7024a1d45d915212033fa32d74ed3bf41ddf62d
-      Stored in directory: /Users/hiroshi.wayama/Library/Caches/pip/wheels/01/f8/3f/4edf7a8f1659f7ca83c463df424e107dbceeffe310b6ecc58d
-      Building wheel for docplex (setup.py) ... [?25ldone
-    [?25h  Created wheel for docplex: filename=docplex-2.22.213-py3-none-any.whl size=696851 sha256=78aca4ab85708f8d2830f352a32b9f4ca193de86ae8ea34348e623ad1d0ce76e
-      Stored in directory: /Users/hiroshi.wayama/Library/Caches/pip/wheels/35/3e/11/e31bf877e1965b75dc2f3de4ec2d5c9d1680c6f803ef76ed9f
-      Building wheel for yfinance (setup.py) ... [?25ldone
-    [?25h  Created wheel for yfinance: filename=yfinance-0.1.63-py2.py3-none-any.whl size=23907 sha256=efa4e5a74644065ab23d18dd96f97d77730e2661513045c386368f21888b10ad
-      Stored in directory: /Users/hiroshi.wayama/Library/Caches/pip/wheels/ec/cc/c1/32da8ee853d742d5d7cbd11ee04421222eb354672020b57297
-    Successfully built qiskit docplex yfinance
-    Installing collected packages: tweedledum, symengine, retworkx, qiskit-terra, yfinance, websocket-client, docplex, qiskit-ibmq-provider, qiskit-aqua, qiskit-aer, qiskit
-      Attempting uninstall: retworkx
-        Found existing installation: retworkx 0.8.0
-        Uninstalling retworkx-0.8.0:
-          Successfully uninstalled retworkx-0.8.0
-      Attempting uninstall: qiskit-terra
-        Found existing installation: qiskit-terra 0.17.4
-        Uninstalling qiskit-terra-0.17.4:
-          Successfully uninstalled qiskit-terra-0.17.4
-      Attempting uninstall: yfinance
-        Found existing installation: yfinance 0.1.55
-        Uninstalling yfinance-0.1.55:
-          Successfully uninstalled yfinance-0.1.55
-      Attempting uninstall: docplex
-        Found existing installation: docplex 2.15.194
-        Uninstalling docplex-2.15.194:
-          Successfully uninstalled docplex-2.15.194
-      Attempting uninstall: qiskit-ibmq-provider
-        Found existing installation: qiskit-ibmq-provider 0.13.1
-        Uninstalling qiskit-ibmq-provider-0.13.1:
-          Successfully uninstalled qiskit-ibmq-provider-0.13.1
-      Attempting uninstall: qiskit-aqua
-        Found existing installation: qiskit-aqua 0.9.1
-        Uninstalling qiskit-aqua-0.9.1:
-          Successfully uninstalled qiskit-aqua-0.9.1
-      Attempting uninstall: qiskit-aer
-        Found existing installation: qiskit-aer 0.8.2
-        Uninstalling qiskit-aer-0.8.2:
-          Successfully uninstalled qiskit-aer-0.8.2
-      Attempting uninstall: qiskit
-        Found existing installation: qiskit 0.26.2
-        Uninstalling qiskit-0.26.2:
-          Successfully uninstalled qiskit-0.26.2
-    Successfully installed docplex-2.22.213 qiskit-0.30.0 qiskit-aer-0.9.0 qiskit-aqua-0.9.5 qiskit-ibmq-provider-0.16.0 qiskit-terra-0.18.2 retworkx-0.10.2 symengine-0.8.1 tweedledum-1.1.1 websocket-client-1.2.1 yfinance-0.1.63
-
-
-
-```python
-!pip install qiskit-terra
-```
-
-    Requirement already satisfied: qiskit-terra in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (0.17.4)
-    Requirement already satisfied: scipy>=1.4 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (1.5.2)
-    Requirement already satisfied: sympy>=1.3 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (1.6.2)
-    Requirement already satisfied: fastjsonschema>=2.10 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (2.15.1)
-    Requirement already satisfied: ply>=3.10 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (3.11)
-    Requirement already satisfied: dill>=0.3 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (0.3.3)
-    Requirement already satisfied: python-dateutil>=2.8.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (2.8.1)
-    Requirement already satisfied: psutil>=5 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (5.7.2)
-    Requirement already satisfied: numpy>=1.17 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (1.19.2)
-    Requirement already satisfied: jsonschema>=2.6 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (3.2.0)
-    Requirement already satisfied: python-constraint>=1.4 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (1.4.0)
-    Requirement already satisfied: retworkx>=0.8.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from qiskit-terra) (0.8.0)
-    Requirement already satisfied: six>=1.11.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from jsonschema>=2.6->qiskit-terra) (1.15.0)
-    Requirement already satisfied: setuptools in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from jsonschema>=2.6->qiskit-terra) (54.2.0)
-    Requirement already satisfied: attrs>=17.4.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from jsonschema>=2.6->qiskit-terra) (20.3.0)
-    Requirement already satisfied: pyrsistent>=0.14.0 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from jsonschema>=2.6->qiskit-terra) (0.17.3)
-    Requirement already satisfied: mpmath>=0.19 in /Users/hiroshi.wayama/anaconda3/lib/python3.8/site-packages (from sympy>=1.3->qiskit-terra) (1.1.0)
-
-
-
-```python
-
-```
+メモがてら、DepricateのログにあるCustomとQuantumCircuit.initializeのdocを残しておきます。
 
 
 ```python
@@ -795,81 +685,17 @@ Returns:
     qiskit.circuit.Instruction: a handle to the instruction that was just initialized
 ```
 
+## まとめ
 
-```python
+このHHLアルゴリズムを元に、量子推薦アルゴリズムやそれにインスパイアされた古典アルゴリズムが発表されています。
 
-```
+- https://arxiv.org/pdf/1603.08675.pdf
+- https://arxiv.org/pdf/1807.04271.pdf
 
+インスパイアされた古典アルゴリズムでは、推薦システムで利用されるUser-Item行列はしばしば低ランク近似が利用可能（莫大な数のユーザーのカテゴリはその数に比べてはるかに少ない）であるため、それを利用して解となる状態を高速でサンプリングすることが出来るというのが概要です。
 
-```python
-
-```
-
-
-```python
-import math
-
-qc = QuantumCircuit(2)
-qc.h(0)
-qc.x(1)
-# Add Controlled-T
-qc.cp(math.pi/4, 0, 1)
-display(qc.draw())
-
-```
-
-
-<pre style="word-wrap: normal;white-space: pre;background: #fff0;line-height: 1.1;font-family: &quot;Courier New&quot;,Courier,monospace">     ┌───┐         
-q_0: ┤ H ├─■───────
-     ├───┤ │P(π/4) 
-q_1: ┤ X ├─■───────
-     └───┘         </pre>
-
-
-
-```python
-from qiskit import QuantumCircuit, Aer, assemble
-from math import pi
-import numpy as np
-from qiskit.visualization import plot_bloch_multivector, plot_histogram, array_to_latex
-
-qc.save_unitary()
-usim = Aer.get_backend('aer_simulator')
-qobj = assemble(qc)
-unitary = usim.run(qobj).result().get_unitary()
-array_to_latex(unitary, prefix="\\text{Circuit = }\n")
-```
-
-
-
-
-$$
-\text{Circuit = }
-
-\begin{bmatrix}
-0 & 0 & \tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}}  \\
- 0 & 0 & \tfrac{1}{\sqrt{2}} & -\tfrac{1}{\sqrt{2}}  \\
- \tfrac{1}{\sqrt{2}} & \tfrac{1}{\sqrt{2}} & 0 & 0  \\
- \tfrac{1}{2}(1 + i) & \tfrac{1}{2}(-1 - i) & 0 & 0  \\
- \end{bmatrix}
-$$
-
-
-
-
-```python
-
-```
-
-
-```python
-
-```
-
-
-```python
-
-```
+いずれ近いうちにその内容もまとめたいと思います。
 
 ## 参考文献
-- https://www2.yukawa.kyoto-u.ac.  jp/~qischool2019/mitaraiCTO.pdf
+- [嶋田義皓. 量子コンピューティング](https://www.amazon.co.jp/%E9%87%8F%E5%AD%90%E3%82%B3%E3%83%B3%E3%83%94%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0-%E5%9F%BA%E6%9C%AC%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%81%8B%E3%82%89%E9%87%8F%E5%AD%90%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E3%81%BE%E3%81%A7-%E6%83%85%E5%A0%B1%E5%87%A6%E7%90%86%E5%AD%A6%E4%BC%9A%E5%87%BA%E7%89%88%E5%A7%94%E5%93%A1%E4%BC%9A/dp/4274226212)
+- https://www2.yukawa.kyoto-u.ac.jp/~qischool2019/mitaraiCTO.pdf
