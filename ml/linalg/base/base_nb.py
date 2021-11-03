@@ -70,3 +70,15 @@ print('numpy  version :', np.__version__)
 
 
 
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
