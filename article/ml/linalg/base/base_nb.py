@@ -65,10 +65,10 @@ print('numpy  version :', np.__version__)
 
 # 
 
-# In[ ]:
+# In[1]:
 
 
-
+1 + 1
 
 
 # In[ ]:
