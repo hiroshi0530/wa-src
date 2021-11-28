@@ -397,6 +397,53 @@ dir(embedding)
 
 
 
+# In[135]:
+
+
+import numpy as np
+import random
+from matplotlib import pyplot as plt
+
+N_steps = 1000
+prob = 0.5
+
+def SimpleRandomWalk(N, p, line):
+
+    position = np.empty(N)
+    position[0] = 0
+    pos_counter = 0
+
+    steps = np.arange(N)
+
+    #ランダムウォークスタート 
+    for i in range(1,N):
+
+        test = random.random()
+
+        if test >= p:
+            pos_counter += 1
+        else:
+            pos_counter -= 1
+
+        position[i] = pos_counter
+
+    plt.plot(steps, position, line)
+    plt.xlabel('Steps taken')
+    plt.ylabel('Distance from Starting Position')
+
+
+    return position
+
+position_distribution = []
+for i in range(1000):
+    p = SimpleRandomWalk(N_steps, prob, line="-")
+    position_distribution.append(p[-1])
+
+plt.figure()
+plt.hist(position_distribution)
+plt.show()
+
+
 # In[ ]:
 
 
@@ -407,4 +454,160 @@ dir(embedding)
 
 
 
+
+
+# In[ ]:
+
+
+from numpy import *
+from matplotlib.pyplot import *
+from scipy import stats
+
+def quantum_walk(N):
+    P = 2*N+1    # number of positions
+
+    coin0 = array([1, 0])  # |0>
+    coin1 = array([0, 1])  # |1>
+
+    # from IPython.core.debugger import Pdb; Pdb().set_trace()
+    
+    C00 = outer(coin0, coin0)  # |0><0| 
+    C01 = outer(coin0, coin1)  # |0><1| 
+    C10 = outer(coin1, coin0)  # |1><0| 
+    C11 = outer(coin1, coin1)  # |1><1| 
+
+    C_hat = (C00 + C01 + C10 - C11)/sqrt(2.)
+
+    ShiftPlus = roll(eye(P), 1, axis=0)
+    ShiftMinus = roll(eye(P), -1, axis=0)
+    S_hat = kron(ShiftPlus, C00) + kron(ShiftMinus, C11)
+
+    U = S_hat.dot(kron(eye(P), C_hat))
+
+    posn0 = zeros(P)
+    posn0[N] = 1     # array indexing starts from 0, so index N is the central posn
+    psi0 = kron(posn0,(coin0+coin1*1j)/sqrt(2.))
+
+    psiN = linalg.matrix_power(U, N).dot(psi0)
+
+    prob = empty(P)
+    for k in range(P):
+        posn = zeros(P)
+        posn[k] = 1     
+        M_hat_k = kron( outer(posn,posn), eye(2))
+        proj = M_hat_k.dot(psiN)
+        prob[k] = proj.dot(proj.conjugate()).real
+    return prob, P
+
+N = 100
+
+prob ,P = quantum_walk(N)
+fig = figure()
+ax = fig.add_subplot(111)
+
+plot(arange(P), prob)
+show()
+
+
+# In[138]:
+
+
+1 + 1
+
+
+# In[140]:
+
+
+np.e
+
+
+# In[144]:
+
+
+a = np.array([[1,2], [3,4]])
+e = np.array([[1,0], [0,1]])
+np.e ** e
+
+a @ e
+
+
+# In[146]:
+
+
+np.exp(e)
+
+
+# In[148]:
+
+
+A
+
+
+# In[149]:
+
+
+# Aを固有値分解して、密度行列を得る
+
+l, p = np.linalg.eig(A)
+
+
+# In[167]:
+
+
+p[:, 0]
+
+
+# In[169]:
+
+
+p[:, 0].T
+
+
+# In[171]:
+
+
+p[:, 0] @ p[:, 0].T
+
+
+# In[172]:
+
+
+for i in range(len(p)):
+  _ += (p[:, i] @ p[:, i].T) * (p[:, i] @ p[:, i].T)
+
+# _ = _ / np.sum(_, axis=1)
+# np.sum(_, axis=1)
+_
+
+
+# In[156]:
+
+
+len(p)
+
+
+# In[174]:
+
+
+np.array([[1,2], [3,4]]) / np.array([10,20])
+
+
+# In[160]:
+
+
+A
+
+
+# In[161]:
+
+
+plt.show()
+
+
+# In[ ]:
+
+
+from scipy.linalg import expm
+
+expm(a)
 
