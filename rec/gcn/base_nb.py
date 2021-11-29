@@ -66,11 +66,24 @@ print(torch.__version__)
 
 # ![](./1.png)
 
-# In[ ]:
-
-
-
-
+# $$
+# R_{u, i}=\left\lbrace\begin{array}{lr}
+# 1, & \text { if }(u, i) \text { interaction is observed } \\
+# 0, & \text { otherwise }
+# \end{array}\right.
+# $$
+# 
+# $$
+# \begin{array}{|l|r|r|r|r|}
+# \hline & \text { item_1 } & \text { item_2 } & \text { item_3 } & \text { item_4 } \\
+# \hline \text { user_1 } & 0 & 1 & 0 & 0 \\
+# \hline \text { user_2 } & 0 & 0 & 1 & 1 \\
+# \hline \text { user_3 } & 1 & 0 & 0 & 0 \\
+# \hline \text { user_4 } & 0 & 1 & 0 & 0 \\
+# \hline \text { user_5 } & 1 & 0 & 1 & 0 \\
+# \hline
+# \end{array}
+# $$
 
 # In[133]:
 
