@@ -52,28 +52,16 @@ $A$が対称行列の場合、$A$の特異値と固有値は同じになりま�
 
 ### 行列のイメージ
 
+分解後の行列を視覚的に表現すると以下の様になります。
+
 $$
-A=U\left(\begin{array}{ccc|c}
+A=U\Sigma V^{T}=U\left(\begin{array}{ccc|c}
 \sigma_{1} & & 0 & \\
 & \ddots & & 0 \\
 0 & & \sigma_{r} & \\
 \hline & 0 & & 0
-\end{array}\right) V^{\mathrm{T}}
-$$
-
-$$
-\Sigma = \left(\begin{array}{ccc|c}
-\sigma_{1} & & 0 & \\
-& \ddots & & 0 \\
-0 & & \sigma_{r} & \\
-\hline & 0 & & 0
-\end{array}\right)
-$$
-
-
-
-$$
-A = \left(
+\end{array}\right) V^{\mathrm{T}} \\
+= \left(
 \mathbf{u}\_{1} \cdots \mathbf{u}\_{r}\right) \left(\begin{array}{llll}
 \sigma_{1} & & & \\
 & & \ddots & \\
@@ -86,13 +74,9 @@ A = \left(
 \end{array}\right)
 $$
 
+## 固有値分解と特異値分解
 
-
-
-
-
-
-
+$A=U\Sigma V^{T}$の$U$と$V$はユニタリ行列なので、ベクトル$u$と$v$を用いて、以下の様にかけます。
 
 $$
 \begin{aligned}
@@ -101,6 +85,8 @@ $$
 \end{aligned}
 $$
 
+さらに変形します。
+
 $$
 \begin{aligned}
 &\mathbf{A}^{T} \mathbf{A} \mathbf{v}=\sigma \mathbf{A}^{T} \mathbf{u}=\sigma^{2} \mathbf{v} \\
@@ -108,39 +94,26 @@ $$
 \end{aligned}
 $$
 
-$\mathbf{u}$と$\mathbf{v}$は左特異ベクトル、右特異ベクトルと呼ばれ、$\mathbf{u}$と$\mathbf{v}$は$AA^{T}, A^{T}A$の固有ベクトルになります。また、$A$の特異値の2乗が$AA^T$や$A^TA$の固有値になります。
+$\mathbf{u}$と$\mathbf{v}$はそれぞれ$\mathbf{A}^{T} \mathbf{A}$と$\mathbf{A} \mathbf{A}^{T} $の固有ベクトルになっています。$\mathbf{u}$と$\mathbf{v}$は左特異ベクトル、右特異ベクトルと呼ばれ、$\mathbf{u}$と$\mathbf{v}$は$\mathbf{AA^{T}}, \mathbf{A^{T}A}$の固有ベクトルになります。また、$\mathbf{A}$の特異値の2乗が$\mathbf{AA^T}$や$\mathbf{A^TA}$の固有値になります。
 
-## 固有値分解と特異値分解
-
-特異値分解の計算方法を介して、固有値分解と特異値分解の関係を示します。
-
-$$
-R_{u, i}=\left\lbrace\begin{array}{lr}
-1, & \text { if }(u, i) \text { interaction is observed } \\
-0, & \text { otherwise }
-\end{array}\right.
-$$
+この性質から、特異値分解と固有値分解を結びつける事ができます。
+最初に$\mathbf{A^TA}$の固有値分解を行い、固有ベクトルを求めます。その固有ベクトルは$\mathbf{v_i}$、固有値を$\lambda_i$とします。
+$\lambda_i = \sigma^2$なので、
 
 $$
-\begin{array}{|l|r|r|r|r|}
-\hline & \text { item_1 } & \text { item_2 } & \text { item_3 } & \text { item_4 } \\
-\hline \text { user_1 } & 0 & 1 & 0 & 0 \\
-\hline \text { user_2 } & 0 & 0 & 1 & 1 \\
-\hline \text { user_3 } & 1 & 0 & 0 & 0 \\
-\hline \text { user_4 } & 0 & 1 & 0 & 0 \\
-\hline \text { user_5 } & 1 & 0 & 1 & 0 \\
-\hline
-\end{array}
+\mathbf{u}_i = \frac{1}{\sqrt{\lambda_i}}\mathbf{A} \mathbf{v_i} 
 $$
 
-## 演算子ノルム
+となり、$\mathbf{u}_i$を求める事が出来ます。$\mathbf{v}_i$についても同様に求める事が可能で、固有値分解のアルゴリズムを用いて、特異値分解を計算する事ができます。
+
+## 作用素ノルム（演算子ノルム）
 行列$A$に対して定義されるノルム、
 
 $$
 \|\|\mathbf{A}\|\|=\max _{x \in \mathbb{C}^{n},\|x\|=1}\|\|\mathbf{A} \mathbf{x}\|\|
 $$
 
-を演算子ノルムといいます。特異値分解を利用すると演算子ノルムを簡単に求める事ができます。
+を作用素ノルムといいます。特異値分解を利用すると作用素ノルムを簡単に求める事ができます。
 
 $$
 \begin{aligned}
@@ -160,11 +133,11 @@ $$
 \end{aligned}
 $$
 
-となり、演算子ノルムは特異値の最も大きな値となります。
+となり、作用素ノルムは特異値の最も大きな値となります。
 
-### ユニタリ行列の演算子ノルム
+### ユニタリ行列の作用素ノルム
 
-ユニタリ行列の演算子ノルムは1になります。これは定義から明白で、ユニタリ行列を$U (U^{T}U=I)$とすると、
+ユニタリ行列の作用素ノルムは1になります。これは定義から明白で、ユニタリ行列を$U (U^{T}U=I)$とすると、
 
 $$
 \|\|U x\|\|^{2}=x^{T} U^{T} U x=\|\|x\|\|^{2} = 1
@@ -207,7 +180,7 @@ $$
 $$
 
 この定理は、$A$を中心とする半径$\sigma_{k+1}$の球上には低ランク近似行列$A_k$が存在することになります。それはすべての$k$で成立します。
-演算子ノルムでノルムを定義すると、非常にわかりやすい直感的な結果を示していると思います。証明は[1]に乗っていますので参考にしてください。
+作用素ノルムでノルムを定義すると、非常にわかりやすい直感的な結果を示していると思います。証明は[1]に乗っていますので参考にしてください。
 
 ### メモ
 
@@ -454,7 +427,79 @@ A.round(2) - (u @ np.append(np.diag(S), [[0], [0], [0], [0]], axis=1) @ v_T).rou
 
 となり、単位行列になっており無事に確認出来ました。
 
+### 作用素ノルムの計算
+
+pythonで作用素ノルムを計算するには、最大の特異値を計算するだけです。
+$A$は先ほど定義した行列とします。
+
+
+```python
+S[0].round(2)
+```
+
+
+
+
+    21.37
+
+
+
+### フロベニウスノルムの計算
+
+フロベニウスノルムはnumpyのlinalgで簡単に計算できます。
+
+
+```python
+np.linalg.norm(A, 'fro').round(2)
+```
+
+
+
+
+    22.07
+
+
+
+また、以下の性質を利用して計算することも出来ます。
+二つの結果が一致していることが分かります。
+
+$$
+\|A\|_{\mathrm{F}}^{2}=\operatorname{tr}\left(A A^{\top}\right)=\operatorname{tr}\left(A^{\top} A\right)
+$$
+
+
+```python
+np.sqrt(np.trace(A.T @ A)).round(2)
+```
+
+
+
+
+    22.07
+
+
+
+### スペクトル半径
+
+正方行列の最大固有値の絶対値をスペクトル半径といい、ページランクの収束性や連立方程式の収束性にも影響を及ぼします。
+
+
+```python
+np.abs(np.max(np.linalg.eig(np.array([[1,2,1], [2,1,3], [3,1,2]]))[0])).round(2)
+```
+
+
+
+
+    5.24
+
+
+
+## まとめ
+
+線型代数は本当に奥が深い。学生時代、サラリーマン時代と今まで2回ほどまとまって勉強する機会を設けたが、まだまだ理解していない事が多い。
+推薦システムでも論文を読んでいると様々な性質を利用して理論が進んでいくので、一つ一つしっかりと理解していきたい。
+
 ## 参考文献
 
 - [1][現代線形代数](https://www.amazon.co.jp/%E7%8F%BE%E4%BB%A3%E7%B7%9A%E5%BD%A2%E4%BB%A3%E6%95%B0-%E2%80%95%E5%88%86%E8%A7%A3%E5%AE%9A%E7%90%86%E3%82%92%E4%B8%AD%E5%BF%83%E3%81%A8%E3%81%97%E3%81%A6%E2%80%95-%E6%B1%A0%E8%BE%BA-%E5%85%AB%E6%B4%B2%E5%BD%A6/dp/4320018818)
-- [2][How Powerful is Graph Convolution for Recommendation?](https://arxiv.org/pdf/2108.07567.pdf)
