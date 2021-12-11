@@ -42,6 +42,8 @@ import matplotlib.pyplot as plt
 
 import networkx as nx
 
+from tabulate import tabulate
+
 print(nx.__version__)
 ```
 
@@ -64,14 +66,7 @@ print(torch.__version__)
 
 ## Graph Convolutional Networks 
 
-## 参照論文
-  - [1][SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS](https://arxiv.org/pdf/1609.02907.pdf)
-  - [2][Neural Graph Collaborative Filtering](https://arxiv.org/pdf/1905.08108.pdf)
-  - [3][LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/pdf/2002.02126.pdf)
-  - [4][UltraGCN: Ultra Simplification of Graph Convolutional Networks for Recommendation](https://arxiv.org/abs/2110.15114)
 
-
-![](./1.png)
 
 $$
 R_{u, i}=\left\lbrace\begin{array}{lr}
@@ -91,6 +86,150 @@ $$
 \hline
 \end{array}
 $$
+
+
+```python
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+
+np.set_printoptions(threshold=10000000)
+
+B = nx.Graph()
+
+user_num = 7
+item_num = 10
+
+user_nodes = [i for i in range(user_num)]
+item_nodes = [i for i in range(100, 100 + item_num)]
+
+B.add_nodes_from(user_nodes, bipartite=0)
+B.add_nodes_from(item_nodes, bipartite=1)
+
+node_color = []
+
+for u in user_nodes:
+  node_color.append('red')
+for i in item_nodes:
+  node_color.append('blue')
+
+edge_nodes = []
+pos = {}
+for _i, u in enumerate(user_nodes):
+  pos[u] = np.array([-1, - 1.75 * _i])
+  for _j, i in enumerate(item_nodes):
+    pos[i] = np.array([1, - 1.75 * _j])
+    if np.random.random() < 0.15:
+      edge_nodes.append((u,i))
+
+B.add_edges_from(edge_nodes)
+
+nx.draw(B, pos=pos, with_labels=True, node_color=node_color)
+
+plt.show()
+```
+
+
+    
+![svg](base_nb_files/base_nb_8_0.svg)
+    
+
+
+
+```python
+A = np.array(nx.adjacency_matrix(B).todense())
+L = np.array(nx.laplacian_matrix(B).todense())
+D = L + A
+A
+```
+
+
+
+
+    array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int64)
+
+
+
+
+```python
+A.shape
+```
+
+
+
+
+    (17, 17)
+
+
+
+
+```python
+# print(tabulate(A, headers=headers, tablefmt='github'))
+print(tabulate(A, tablefmt='github'))
+```
+
+    |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+
+```python
+
+```
+
+![](./1.png)
 
 
 ```python
@@ -185,7 +324,7 @@ plt.show()
 
 
     
-![svg](base_nb_files/base_nb_13_0.svg)
+![svg](base_nb_files/base_nb_19_0.svg)
     
 
 
@@ -253,7 +392,7 @@ plt.show()
 
 
     
-![svg](base_nb_files/base_nb_16_0.svg)
+![svg](base_nb_files/base_nb_22_0.svg)
     
 
 
@@ -281,7 +420,7 @@ plt.show()
 
 
     
-![svg](base_nb_files/base_nb_17_0.svg)
+![svg](base_nb_files/base_nb_23_0.svg)
     
 
 
@@ -572,104 +711,18 @@ nU @ np.diagflat(nLambda) @ nU.T
 
 ```python
 embedding = torch.nn.Embedding(num_embeddings=len(nA), embedding_dim=len(nA))
-dir(embedding)
 ```
 
 
+    ---------------------------------------------------------------------------
 
+    NameError                                 Traceback (most recent call last)
 
-    ['__call__',
-     '__class__',
-     '__constants__',
-     '__delattr__',
-     '__dict__',
-     '__dir__',
-     '__doc__',
-     '__eq__',
-     '__format__',
-     '__ge__',
-     '__getattr__',
-     '__getattribute__',
-     '__gt__',
-     '__hash__',
-     '__init__',
-     '__init_subclass__',
-     '__le__',
-     '__lt__',
-     '__module__',
-     '__ne__',
-     '__new__',
-     '__reduce__',
-     '__reduce_ex__',
-     '__repr__',
-     '__setattr__',
-     '__setstate__',
-     '__sizeof__',
-     '__str__',
-     '__subclasshook__',
-     '__weakref__',
-     '_apply',
-     '_backward_hooks',
-     '_buffers',
-     '_forward_hooks',
-     '_forward_pre_hooks',
-     '_get_name',
-     '_load_from_state_dict',
-     '_load_state_dict_pre_hooks',
-     '_modules',
-     '_named_members',
-     '_parameters',
-     '_register_load_state_dict_pre_hook',
-     '_register_state_dict_hook',
-     '_replicate_for_data_parallel',
-     '_save_to_state_dict',
-     '_slow_forward',
-     '_state_dict_hooks',
-     '_version',
-     'add_module',
-     'apply',
-     'buffers',
-     'children',
-     'cpu',
-     'cuda',
-     'double',
-     'dump_patches',
-     'embedding_dim',
-     'eval',
-     'extra_repr',
-     'float',
-     'forward',
-     'from_pretrained',
-     'half',
-     'load_state_dict',
-     'max_norm',
-     'modules',
-     'named_buffers',
-     'named_children',
-     'named_modules',
-     'named_parameters',
-     'norm_type',
-     'num_embeddings',
-     'padding_idx',
-     'parameters',
-     'register_backward_hook',
-     'register_buffer',
-     'register_forward_hook',
-     'register_forward_pre_hook',
-     'register_parameter',
-     'requires_grad_',
-     'reset_parameters',
-     'scale_grad_by_freq',
-     'share_memory',
-     'sparse',
-     'state_dict',
-     'to',
-     'train',
-     'training',
-     'type',
-     'weight',
-     'zero_grad']
+    <ipython-input-1-e065ab5f8c7f> in <module>
+    ----> 1 embedding = torch.nn.Embedding(num_embeddings=len(nA), embedding_dim=len(nA))
+    
 
+    NameError: name 'torch' is not defined
 
 
 $$
@@ -753,13 +806,13 @@ plt.show()
 
 
     
-![svg](base_nb_files/base_nb_46_0.svg)
+![svg](base_nb_files/base_nb_52_0.svg)
     
 
 
 
     
-![svg](base_nb_files/base_nb_46_1.svg)
+![svg](base_nb_files/base_nb_52_1.svg)
     
 
 
@@ -1066,3 +1119,81 @@ from scipy.linalg import expm
 
 expm(a)
 ```
+
+
+```python
+
+```
+
+$$
+R_{u, i}=\left\lbrace\begin{array}{lr}
+1, & \text { if }(u, i) \text { interaction is observed } \\
+0, & \text { otherwise }
+\end{array}\right.
+$$
+
+$$
+\begin{array}{|l|r|r|r|r|}
+\hline & \text { item_1 } & \text { item_2 } & \text { item_3 } & \text { item_4 } \\
+\hline \text { user_1 } & 0 & 1 & 0 & 0 \\
+\hline \text { user_2 } & 0 & 0 & 1 & 1 \\
+\hline \text { user_3 } & 1 & 0 & 0 & 0 \\
+\hline \text { user_4 } & 0 & 1 & 0 & 0 \\
+\hline \text { user_5 } & 1 & 0 & 1 & 0 \\
+\hline
+\end{array}
+$$
+
+
+```python
+
+```
+
+
+```python
+a = None
+print(a)
+```
+
+    None
+
+
+
+```python
+class A():
+  def __init__(self):
+    self.text = None
+
+  def __repr__(self):
+    # __repr__ でNoneを返すとエラー
+    return None
+
+    # __repr__ でNoneを返すとエラー
+    # これでもダメ
+    # return self.text
+
+a = A()
+print(a.text)
+print(a)
+len(a.a)
+```
+
+    None
+
+
+
+    ---------------------------------------------------------------------------
+
+    TypeError                                 Traceback (most recent call last)
+
+    <ipython-input-33-e8a5c7517652> in <module>
+         13 a = A()
+         14 print(a.text)
+    ---> 15 print(a)
+         16 len(a.a)
+
+
+    TypeError: __str__ returned non-string (type NoneType)
+
+
+- a.text でNoneの変数をprint出来るが、 a.__repr__ でprint()させようとするとError

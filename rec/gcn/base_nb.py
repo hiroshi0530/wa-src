@@ -27,7 +27,7 @@ get_ipython().system('python -V')
 
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 
-# In[1]:
+# In[12]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -40,10 +40,12 @@ import matplotlib.pyplot as plt
 
 import networkx as nx
 
+from tabulate import tabulate
+
 print(nx.__version__)
 
 
-# In[2]:
+# In[5]:
 
 
 # torchの読み込み
@@ -57,14 +59,7 @@ print(torch.__version__)
 
 # ## Graph Convolutional Networks 
 # 
-# ## 参照論文
-#   - [1][SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS](https://arxiv.org/pdf/1609.02907.pdf)
-#   - [2][Neural Graph Collaborative Filtering](https://arxiv.org/pdf/1905.08108.pdf)
-#   - [3][LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation](https://arxiv.org/pdf/2002.02126.pdf)
-#   - [4][UltraGCN: Ultra Simplification of Graph Convolutional Networks for Recommendation](https://arxiv.org/abs/2110.15114)
 # 
-
-# ![](./1.png)
 
 # $$
 # R_{u, i}=\left\lbrace\begin{array}{lr}
@@ -84,6 +79,99 @@ print(torch.__version__)
 # \hline
 # \end{array}
 # $$
+
+# In[8]:
+
+
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+
+np.set_printoptions(threshold=10000000)
+
+B = nx.Graph()
+
+user_num = 7
+item_num = 10
+
+user_nodes = [i for i in range(user_num)]
+item_nodes = [i for i in range(100, 100 + item_num)]
+
+B.add_nodes_from(user_nodes, bipartite=0)
+B.add_nodes_from(item_nodes, bipartite=1)
+
+node_color = []
+
+for u in user_nodes:
+  node_color.append('red')
+for i in item_nodes:
+  node_color.append('blue')
+
+edge_nodes = []
+pos = {}
+for _i, u in enumerate(user_nodes):
+  pos[u] = np.array([-1, - 1.75 * _i])
+  for _j, i in enumerate(item_nodes):
+    pos[i] = np.array([1, - 1.75 * _j])
+    if np.random.random() < 0.15:
+      edge_nodes.append((u,i))
+
+B.add_edges_from(edge_nodes)
+
+nx.draw(B, pos=pos, with_labels=True, node_color=node_color)
+
+plt.show()
+
+
+# In[10]:
+
+
+A = np.array(nx.adjacency_matrix(B).todense())
+L = np.array(nx.laplacian_matrix(B).todense())
+D = L + A
+A
+
+
+# In[11]:
+
+
+A.shape
+
+
+# In[16]:
+
+
+# print(tabulate(A, headers=headers, tablefmt='github'))
+print(tabulate(A, tablefmt='github'))
+
+
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+# | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+# In[ ]:
+
+
+
+
+
+# ![](./1.png)
 
 # In[133]:
 
@@ -370,11 +458,10 @@ nU = np.linalg.eig(nL)[1]
 nU @ np.diagflat(nLambda) @ nU.T
 
 
-# In[125]:
+# In[1]:
 
 
 embedding = torch.nn.Embedding(num_embeddings=len(nA), embedding_dim=len(nA))
-dir(embedding)
 
 
 # $$
@@ -624,3 +711,64 @@ from scipy.linalg import expm
 
 expm(a)
 
+
+# In[ ]:
+
+
+
+
+
+# $$
+# R_{u, i}=\left\lbrace\begin{array}{lr}
+# 1, & \text { if }(u, i) \text { interaction is observed } \\
+# 0, & \text { otherwise }
+# \end{array}\right.
+# $$
+# 
+# $$
+# \begin{array}{|l|r|r|r|r|}
+# \hline & \text { item_1 } & \text { item_2 } & \text { item_3 } & \text { item_4 } \\
+# \hline \text { user_1 } & 0 & 1 & 0 & 0 \\
+# \hline \text { user_2 } & 0 & 0 & 1 & 1 \\
+# \hline \text { user_3 } & 1 & 0 & 0 & 0 \\
+# \hline \text { user_4 } & 0 & 1 & 0 & 0 \\
+# \hline \text { user_5 } & 1 & 0 & 1 & 0 \\
+# \hline
+# \end{array}
+# $$
+
+# In[ ]:
+
+
+
+
+
+# In[17]:
+
+
+a = None
+print(a)
+
+
+# In[33]:
+
+
+class A():
+  def __init__(self):
+    self.text = None
+
+  def __repr__(self):
+    # __repr__ でNoneを返すとエラー
+    return None
+
+    # __repr__ でNoneを返すとエラー
+    # これでもダメ
+    # return self.text
+
+a = A()
+print(a.text)
+print(a)
+len(a.a)
+
+
+# - a.text でNoneの変数をprint出来るが、 a.__repr__ でprint()させようとするとError
