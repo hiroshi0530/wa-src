@@ -39,6 +39,7 @@ import numpy as np
 import pandas as pd
 
 import japanize_matplotlib
+import japanize_matplotlib
 import snap
 
 
