@@ -1,6 +1,7 @@
-## Graph Convolutional Networks
+## [PyTorch] Matrix Factorization
 
-グラフ畳み込みネットワーク(GCN)についてまとめる。
+pytorchで行列分解(Matrix Factorization)をやってみる。
+
 
 ### データセット
 
@@ -33,9 +34,6 @@
     ProductName:	macOS
     ProductVersion:	11.6.7
     BuildVersion:	20G630
-    ProductName:	macOS
-    ProductVersion:	11.6.7
-    BuildVersion:	20G630
 
 
 
@@ -43,12 +41,8 @@
 !python -V
 ```
 
-    Python 3.9.12
+    Python 3.8.13
 
-
-$$\int_a^b f(x) dx = \infty$$
-
-$$E = \sum_{(u_i, d_j, r_{ij}) \in T}{e_{ij}} = \sum_{(u_i,d_j,r_{ij}) \in T}{(r_{ij} - \sum_{k=1}^K{p_{ik}q_{kj}})^2}$$
 
 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 学習をpytorchを利用し、ネットワーク関係はnetworkxを利用する。
@@ -88,37 +82,189 @@ print('torch       : {}'.format(torch.__version__))
 
 
 ```python
-import scipy
-scipy.__version__
+class MF(torch.nn.Module):
+    def __init__(self, n_users, n_items, n_factors=20):
+        super(MF, self).__init__()
+        self.user_factors = torch.nn.Embedding(n_users, n_factors, sparse=True)
+        self.item_factors = torch.nn.Embedding(n_items, n_factors, sparse=True)
+
+    def forward(self, user, item):
+        return (self.user_factors(user) * self.item_factors(item)).sum(1)
+
+n_users = 2000
+n_items = 2000
+
+model = MF(n_users, n_items, n_factors=128)
 ```
 
 
+```python
+class MF(torch.nn.Module):
+
+    def __init__(self, n_users, n_items, latent_dim):
+        super(MF, self).__init__()
+
+        # define layers and loss
+        self.user_embedding = torch.nn.Embedding(num_embeddings=n_users, embedding_dim=latent_dim)
+        self.item_embedding = torch.nn.Embedding(num_embeddings=n_items, embedding_dim=latent_dim)
+
+    def forward(self):
+        all_embeddings = self.get_ego_embeddings()
+        embeddings_list = [all_embeddings]
+
+        for layer_idx in range(self.n_layers):
+            all_embeddings = torch.sparse.mm(self.norm_adj_matrix, all_embeddings)
+            embeddings_list.append(all_embeddings)
+
+        lightgcn_all_embeddings = torch.stack(embeddings_list, dim=1)
+        lightgcn_all_embeddings = torch.mean(lightgcn_all_embeddings, dim=1)
+
+        user_all_embeddings, item_all_embeddings = torch.split(lightgcn_all_embeddings, [self.n_users, self.n_items])
+        return user_all_embeddings, item_all_embeddings
+
+    def calculate_loss(self, interaction):
+        # clear the storage variable when training
+        if self.restore_user_e is not None or self.restore_item_e is not None:
+            self.restore_user_e, self.restore_item_e = None, None
+
+        user = interaction[self.USER_ID]
+        pos_item = interaction[self.ITEM_ID]
+        neg_item = interaction[self.NEG_ITEM_ID]
+
+        user_all_embeddings, item_all_embeddings = self.forward()
+        u_embeddings = user_all_embeddings[user]
+        pos_embeddings = item_all_embeddings[pos_item]
+        neg_embeddings = item_all_embeddings[neg_item]
+
+        # calculate BPR Loss
+        pos_scores = torch.mul(u_embeddings, pos_embeddings).sum(dim=1)
+        neg_scores = torch.mul(u_embeddings, neg_embeddings).sum(dim=1)
+        mf_loss = self.mf_loss(pos_scores, neg_scores)
+
+        # calculate BPR Loss
+        u_ego_embeddings = self.user_embedding(user)
+        pos_ego_embeddings = self.item_embedding(pos_item)
+        neg_ego_embeddings = self.item_embedding(neg_item)
+
+        reg_loss = self.reg_loss(u_ego_embeddings, pos_ego_embeddings, neg_ego_embeddings)
+        loss = mf_loss + self.reg_weight * reg_loss
+
+        return loss
+
+    def predict(self, interaction):
+        user = interaction[self.USER_ID]
+        item = interaction[self.ITEM_ID]
+
+        user_all_embeddings, item_all_embeddings = self.forward()
+
+        u_embeddings = user_all_embeddings[user]
+        i_embeddings = item_all_embeddings[item]
+        scores = torch.mul(u_embeddings, i_embeddings).sum(dim=1)
+        return scores
+
+n_users = 2000
+n_items = 2000
+latent_dim = 128
+model = MF(n_users, n_items, latent_dim)
+```
 
 
-    '1.8.1'
+```python
+model.user_embedding()
+```
 
+
+    ---------------------------------------------------------------------------
+
+    TypeError                                 Traceback (most recent call last)
+
+    Input In [14], in <cell line: 1>()
+    ----> 1 model.user_embedding()
+
+
+    File ~/anaconda3/envs/rec/lib/python3.8/site-packages/torch/nn/modules/module.py:1130, in Module._call_impl(self, *input, **kwargs)
+       1126 # If we don't have any hooks, we want to skip the rest of the logic in
+       1127 # this function, and just call forward.
+       1128 if not (self._backward_hooks or self._forward_hooks or self._forward_pre_hooks or _global_backward_hooks
+       1129         or _global_forward_hooks or _global_forward_pre_hooks):
+    -> 1130     return forward_call(*input, **kwargs)
+       1131 # Do not call functions when jit is used
+       1132 full_backward_hooks, non_full_backward_hooks = [], []
+
+
+    TypeError: forward() missing 1 required positional argument: 'input'
 
 
 
 ```python
-!which python
+loss_function = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(), lr=1e-2)
 ```
-
-    /Users/83005814_mac/anaconda3/bin/python
-
 
 
 ```python
-import sys
-sys.executable
+from torch import autograd
+
+for epoch in range(10):  # 最大10反復
+    accum_loss = 0.
+
+    # 学習データのシャッフル
+    random.shuffle(samples_train)
+
+    for u, i, r in samples_train:
+        # PyTorchでは勾配は累積するのでサンプルごとに初期化
+        model.zero_grad()
+
+        # 入力値を `torch.Tensor` でラップして `autograd.Variable` 化
+        user = autograd.Variable(as_long_tensor(u))  # user index
+        item = autograd.Variable(as_long_tensor(i))  # item index
+        rating = autograd.Variable(as_float_tensor(r))  # target
+
+        # forward pass (prediction)
+        prediction = model(user, item)
+
+        # compute loss
+        loss = loss_function(prediction, rating)
+        accum_loss += loss.data[0]
+
+        # gradient of loss
+        loss.backward()
+
+        # update model parameters
+        optimizer.step()
+
+    print('MF (PyTorch)', epoch + 1, accum_loss)
+    if abs(accum_loss - last_accum_loss) < 1e-3:  # 収束判定
+        break
+    last_accum_loss = accum_loss
 ```
 
 
+```python
+for i in model.parameters():
+  print(i) 
+```
 
 
-    '/Users/83005814_mac/anaconda3/envs/rec/bin/python'
+```python
+
+```
 
 
+```python
+
+o
+```
+
+
+```python
+
+```
+
+
+```python
+
+```
 
 ## 二部グラフの作成、L、A、D、正規化行列の計算
 
@@ -184,82 +330,9 @@ plt.show()
 ```
 
 
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    セル15 を /Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb in <cell line: 1>()
-    ----> <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000014?line=0'>1</a> np.random.seed(seed=16)
-          <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000014?line=1'>2</a> np.set_printoptions(threshold=10000000)
-          <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000014?line=3'>4</a> B = nx.Graph()
-
-
-    NameError: name 'np' is not defined
-
-
-
-```python
-edge_nodes
-```
-
-
-
-
-    [(0, 100), (0, 103), (1, 100), (1, 101), (1, 103), (2, 100), (2, 103)]
-
-
-
-
-```python
-dir(nx.adjacency_matrix(B))
-print(nx.adjacency_matrix(B))
-```
-
-      (0, 3)	1
-      (0, 6)	1
-      (1, 3)	1
-      (1, 4)	1
-      (1, 6)	1
-      (2, 3)	1
-      (2, 6)	1
-      (3, 0)	1
-      (3, 1)	1
-      (3, 2)	1
-      (4, 1)	1
-      (6, 0)	1
-      (6, 1)	1
-      (6, 2)	1
-
-
-    /var/folders/hf/n122ckrx1s7d_4znx12t3r800000gq/T/ipykernel_19788/4100402902.py:1: FutureWarning: adjacency_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.
-      dir(nx.adjacency_matrix(B))
-    /var/folders/hf/n122ckrx1s7d_4znx12t3r800000gq/T/ipykernel_19788/4100402902.py:2: FutureWarning: adjacency_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.
-      print(nx.adjacency_matrix(B))
-
-
-
-```python
-A = np.array(nx.adjacency_matrix(B).todense())
-L = np.array(nx.laplacian_matrix(B).todense())
-D = L + A
-A
-```
-
-    /var/folders/hf/n122ckrx1s7d_4znx12t3r800000gq/T/ipykernel_19788/2610973267.py:1: FutureWarning: adjacency_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.
-      A = np.array(nx.adjacency_matrix(B).todense())
-
-
-
-
-
-    array([[0, 0, 0, 1, 0, 0, 1],
-           [0, 0, 0, 1, 1, 0, 1],
-           [0, 0, 0, 1, 0, 0, 1],
-           [1, 1, 1, 0, 0, 0, 0],
-           [0, 1, 0, 0, 0, 0, 0],
-           [0, 0, 0, 0, 0, 0, 0],
-           [1, 1, 1, 0, 0, 0, 0]])
-
+    
+![svg](mf_nb_files/mf_nb_17_0.svg)
+    
 
 
 上の二部グラフを嗜好行列で表すと以下のようになります。
@@ -274,6 +347,8 @@ networkx型のオブジェクトから、嗜好行列や隣接行列を作るこ
 
 
 ```python
+A = np.array(nx.adjacency_matrix(B).todense())
+L = np.array(nx.laplacian_matrix(B).todense())
 D = L + A
 A
 ```
@@ -287,7 +362,7 @@ A
            [1, 1, 1, 0, 0, 0, 0],
            [0, 1, 0, 0, 0, 0, 0],
            [0, 0, 0, 0, 0, 0, 0],
-           [1, 1, 1, 0, 0, 0, 0]])
+           [1, 1, 1, 0, 0, 0, 0]], dtype=int64)
 
 
 
@@ -302,7 +377,7 @@ R
 
     array([[1, 0, 0, 1],
            [1, 1, 0, 1],
-           [1, 0, 0, 1]])
+           [1, 0, 0, 1]], dtype=int64)
 
 
 
@@ -315,7 +390,7 @@ D_I
 
 
 
-    array([3, 1, 0, 3])
+    array([3, 1, 0, 3], dtype=int64)
 
 
 
@@ -532,7 +607,7 @@ plt.show()
 
 
     
-![svg](base_nb_files/base_nb_36_0.svg)
+![svg](mf_nb_files/mf_nb_38_0.svg)
     
 
 
@@ -714,12 +789,12 @@ for epoch in range(30):
 
     ModuleNotFoundError                       Traceback (most recent call last)
 
-    セル56 を /Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb in <cell line: 4>()
-          <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000055?line=0'>1</a> import torch
-          <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000055?line=1'>2</a> from torch.utils.data import DataLoader, Dataset
-    ----> <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000055?line=3'>4</a> from SVDppRecommender import SVDpp
-          <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000055?line=5'>6</a> class RateDataset(Dataset):
-          <a href='vscode-notebook-cell:/Users/83005814_mac/private/wa_src/rec/gcn/01/base_nb.ipynb#ch0000055?line=6'>7</a>     def __init__(self, user_tensor, item_tensor, target_tensor):
+    <ipython-input-68-7cab36334607> in <module>
+          2 from torch.utils.data import DataLoader, Dataset
+          3 
+    ----> 4 from SVDppRecommender import SVDpp
+          5 
+          6 class RateDataset(Dataset):
 
 
     ModuleNotFoundError: No module named 'SVDppRecommender'
