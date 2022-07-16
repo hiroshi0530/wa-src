@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ## Graph Convolutional Networks
+# ## [PyTorch] Matrix Factorization
 # 
-# グラフ畳み込みネットワーク(GCN)についてまとめる。
+# pytorchで行列分解(Matrix Factorization)をやってみる。
+# 
 # 
 # ### データセット
 # 
@@ -40,14 +41,10 @@ get_ipython().system('sw_vers')
 get_ipython().system('python -V')
 
 
-# $$\int_a^b f(x) dx = \infty$$
-
-# $$E = \sum_{(u_i, d_j, r_{ij}) \in T}{e_{ij}} = \sum_{(u_i,d_j,r_{ij}) \in T}{(r_{ij} - \sum_{k=1}^K{p_{ik}q_{kj}})^2}$$
-
 # 基本的なライブラリをインポートしそのバージョンを確認しておきます。
 # 学習をpytorchを利用し、ネットワーク関係はnetworkxを利用する。
 
-# In[1]:
+# In[7]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -75,24 +72,177 @@ print('numpy       : {}'.format(np.__version__))
 print('torch       : {}'.format(torch.__version__))
 
 
-# In[2]:
+# In[12]:
 
 
-import scipy
-scipy.__version__
+class MF(torch.nn.Module):
+    def __init__(self, n_users, n_items, n_factors=20):
+        super(MF, self).__init__()
+        self.user_factors = torch.nn.Embedding(n_users, n_factors, sparse=True)
+        self.item_factors = torch.nn.Embedding(n_items, n_factors, sparse=True)
+
+    def forward(self, user, item):
+        return (self.user_factors(user) * self.item_factors(item)).sum(1)
+
+n_users = 2000
+n_items = 2000
+
+model = MF(n_users, n_items, n_factors=128)
 
 
-# In[3]:
+# In[13]:
 
 
-get_ipython().system('which python')
+class MF(torch.nn.Module):
+
+    def __init__(self, n_users, n_items, latent_dim):
+        super(MF, self).__init__()
+
+        # define layers and loss
+        self.user_embedding = torch.nn.Embedding(num_embeddings=n_users, embedding_dim=latent_dim)
+        self.item_embedding = torch.nn.Embedding(num_embeddings=n_items, embedding_dim=latent_dim)
+
+    def forward(self):
+        all_embeddings = self.get_ego_embeddings()
+        embeddings_list = [all_embeddings]
+
+        for layer_idx in range(self.n_layers):
+            all_embeddings = torch.sparse.mm(self.norm_adj_matrix, all_embeddings)
+            embeddings_list.append(all_embeddings)
+
+        lightgcn_all_embeddings = torch.stack(embeddings_list, dim=1)
+        lightgcn_all_embeddings = torch.mean(lightgcn_all_embeddings, dim=1)
+
+        user_all_embeddings, item_all_embeddings = torch.split(lightgcn_all_embeddings, [self.n_users, self.n_items])
+        return user_all_embeddings, item_all_embeddings
+
+    def calculate_loss(self, interaction):
+        # clear the storage variable when training
+        if self.restore_user_e is not None or self.restore_item_e is not None:
+            self.restore_user_e, self.restore_item_e = None, None
+
+        user = interaction[self.USER_ID]
+        pos_item = interaction[self.ITEM_ID]
+        neg_item = interaction[self.NEG_ITEM_ID]
+
+        user_all_embeddings, item_all_embeddings = self.forward()
+        u_embeddings = user_all_embeddings[user]
+        pos_embeddings = item_all_embeddings[pos_item]
+        neg_embeddings = item_all_embeddings[neg_item]
+
+        # calculate BPR Loss
+        pos_scores = torch.mul(u_embeddings, pos_embeddings).sum(dim=1)
+        neg_scores = torch.mul(u_embeddings, neg_embeddings).sum(dim=1)
+        mf_loss = self.mf_loss(pos_scores, neg_scores)
+
+        # calculate BPR Loss
+        u_ego_embeddings = self.user_embedding(user)
+        pos_ego_embeddings = self.item_embedding(pos_item)
+        neg_ego_embeddings = self.item_embedding(neg_item)
+
+        reg_loss = self.reg_loss(u_ego_embeddings, pos_ego_embeddings, neg_ego_embeddings)
+        loss = mf_loss + self.reg_weight * reg_loss
+
+        return loss
+
+    def predict(self, interaction):
+        user = interaction[self.USER_ID]
+        item = interaction[self.ITEM_ID]
+
+        user_all_embeddings, item_all_embeddings = self.forward()
+
+        u_embeddings = user_all_embeddings[user]
+        i_embeddings = item_all_embeddings[item]
+        scores = torch.mul(u_embeddings, i_embeddings).sum(dim=1)
+        return scores
+
+n_users = 2000
+n_items = 2000
+latent_dim = 128
+model = MF(n_users, n_items, latent_dim)
 
 
-# In[4]:
+# In[14]:
 
 
-import sys
-sys.executable
+model.user_embedding()
+
+
+# In[ ]:
+
+
+loss_function = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(), lr=1e-2)
+
+
+# In[ ]:
+
+
+from torch import autograd
+
+for epoch in range(10):  # 最大10反復
+    accum_loss = 0.
+
+    # 学習データのシャッフル
+    random.shuffle(samples_train)
+
+    for u, i, r in samples_train:
+        # PyTorchでは勾配は累積するのでサンプルごとに初期化
+        model.zero_grad()
+
+        # 入力値を `torch.Tensor` でラップして `autograd.Variable` 化
+        user = autograd.Variable(as_long_tensor(u))  # user index
+        item = autograd.Variable(as_long_tensor(i))  # item index
+        rating = autograd.Variable(as_float_tensor(r))  # target
+
+        # forward pass (prediction)
+        prediction = model(user, item)
+
+        # compute loss
+        loss = loss_function(prediction, rating)
+        accum_loss += loss.data[0]
+
+        # gradient of loss
+        loss.backward()
+
+        # update model parameters
+        optimizer.step()
+
+    print('MF (PyTorch)', epoch + 1, accum_loss)
+    if abs(accum_loss - last_accum_loss) < 1e-3:  # 収束判定
+        break
+    last_accum_loss = accum_loss
+
+
+# In[ ]:
+
+
+for i in model.parameters():
+  print(i) 
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+o
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # ## 二部グラフの作成、L、A、D、正規化行列の計算
@@ -118,7 +268,7 @@ sys.executable
 # \end{array}
 # $$
 
-# In[2]:
+# In[52]:
 
 
 np.random.seed(seed=16)
@@ -159,28 +309,6 @@ nx.draw(B, pos=pos, with_labels=True, node_color=node_color, node_size=node_size
 plt.show()
 
 
-# In[6]:
-
-
-edge_nodes
-
-
-# In[7]:
-
-
-dir(nx.adjacency_matrix(B))
-print(nx.adjacency_matrix(B))
-
-
-# In[10]:
-
-
-A = np.array(nx.adjacency_matrix(B).todense())
-L = np.array(nx.laplacian_matrix(B).todense())
-D = L + A
-A
-
-
 # 上の二部グラフを嗜好行列で表すと以下のようになります。
 # 
 # |  | item_100 | item_200 | item_300 | item_400 |
@@ -191,21 +319,23 @@ A
 
 # networkx型のオブジェクトから、嗜好行列や隣接行列を作ることができます。
 
-# In[11]:
+# In[53]:
 
 
+A = np.array(nx.adjacency_matrix(B).todense())
+L = np.array(nx.laplacian_matrix(B).todense())
 D = L + A
 A
 
 
-# In[8]:
+# In[54]:
 
 
 R = A[0:user_num, user_num:]
 R
 
 
-# In[9]:
+# In[55]:
 
 
 D_I = np.sum(R, axis=0)
@@ -472,7 +602,7 @@ output.backward()
 
 
 
-# In[12]:
+# In[68]:
 
 
 import torch
@@ -545,7 +675,7 @@ for epoch in range(30):
     
 
 
-# In[ ]:
+# In[69]:
 
 
 import numpy as np
