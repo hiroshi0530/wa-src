@@ -1,5 +1,7 @@
 #!/bin/bash -l
 
+WA="/Users/hiroshi/private"
+
 # タイミングによって 余計なファイルが入ってしまうので、一度コピージョブをkill
 pkill -kill -f copy_md_to_hugo
 pkill -kill -f execute_copy
