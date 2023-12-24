@@ -10,7 +10,10 @@
 
 ### Recommender Systems
 1. コンテンツベースフィルタリング
-2. 
+2. 協調フィルタリング   
+    - メモリベース
+    - モデルベース
+
 
 
 
@@ -41,10 +44,10 @@ print('numpy       : {}'.format(np.__version__))
 print('torch       : {}'.format(torch.__version__))
 ```
 
-    matplotlib  : 3.5.2
-    networkdx   : 2.5
-    numpy       : 1.19.2
-    torch       : 1.10.0
+    matplotlib  : 3.7.1
+    networkdx   : 3.1
+    numpy       : 1.24.3
+    torch       : 2.0.1
 
 
 
@@ -52,19 +55,14 @@ print('torch       : {}'.format(torch.__version__))
 !ls -alh ../dataset/ml-100k/
 ```
 
-    total 4056
-    drwxr-xr-x  5 hiroshi.wayama  staff   160B 11 10  2021 [34m.[m[m
-    drwxr-xr-x  9 hiroshi.wayama  staff   288B  6 15 01:36 [34m..[m[m
-    -rw-r--r--  1 hiroshi.wayama  staff   1.9M 11 10  2021 ml-100k.inter
-    -rw-r--r--  1 hiroshi.wayama  staff    65K 11 10  2021 ml-100k.item
-    -rw-r--r--  1 hiroshi.wayama  staff    22K 11 10  2021 ml-100k.user
+    ls: ../dataset/ml-100k/: No such file or directory
 
 
 
 ```python
 import pandas as pd
 
-df = pd.read_csv('../dataset/ml-100k/ml-100k.inter', sep='\t')
+df = pd.read_csv("./data/ml-100k.csv")
 df
 ```
 
@@ -89,15 +87,17 @@ df
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>user_id:token</th>
-      <th>item_id:token</th>
-      <th>rating:float</th>
-      <th>timestamp:float</th>
+      <th>num</th>
+      <th>user_id</th>
+      <th>item_id</th>
+      <th>rating</th>
+      <th>timestamp</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
+      <td>0</td>
       <td>196</td>
       <td>242</td>
       <td>3</td>
@@ -105,6 +105,7 @@ df
     </tr>
     <tr>
       <th>1</th>
+      <td>1</td>
       <td>186</td>
       <td>302</td>
       <td>3</td>
@@ -112,6 +113,7 @@ df
     </tr>
     <tr>
       <th>2</th>
+      <td>2</td>
       <td>22</td>
       <td>377</td>
       <td>1</td>
@@ -119,6 +121,7 @@ df
     </tr>
     <tr>
       <th>3</th>
+      <td>3</td>
       <td>244</td>
       <td>51</td>
       <td>2</td>
@@ -126,6 +129,7 @@ df
     </tr>
     <tr>
       <th>4</th>
+      <td>4</td>
       <td>166</td>
       <td>346</td>
       <td>1</td>
@@ -137,9 +141,11 @@ df
       <td>...</td>
       <td>...</td>
       <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
       <th>99995</th>
+      <td>99995</td>
       <td>880</td>
       <td>476</td>
       <td>3</td>
@@ -147,6 +153,7 @@ df
     </tr>
     <tr>
       <th>99996</th>
+      <td>99996</td>
       <td>716</td>
       <td>204</td>
       <td>5</td>
@@ -154,6 +161,7 @@ df
     </tr>
     <tr>
       <th>99997</th>
+      <td>99997</td>
       <td>276</td>
       <td>1090</td>
       <td>1</td>
@@ -161,6 +169,7 @@ df
     </tr>
     <tr>
       <th>99998</th>
+      <td>99998</td>
       <td>13</td>
       <td>225</td>
       <td>2</td>
@@ -168,6 +177,7 @@ df
     </tr>
     <tr>
       <th>99999</th>
+      <td>99999</td>
       <td>12</td>
       <td>203</td>
       <td>3</td>
@@ -175,7 +185,7 @@ df
     </tr>
   </tbody>
 </table>
-<p>100000 rows × 4 columns</p>
+<p>100000 rows × 5 columns</p>
 </div>
 
 
@@ -184,14 +194,15 @@ df
 ```python
 # plt.figure(figsize=(18, 6)).patch.set_facecolor('white')
 # plt.style.use('ggplot')
-df.groupby('user_id:token').count().sort_values(by='item_id:token', ascending=False).reset_index() \
-.plot.scatter(x='user_id:token', y='item_id:token')
+df.groupby("user_id").count().sort_values(by="item_id", ascending=False).reset_index().plot.scatter(
+    x="user_id", y="item_id"
+)
 ```
 
 
 
 
-    <AxesSubplot:xlabel='user_id:token', ylabel='item_id:token'>
+    <Axes: xlabel='user_id', ylabel='item_id'>
 
 
 
@@ -203,14 +214,13 @@ df.groupby('user_id:token').count().sort_values(by='item_id:token', ascending=Fa
 
 
 ```python
-df.groupby('user_id:token').count().sort_values(by='item_id:token', ascending=False).reset_index() \
-['item_id:token'].plot()
+df.groupby("user_id").count().sort_values(by="item_id", ascending=False).reset_index()["item_id"].plot()
 ```
 
 
 
 
-    <AxesSubplot:>
+    <Axes: >
 
 
 
