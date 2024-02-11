@@ -12,12 +12,67 @@
 ・アクセスがなくても、このサイトを見に来てくれた人がこの人は何が出来るのかを確認出来るもの
 ・SEOに引っかかる付加価値が高い記事
 
+## 2024/3/31 までに書くブログ
+
+- Graphの話
+    - [rec/graph/01] [グラフ理論]  評価行列、隣接行列、次数行列、ラプラシアン行列 (済)
+    - [rec/graph/02] [グラフ理論]  ベクトル場とグラフの演算子の対比
+        - http://gabarro.org/ccn/algebraic_graph_calculus.html
+    - [rec/graph/03] [グラフ理論]  グラフラプラシアンと固有値、GFT
+    - [rec/graph/04] [スペクトラルグラフ理論] ローパスフィルタの話
+    - [rec/graph/05] [スペクトラルグラフ理論] チーガーの不等式の話
+        - https://mathweb.ucsd.edu/~fan/research/revised.html
+    - [rec/graph/06] [スペクトラルグラフ理論] 最短カットの話
+
+- 線型代数の話
+    - [rec/linalg/base] 低ランク近似 (済)
+    - [rec/linalg/base2] 疑似逆行列 (済)
+    - [rec/linalg/base3] 特異値分解と主成分分析
+    - [rec/linalg/base4] レイリー商の話
+    - [rec/linalg/base5] 余因子と余因子展開の話
+    - [rec/linalg/base6] スペクトル分解の話
+    - [rec/linalg/base7] 便利な公式の話
+        - Matrix CookBook https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
+
+
+- Graph Convolutional Network (GCN) の話
+    - https://www.slideshare.net/yukihirodomae/graph-convolution
+    - 空間上の畳み込みとスペクトル上での畳み込みの話
+    - [rec/gcn/01]
+    - [rec/gcn/02]
+
+- 推薦システムの評価手法と実装の話
+    - [rec/gr/01] RFMとCPM分析の話
+    - [rec/gr/02] アソシエーション分析の話
+    - [rec/gr/03] メモリベース協調フィルタリング
+    - [rec/gr/04] 内容ベースフィルタリング
+    - [rec/gr/05] 行列分解の話
+    - [rec/gr/06] 評価手法の話
+
+- 研究の話
+    - 量子ランダムウォークと隣接行列の話
+    - 2重確率行列の性質の話
+
+
+- Simpyの話
+
+
+
+
+
+- GNN
+- SQL
+- J-Quants
+- 統計
+  - ガンマ関数とベータ関数のプロット
+- MMM
+- 時系列
+- ベイズ
+
+
+
 ## 忘れないようにメモ
 - 211007
-- ml
-  - 低ランク近似 (済)
-  - 疑似逆行列 (済)
-  - 特異値分解と主成分分析
 - rec
   - 量子ウォーク
   - 量子低ランク近似推定
@@ -25,23 +80,6 @@
   - prakashの博士論文
   - データ木構造を使った振幅エンコーディング(量子RAM)
     - prakashや教科書から
-
-- 240101
-  - GNN
-  - Matrix CookBook https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
-  - SQL
-  - J-Quants
-  - 統計
-    - ガンマ関数とベータ関数のプロット
-  - グラフラプラシンの話
-    - Nexworkx (済)
-    - http://gabarro.org/ccn/algebraic_graph_calculus.html
-    - GFTとグラフラプラシンとの対応
-    - ローパスフィルタの機能の話
-  - グラフスペクトル理論
-  - MMM
-  - 時系列
-  - ベイズ
 
 
 - 211007
