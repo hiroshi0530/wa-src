@@ -54,7 +54,7 @@
     - [rec/qwalk/02] 2重確率行列の性質の話
 
 - マーケティングの話
-    - [rec/mkt/04] RFMとCPM分析の話
+    - [rec/mkt/04] RFMとCPM分析の話 (済)
     - [rec/mkt/05] アソシエーション分析の話
       - mlxtendでのaprioriとfpgtree
 
