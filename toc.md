@@ -32,7 +32,7 @@
     - [rec/linalg/base3] 特異値分解と主成分分析
     - [rec/linalg/base4] レイリー商の話
     - [rec/linalg/base5] 余因子と余因子展開の話
-    - [rec/linalg/base6] スペクトル分解の話
+    - [rec/linalg/base6] スペクトル分解の話 (済)
     - [rec/linalg/base7] 便利な公式の話
         - Matrix CookBook https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
 
