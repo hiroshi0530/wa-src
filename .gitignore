@@ -6,6 +6,8 @@ _temp_orig_index.md
 
 *Zone.Identifier
 
+*.md
+
 pt_*.md
 toc.md
 top_template.ipynb
@@ -13,3 +15,5 @@ nbconverter_test.sh
 gupdate.sh
 gpull.sh
 gdeploy.sh
+
+!README.md
