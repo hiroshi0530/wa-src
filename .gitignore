@@ -7,6 +7,8 @@ _temp_orig_index.md
 *Zone.Identifier
 
 *.md
+*.png
+*.svg
 
 pt_*.md
 toc.md
