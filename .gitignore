@@ -11,6 +11,8 @@ _temp_orig_index.md
 *.png
 *.svg
 
+manage_file.sh
+
 .ipynb_checkpoints/
 
 pt_*.md
