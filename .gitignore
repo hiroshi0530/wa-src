@@ -10,8 +10,10 @@ _temp_orig_index.md
 *.py
 *.png
 *.svg
+*.drawio
 
 manage_file.sh
+manage_file.csv
 
 .ipynb_checkpoints/
 
