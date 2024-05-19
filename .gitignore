@@ -7,8 +7,11 @@ _temp_orig_index.md
 *Zone.Identifier
 
 *.md
+*.py
 *.png
 *.svg
+
+.ipynb_checkpoints/
 
 pt_*.md
 toc.md
