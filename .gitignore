@@ -17,6 +17,9 @@ manage_file.csv
 
 .ipynb_checkpoints/
 
+data/
+ml-100k/
+
 pt_*.md
 toc.md
 top_template.ipynb
