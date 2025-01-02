@@ -29,3 +29,5 @@ gpull.sh
 gdeploy.sh
 
 !README.md
+
+copy_template.ipynb
