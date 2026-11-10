@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  notebooks:
+    name: "Notebook (${{ matrix.notebook }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MPLBACKEND: Agg
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    strategy:
+      fail-fast: false
+      matrix:
+        notebook: [environment, sympy, statistics, linear-algebra]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          version: "0.13.7"
+
+      # uv reads the Python version from .python-version.
+      - name: Install dependencies from the lockfile
+        run: uv sync --locked
+
+      - name: Execute notebook
+        run: >-
+          uv run --locked pytest -q
+          "tests/test_notebooks.py::test_notebook[${{ matrix.notebook }}]"
+          --basetemp .pytest-notebooks
+
+      - name: Upload executed notebook
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: executed-notebook-${{ matrix.notebook }}
+          path: .pytest-notebooks/**/*.ipynb
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
