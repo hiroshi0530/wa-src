@@ -29,5 +29,16 @@ gpull.sh
 gdeploy.sh
 
 !README.md
+!/.github/**/*.md
+!/tests/**/*.py
 
 copy_template.ipynb
+
+/_old/
+
+# uv environment and Python caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-notebooks/
