@@ -34,6 +34,8 @@ gdeploy.sh
 
 copy_template.ipynb
 
+/_old/
+
 # uv environment and Python caches
 .venv/
 __pycache__/
